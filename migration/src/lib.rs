@@ -23,6 +23,7 @@ mod m20260321_182739_create_table_company_feature_overrides;
 mod m20260321_184247_create_table_role_permissions;
 mod m20260321_185438_create_table_membership_roles;
 mod m20260321_190530_create_table_technicians;
+mod m20260321_195712_create_table_clients;
 
 pub struct Migrator;
 
@@ -53,6 +54,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260321_184247_create_table_role_permissions::Migration),
             Box::new(m20260321_185438_create_table_membership_roles::Migration),
             Box::new(m20260321_190530_create_table_technicians::Migration),
+            Box::new(m20260321_195712_create_table_clients::Migration),
         ]
     }
 }
