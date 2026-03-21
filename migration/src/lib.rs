@@ -29,6 +29,30 @@ pub struct Migrator;
 #[async_trait::async_trait]
 impl MigratorTrait for Migrator {
     fn migrations() -> Vec<Box<dyn MigrationTrait>> {
-        vec![]
+        vec![
+            Box::new(m20260321_041852_create_table_companies::Migration),
+            Box::new(m20260321_043556_create_table_users::Migration),
+            Box::new(m20260321_050225_create_table_permissions::Migration),
+            Box::new(m20260321_140601_create_table_plans::Migration),
+            Box::new(m20260321_141334_create_table_plan_features::Migration),
+            Box::new(m20260321_142529_create_table_company_addresses::Migration),
+            Box::new(m20260321_144012_create_table_company_memberships::Migration),
+            Box::new(m20260321_144722_create_table_roles::Migration),
+            Box::new(m20260321_145219_create_table_plan_versions::Migration),
+            Box::new(m20260321_150920_create_table_specialties::Migration),
+            Box::new(m20260321_151319_create_table_certifications::Migration),
+            Box::new(m20260321_151931_create_table_payment_methods::Migration),
+            Box::new(m20260321_153334_create_table_service_catalog_items::Migration),
+            Box::new(m20260321_154602_create_table_service_expense_presets::Migration),
+            Box::new(m20260321_160001_create_table_service_order_status_setps::Migration),
+            Box::new(m20260321_161049_create_table_stock_products::Migration),
+            Box::new(m20260321_173415_create_table_resources::Migration),
+            Box::new(m20260321_175712_create_table_plan_version_features::Migration),
+            Box::new(m20260321_180536_create_table_company_subscriptions::Migration),
+            Box::new(m20260321_182739_create_table_company_feature_overrides::Migration),
+            Box::new(m20260321_184247_create_table_role_permissions::Migration),
+            Box::new(m20260321_185438_create_table_membership_roles::Migration),
+            Box::new(m20260321_190530_create_table_technicians::Migration),
+        ]
     }
 }
