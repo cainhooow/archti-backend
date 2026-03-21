@@ -19,6 +19,7 @@ mod m20260321_161049_create_table_stock_products;
 mod m20260321_173415_create_table_resources;
 mod m20260321_175712_create_table_plan_version_features;
 mod m20260321_180536_create_table_company_subscriptions;
+mod m20260321_182739_create_table_company_feature_overrides;
 
 pub struct Migrator;
 
