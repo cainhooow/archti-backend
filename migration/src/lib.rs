@@ -11,6 +11,8 @@ mod m20260321_144722_create_table_roles;
 mod m20260321_145219_create_table_plan_versions;
 mod m20260321_150920_create_table_specialties;
 mod m20260321_151319_create_table_certifications;
+mod m20260321_151931_create_table_payment_methods;
+mod m20260321_153334_create_table_service_catalog_items;
 
 pub struct Migrator;
 
