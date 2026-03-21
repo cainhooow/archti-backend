@@ -9,3 +9,6 @@ impl MigratorTrait for Migrator {
         vec![]
     }
 }
+mod m20260321_041852_create_table_companies;
+mod m20260321_043556_create_table_users;
+mod m20260321_050225_create_table_permissions;
