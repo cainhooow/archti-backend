@@ -25,6 +25,7 @@ mod m20260321_185438_create_table_membership_roles;
 mod m20260321_190530_create_table_technicians;
 mod m20260321_195712_create_table_clients;
 mod m20260321_201053_create_table_inventory_items;
+mod m20260321_204738_create_table_resource_machines;
 
 pub struct Migrator;
 
@@ -57,6 +58,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260321_190530_create_table_technicians::Migration),
             Box::new(m20260321_195712_create_table_clients::Migration),
             Box::new(m20260321_201053_create_table_inventory_items::Migration),
+            Box::new(m20260321_204738_create_table_resource_machines::Migration),
         ]
     }
 }
