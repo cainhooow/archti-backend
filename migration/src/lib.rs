@@ -18,6 +18,7 @@ mod m20260321_160001_create_table_service_order_status_setps;
 mod m20260321_161049_create_table_stock_products;
 mod m20260321_173415_create_table_resources;
 mod m20260321_175712_create_table_plan_version_features;
+mod m20260321_180536_create_table_company_subscriptions;
 
 pub struct Migrator;
 
