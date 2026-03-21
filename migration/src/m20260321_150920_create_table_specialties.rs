@@ -1,0 +1,45 @@
+use sea_orm_migration::{prelude::*, schema::*};
+
+#[derive(DeriveMigrationName)]
+pub struct Migration;
+
+#[async_trait::async_trait]
+impl MigrationTrait for Migration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        // Replace the sample below with your own migration scripts
+        manager
+            .create_table(
+                Table::create()
+                    .col(uuid(Specialtie::Id).primary_key())
+                    .col(ColumnDef::new(Specialtie::CompanyId).uuid().not_null())
+                    .col(ColumnDef::new(Specialtie::Name).string_len(120).not_null())
+                    .col(
+                        ColumnDef::new(Specialtie::CreatedAt)
+                            .timestamp()
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
+                    .to_owned(),
+            )
+            .await
+    }
+
+    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        // Replace the sample below with your own migration scripts
+        todo!();
+
+        manager
+            .drop_table(Table::drop().table("post").to_owned())
+            .await
+    }
+}
+
+#[derive(DeriveIden)]
+#[sea_orm(table_name = "specialties")]
+pub enum Specialtie {
+    Id,
+    Table,
+    CompanyId,
+    Name,
+    CreatedAt,
+}
