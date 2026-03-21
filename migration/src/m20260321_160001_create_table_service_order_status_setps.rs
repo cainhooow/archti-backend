@@ -11,7 +11,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(ServiceOrderStatusStep::Table)
                     .col(uuid(ServiceOrderStatusStep::Id).primary_key())
-                    .col(ColumnDef::new(ServiceOrderStatusStep::CompanyId).not_null())
+                    .col(ColumnDef::new(ServiceOrderStatusStep::CompanyId).uuid().not_null())
                     .col(
                         ColumnDef::new(ServiceOrderStatusStep::StatusKey)
                             .string_len(60)
@@ -36,8 +36,8 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(ServiceOrderStatusStep::IsActive)
                             .boolean()
-                            .default(true)
-                            .not_null(),
+                            .default(Expr::value(true))
+                            .not_null()
                     )
                     .col(
                         ColumnDef::new(ServiceOrderStatusStep::CreatedAt)

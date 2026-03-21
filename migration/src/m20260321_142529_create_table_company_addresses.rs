@@ -10,6 +10,7 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
+                    .table(CompanyAddress::Table)
                     .col(uuid(CompanyAddress::Id).primary_key())
                     .col(ColumnDef::new(CompanyAddress::CompanyId).uuid().not_null())
                     .col(

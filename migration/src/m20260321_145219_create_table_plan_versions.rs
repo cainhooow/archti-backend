@@ -10,6 +10,7 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
+                    .table(PlanVersion::Table)
                     .col(uuid(PlanVersion::Id).primary_key())
                     .col(ColumnDef::new(PlanVersion::PlanId).uuid().not_null())
                     .col(

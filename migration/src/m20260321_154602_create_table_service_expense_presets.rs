@@ -9,6 +9,7 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
+                    .table(ServiceExpensePreset::Table)
                     .col(uuid(ServiceExpensePreset::Id).primary_key())
                     .col(
                         ColumnDef::new(ServiceExpensePreset::CompanyId)

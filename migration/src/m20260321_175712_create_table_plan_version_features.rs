@@ -17,7 +17,7 @@ impl MigrationTrait for Migration {
                             .primary_key()
                             .not_null(),
                     )
-                    .col(uuid(PlanVersionFeature::FeatureId).primary_key().not_null())
+                    .col(ColumnDef::new(PlanVersionFeature::FeatureId).uuid().not_null())
                     .col(
                         ColumnDef::new(PlanVersionFeature::IsEnabled)
                             .boolean()
