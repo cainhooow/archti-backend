@@ -31,6 +31,7 @@ mod m20260321_210221_create_table_company_subscription_events;
 mod m20260321_211034_create_table_technician_specialties;
 mod m20260321_211506_create_table_technician_certifications;
 mod m20260321_211923_create_table_client_addresses;
+mod m20260321_232129_create_table_client_equipments;
 
 pub struct Migrator;
 
@@ -69,6 +70,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260321_211034_create_table_technician_specialties::Migration),
             Box::new(m20260321_211506_create_table_technician_certifications::Migration),
             Box::new(m20260321_211923_create_table_client_addresses::Migration),
+            Box::new(m20260321_232129_create_table_client_equipments::Migration),
         ]
     }
 }
