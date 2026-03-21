@@ -84,7 +84,7 @@ impl MigrationTrait for Migration {
 }
 
 #[derive(DeriveIden)]
-#[sea_orm(table_name = "Companies")]
+#[sea_orm(table_name = "companies")]
 pub enum Company {
     Id,
     Table,

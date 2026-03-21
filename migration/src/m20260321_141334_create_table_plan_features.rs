@@ -1,4 +1,4 @@
-use sea_orm_migration::{prelude::*, schema::*, sea_orm::sqlx::Column};
+use sea_orm_migration::{prelude::*, schema::*};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -7,18 +7,21 @@ pub struct Migration;
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
-
         manager
             .create_table(
                 Table::create()
-                    .table(Permission::Table)
-                    .col(uuid(Permission::Id).primary_key())
-                    .col(ColumnDef::new(Permission::Code).string_len(100).not_null())
-                    .col(ColumnDef::new(Permission::Module).string_len(60).not_null())
-                    .col(ColumnDef::new(Permission::Action).string_len(60).not_null())
-                    .col(ColumnDef::new(Permission::Description).text().null())
+                    .table(PlanFeature::Table)
+                    .col(uuid(PlanFeature::Id).primary_key())
+                    .col(ColumnDef::new(PlanFeature::Code).string_len(100).not_null())
+                    .col(ColumnDef::new(PlanFeature::Name).string_len(120).not_null())
                     .col(
-                        ColumnDef::new(Permission::CreatedAt)
+                        ColumnDef::new(PlanFeature::Module)
+                            .string_len(60)
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(PlanFeature::Description).text().null())
+                    .col(
+                        ColumnDef::new(PlanFeature::CreatedAt)
                             .timestamp()
                             .default(Expr::current_timestamp())
                             .not_null(),
@@ -39,13 +42,13 @@ impl MigrationTrait for Migration {
 }
 
 #[derive(DeriveIden)]
-#[sea_orm(table_name = "permissions")]
-pub enum Permission {
+#[sea_orm(table_name = "plan_features")]
+pub enum PlanFeature {
     Id,
     Table,
     Code,
+    Name,
     Module,
-    Action,
     Description,
     CreatedAt,
 }

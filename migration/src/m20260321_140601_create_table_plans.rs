@@ -10,37 +10,26 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(User::Table)
-                    .col(uuid(User::Id).primary_key())
+                    .table(Plan::Table)
+                    .col(uuid(Plan::Id).primary_key())
+                    .col(ColumnDef::new(Plan::Code).string_len(60).not_null())
+                    .col(ColumnDef::new(Plan::Name).string_len(120).not_null())
+                    .col(ColumnDef::new(Plan::Description).text().null())
+                    .col(ColumnDef::new(Plan::StatusKey).string_len(40).not_null())
                     .col(
-                        ColumnDef::new(User::Email)
-                            .unique_key()
-                            .string_len(160)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(User::PasswordHash)
-                            .string_len(255)
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(User::FullName).string_len(160).not_null())
-                    .col(ColumnDef::new(User::Phone).string_len(32).null())
-                    .col(ColumnDef::new(User::StatusKey).string_len(40).not_null())
-                    .col(
-                        ColumnDef::new(User::IsSuperAdmin)
+                        ColumnDef::new(Plan::IsPublic)
                             .boolean()
-                            .default(false)
+                            .default(true)
                             .not_null(),
                     )
-                    .col(ColumnDef::new(User::LastLoginAt).timestamp().null())
                     .col(
-                        ColumnDef::new(User::CreatedAt)
+                        ColumnDef::new(Plan::CreatedAt)
                             .timestamp()
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
                     .col(
-                        ColumnDef::new(User::UpdatedAt)
+                        ColumnDef::new(Plan::UpdatedAt)
                             .timestamp()
                             .default(Expr::current_timestamp())
                             .not_null(),
@@ -53,21 +42,23 @@ impl MigrationTrait for Migration {
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
         todo!();
+
+        manager
+            .drop_table(Table::drop().table("post").to_owned())
+            .await
     }
 }
 
 #[derive(DeriveIden)]
-#[sea_orm(table_name = "users")]
-pub enum User {
+#[sea_orm(table_name = "plans")]
+pub enum Plan {
     Id,
     Table,
-    Email,
-    PasswordHash,
-    FullName,
-    Phone,
+    Code,
+    Name,
+    Description,
     StatusKey,
-    IsSuperAdmin,
-    LastLoginAt,
+    IsPublic,
     CreatedAt,
     UpdatedAt,
 }
