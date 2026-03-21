@@ -3,6 +3,9 @@ name = "archti-backend"
 version = "0.1.0"
 edition = "2024"
 
+[workspace]
+members = [".", "migration"]
+
 [dependencies]
 async-trait = "0.1.89"
 regex = "1.12.3"
