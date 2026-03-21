@@ -16,3 +16,4 @@ mod m20260321_140601_create_table_plans;
 mod m20260321_141334_create_table_plan_features;
 mod m20260321_142529_create_table_company_addresses;
 mod m20260321_144012_create_table_company_memberships;
+mod m20260321_144722_create_table_roles;
