@@ -28,6 +28,7 @@ mod m20260321_201053_create_table_inventory_items;
 mod m20260321_204738_create_table_resource_machines;
 mod m20260321_205617_create_table_company_subscription_seats;
 mod m20260321_210221_create_table_company_subscription_events;
+mod m20260321_211034_create_table_technician_specialties;
 
 pub struct Migrator;
 
@@ -63,6 +64,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260321_204738_create_table_resource_machines::Migration),
             Box::new(m20260321_205617_create_table_company_subscription_seats::Migration),
             Box::new(m20260321_210221_create_table_company_subscription_events::Migration),
+            Box::new(m20260321_211034_create_table_technician_specialties::Migration),
         ]
     }
 }
