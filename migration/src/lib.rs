@@ -21,6 +21,7 @@ mod m20260321_175712_create_table_plan_version_features;
 mod m20260321_180536_create_table_company_subscriptions;
 mod m20260321_182739_create_table_company_feature_overrides;
 mod m20260321_184247_create_table_role_permissions;
+mod m20260321_185438_create_table_membership_roles;
 
 pub struct Migrator;
 
