@@ -13,6 +13,7 @@ mod m20260321_150920_create_table_specialties;
 mod m20260321_151319_create_table_certifications;
 mod m20260321_151931_create_table_payment_methods;
 mod m20260321_153334_create_table_service_catalog_items;
+mod m20260321_154602_create_table_service_expense_presets;
 
 pub struct Migrator;
 
