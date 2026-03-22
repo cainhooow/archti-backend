@@ -17,7 +17,6 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         uuid(TechnicianCertification::CertificationId)
-                            .primary_key()
                             .not_null(),
                     )
                     .col(

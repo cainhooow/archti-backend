@@ -19,7 +19,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(ServiceOrder::ClientId).uuid().null())
                     .col(ColumnDef::new(ServiceOrder::TechnicianId).uuid().null())
-                    .col(ColumnDef::new(ServiceOrder::CurrentStatusStepId).null())
+                    .col(ColumnDef::new(ServiceOrder::CurrentStatusStepId).uuid().null())
                     .col(
                         ColumnDef::new(ServiceOrder::PriorityKey)
                             .string_len(40)
@@ -82,7 +82,7 @@ impl MigrationTrait for Migration {
                             .integer()
                             .not_null(),
                     )
-                    .col(ColumnDef::new(ServiceOrder::TotalCents).not_null())
+                    .col(ColumnDef::new(ServiceOrder::TotalCents).integer().not_null())
                     .col(
                         ColumnDef::new(ServiceOrder::OpenedAt)
                             .timestamp()

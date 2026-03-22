@@ -11,7 +11,11 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(ServiceOrderChecklist::Table)
                     .col(uuid(ServiceOrderChecklist::Id).primary_key())
-                    .col(ColumnDef::new(ServiceOrderChecklist::ServiceOrderId).not_null())
+                    .col(
+                        ColumnDef::new(ServiceOrderChecklist::ServiceOrderId)
+                            .uuid()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(ServiceOrderChecklist::InspectionNotes)
                             .text()
