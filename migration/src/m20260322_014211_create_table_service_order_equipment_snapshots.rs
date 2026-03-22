@@ -14,6 +14,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(ServiceOrderEquipmentSnapshot::ServiceOrderId)
                             .uuid()
+                            .unique_key()
                             .not_null(),
                     )
                     .col(
@@ -44,6 +45,11 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(ServiceOrderEquipmentSnapshot::UnlockCode)
                             .string_len(120)
+                            .null(),
+                    )
+                    .col(
+                        ColumnDef::new(ServiceOrderEquipmentSnapshot::Notes)
+                            .text()
                             .null(),
                     )
                     .col(
