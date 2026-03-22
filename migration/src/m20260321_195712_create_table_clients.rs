@@ -12,7 +12,12 @@ impl MigrationTrait for Migration {
                     .table(Client::Table)
                     .col(uuid(Client::Id).primary_key())
                     .col(ColumnDef::new(Client::CompanyId).uuid().not_null())
-                    .col(ColumnDef::new(Client::CompanyMembershipId).uuid().null())
+                    .col(
+                        ColumnDef::new(Client::CompanyMembershipId)
+                            .uuid()
+                            .unique_key()
+                            .null(),
+                    )
                     .col(ColumnDef::new(Client::FirstName).string_len(120).not_null())
                     .col(ColumnDef::new(Client::LastName).string_len(120).not_null())
                     .col(ColumnDef::new(Client::FullName).string_len(240).not_null())
@@ -23,7 +28,12 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Client::Ocupation).string_len(120).null())
                     .col(ColumnDef::new(Client::City).string_len(120).null())
                     .col(ColumnDef::new(Client::Profile).string_len(60).null())
-                    .col(ColumnDef::new(Client::StatusKey).string_len(60).not_null())
+                    .col(
+                        ColumnDef::new(Client::StatusKey)
+                            .string_len(60)
+                            .default("active")
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(Client::Note).text().null())
                     .col(ColumnDef::new(Client::CustomerSinceAt).timestamp().null())
                     .col(ColumnDef::new(Client::LastContactAt).timestamp().null())
