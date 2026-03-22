@@ -13,10 +13,16 @@ impl MigrationTrait for Migration {
                     .col(uuid(IventoryItem::Id).primary_key())
                     .col(ColumnDef::new(IventoryItem::CompanyId).uuid().not_null())
                     .col(ColumnDef::new(IventoryItem::StockProductId).uuid().null())
-                    .col(ColumnDef::new(IventoryItem::Code).string_len(60).not_null())
+                    .col(
+                        ColumnDef::new(IventoryItem::Code)
+                            .string_len(60)
+                            .unique_key()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(IventoryItem::AssetTag)
                             .string_len(60)
+                            .unique_key()
                             .not_null(),
                     )
                     .col(
