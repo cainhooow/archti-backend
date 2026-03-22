@@ -14,11 +14,13 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(CompanySubscriptionSeat::CompanySubscriptionId)
                             .uuid()
+                            .unique_key()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(CompanySubscriptionSeat::MembershipId)
                             .uuid()
+                            .unique_key()
                             .not_null(),
                     )
                     .col(
