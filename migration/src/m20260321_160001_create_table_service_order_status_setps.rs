@@ -11,10 +11,16 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(ServiceOrderStatusStep::Table)
                     .col(uuid(ServiceOrderStatusStep::Id).primary_key())
-                    .col(ColumnDef::new(ServiceOrderStatusStep::CompanyId).uuid().not_null())
+                    .col(
+                        ColumnDef::new(ServiceOrderStatusStep::CompanyId)
+                            .uuid()
+                            .unique_key()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(ServiceOrderStatusStep::StatusKey)
                             .string_len(60)
+                            .unique_key()
                             .not_null(),
                     )
                     .col(
@@ -37,7 +43,7 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(ServiceOrderStatusStep::IsActive)
                             .boolean()
                             .default(Expr::value(true))
-                            .not_null()
+                            .not_null(),
                     )
                     .col(
                         ColumnDef::new(ServiceOrderStatusStep::CreatedAt)
@@ -52,7 +58,11 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(ServiceOrderStatusStep::Table).to_owned())
+            .drop_table(
+                Table::drop()
+                    .table(ServiceOrderStatusStep::Table)
+                    .to_owned(),
+            )
             .await
     }
 }
