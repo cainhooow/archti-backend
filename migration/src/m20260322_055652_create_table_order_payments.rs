@@ -23,7 +23,7 @@ impl MigrationTrait for Migration {
                             .not_null(),
                     )
                     .col(ColumnDef::new(OrderPayment::ReceivedAt).timestamp().null())
-                    .col(ColumnDef::new(OrderPayment::Note).null())
+                    .col(ColumnDef::new(OrderPayment::Note).text().null())
                     .to_owned(),
             )
             .await
