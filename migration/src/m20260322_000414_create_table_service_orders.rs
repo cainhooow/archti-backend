@@ -47,10 +47,14 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(ServiceOrder::IntakeNote).text().null())
                     .col(ColumnDef::new(ServiceOrder::Diagnosis).text().null())
-                    .col(ColumnDef::new(ServiceOrder::ServicePlan).text())
+                    .col(ColumnDef::new(ServiceOrder::ServicePlan).text().null())
                     .col(ColumnDef::new(ServiceOrder::CustomerContext).text().null())
-                    .col(ColumnDef::new(ServiceOrder::CommercialContext).text())
-                    .col(ColumnDef::new(ServiceOrder::DefectNote).text())
+                    .col(
+                        ColumnDef::new(ServiceOrder::CommercialContext)
+                            .text()
+                            .null(),
+                    )
+                    .col(ColumnDef::new(ServiceOrder::DefectNote).text().null())
                     .col(ColumnDef::new(ServiceOrder::SolutionNote).text().null())
                     .col(ColumnDef::new(ServiceOrder::AdditionalInfo).text().null())
                     .col(
