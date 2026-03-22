@@ -12,7 +12,12 @@ impl MigrationTrait for Migration {
                     .table(Quote::Table)
                     .col(uuid(Quote::Id).primary_key())
                     .col(ColumnDef::new(Quote::CompanyId).uuid().not_null())
-                    .col(ColumnDef::new(Quote::QuoteNumber).string_len(40).not_null())
+                    .col(
+                        ColumnDef::new(Quote::QuoteNumber)
+                            .string_len(40)
+                            .unique_key()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(Quote::ClientId).uuid().null())
                     .col(
                         ColumnDef::new(Quote::CustomerNameSnapshot)
@@ -25,8 +30,18 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Quote::DiscountMode).string_len(40).null())
                     .col(ColumnDef::new(Quote::DiscountValueCents).integer())
                     .col(ColumnDef::new(Quote::DiscountValuePercent).integer())
-                    .col(ColumnDef::new(Quote::SubtotalCents).integer().not_null())
-                    .col(ColumnDef::new(Quote::TotalCents).integer().not_null())
+                    .col(
+                        ColumnDef::new(Quote::SubtotalCents)
+                            .integer()
+                            .default(0)
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Quote::TotalCents)
+                            .integer()
+                            .default(0)
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(Quote::CreatedAt)
                             .timestamp()
