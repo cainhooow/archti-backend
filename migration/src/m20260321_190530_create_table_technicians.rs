@@ -16,6 +16,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(Technician::CompanyMembershipId)
                             .uuid()
+                            .unique_key()
                             .null(),
                     )
                     .col(ColumnDef::new(Technician::PrimarySpecialtyId).uuid().null())
