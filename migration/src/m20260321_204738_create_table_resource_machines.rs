@@ -14,6 +14,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(ResourceMachine::ResourceId)
                             .uuid()
+                            .unique_key()
                             .not_null(),
                     )
                     .col(
