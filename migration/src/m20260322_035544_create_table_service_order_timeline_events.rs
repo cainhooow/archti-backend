@@ -10,6 +10,7 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ServiceOrderTimelineEvent::Table)
+                    .col(uuid(ServiceOrderTimelineEvent::Id).primary_key())
                     .col(
                         ColumnDef::new(ServiceOrderTimelineEvent::ServiceOrderId)
                             .uuid()
