@@ -12,10 +12,16 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(PlanVersion::Table)
                     .col(uuid(PlanVersion::Id).primary_key())
-                    .col(ColumnDef::new(PlanVersion::PlanId).uuid().not_null())
+                    .col(
+                        ColumnDef::new(PlanVersion::PlanId)
+                            .uuid()
+                            .unique_key()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(PlanVersion::VersionNumber)
                             .integer()
+                            .unique_key()
                             .not_null(),
                     )
                     .col(
@@ -30,11 +36,22 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(PlanVersion::IncludedSeats).integer().null())
                     .col(ColumnDef::new(PlanVersion::SeatPriceCents).integer().null())
-                    .col(ColumnDef::new(PlanVersion::TrialDays).integer().not_null())
-                    .col(ColumnDef::new(PlanVersion::GraceDays).integer().not_null())
+                    .col(
+                        ColumnDef::new(PlanVersion::TrialDays)
+                            .integer()
+                            .default(0)
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(PlanVersion::GraceDays)
+                            .integer()
+                            .default(0)
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(PlanVersion::StatusKey)
                             .string_len(40)
+                            .default("active")
                             .not_null(),
                     )
                     .col(
