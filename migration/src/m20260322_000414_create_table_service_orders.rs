@@ -1,11 +1,42 @@
 use sea_orm_migration::{prelude::*, schema::*};
 
+use crate::{
+    m20260321_041852_create_table_companies::Company,
+    m20260321_160001_create_table_service_order_status_setps::ServiceOrderStatusStep,
+    m20260321_190530_create_table_technicians::Technician,
+    m20260321_195712_create_table_clients::Client,
+};
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        let mut company_fk = ForeignKey::create()
+            .from(ServiceOrder::Table, ServiceOrder::CompanyId)
+            .to(Company::Table, Company::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let mut client_fk = ForeignKey::create()
+            .from(ServiceOrder::Table, ServiceOrder::ClientId)
+            .to(Client::Table, Client::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let mut technician_fk = ForeignKey::create()
+            .from(ServiceOrder::Table, ServiceOrder::TechnicianId)
+            .to(Technician::Table, Technician::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let mut order_status_step_fk = ForeignKey::create()
+            .from(ServiceOrder::Table, ServiceOrder::CurrentStatusStepId)
+            .to(ServiceOrderStatusStep::Table, ServiceOrderStatusStep::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
         manager
             .create_table(
                 Table::create()
@@ -117,6 +148,10 @@ impl MigrationTrait for Migration {
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
+                    .foreign_key(&mut company_fk)
+                    .foreign_key(&mut client_fk)
+                    .foreign_key(&mut technician_fk)
+                    .foreign_key(&mut order_status_step_fk)
                     .to_owned(),
             )
             .await
