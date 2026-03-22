@@ -43,6 +43,7 @@ mod m20260322_035016_create_table_service_order_payment_methods;
 mod m20260322_035544_create_table_service_order_timeline_events;
 mod m20260322_040306_create_table_service_order_checklists;
 mod m20260322_040822_create_table_quote_items;
+mod m20260322_051337_create_table_orders;
 
 pub struct Migrator;
 
@@ -93,6 +94,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260322_035544_create_table_service_order_timeline_events::Migration),
             Box::new(m20260322_040306_create_table_service_order_checklists::Migration),
             Box::new(m20260322_040822_create_table_quote_items::Migration),
+            Box::new(m20260322_051337_create_table_orders::Migration),
         ]
     }
 }

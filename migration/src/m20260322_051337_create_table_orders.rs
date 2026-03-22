@@ -1,0 +1,107 @@
+use sea_orm_migration::{prelude::*, schema::*};
+
+#[derive(DeriveMigrationName)]
+pub struct Migration;
+
+#[async_trait::async_trait]
+impl MigrationTrait for Migration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .create_table(
+                Table::create()
+                    .table(Order::Table)
+                    .col(uuid(Order::Id).primary_key())
+                    .col(ColumnDef::new(Order::CompanyId).uuid().not_null())
+                    .col(ColumnDef::new(Order::OrderNumber).uuid().not_null())
+                    .col(ColumnDef::new(Order::QuoteId).uuid().null())
+                    .col(ColumnDef::new(Order::ClientId).uuid().null())
+                    .col(
+                        ColumnDef::new(Order::CustomerNameSnapshot)
+                            .string_len(160)
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Order::CustomerProfileSnapshot)
+                            .string_len(80)
+                            .null(),
+                    )
+                    .col(
+                        ColumnDef::new(Order::CustomerEmailSnapshot)
+                            .string_len(160)
+                            .null(),
+                    )
+                    .col(
+                        ColumnDef::new(Order::CustomerPhoneSnapshot)
+                            .string_len(32)
+                            .null(),
+                    )
+                    .col(ColumnDef::new(Order::StatusKey).string_len(40).not_null())
+                    .col(
+                        ColumnDef::new(Order::PaymentStatusKey)
+                            .string_len(40)
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(Order::ChannelKey).string_len(40).not_null())
+                    .col(ColumnDef::new(Order::SellerName).string_len(120).null())
+                    .col(
+                        ColumnDef::new(Order::DeliveryMode)
+                            .string_len(60)
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(Order::Notes).text().null())
+                    .col(ColumnDef::new(Order::SubtotalCents).integer().not_null())
+                    .col(ColumnDef::new(Order::FreightCents).integer().not_null())
+                    .col(ColumnDef::new(Order::DiscountCents).integer().not_null())
+                    .col(ColumnDef::new(Order::TotalCents).integer().not_null())
+                    .col(
+                        ColumnDef::new(Order::CreatedAt)
+                            .timestamp()
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(Order::PromisedWindowAt).timestamp().null())
+                    .col(
+                        ColumnDef::new(Order::UpdatedAt)
+                            .timestamp()
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
+                    .to_owned(),
+            )
+            .await
+    }
+
+    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .drop_table(Table::drop().table(Order::Table).to_owned())
+            .await
+    }
+}
+
+#[derive(DeriveIden)]
+#[sea_orm(table_name = "orders")]
+pub enum Order {
+    Id,
+    Table,
+    CompanyId,
+    OrderNumber,
+    QuoteId,
+    ClientId,
+    CustomerNameSnapshot,
+    CustomerProfileSnapshot,
+    CustomerEmailSnapshot,
+    CustomerPhoneSnapshot,
+    StatusKey,
+    PaymentStatusKey,
+    ChannelKey,
+    SellerName,
+    DeliveryMode,
+    Notes,
+    SubtotalCents,
+    FreightCents,
+    DiscountCents,
+    TotalCents,
+    CreatedAt,
+    PromisedWindowAt,
+    UpdatedAt,
+}
