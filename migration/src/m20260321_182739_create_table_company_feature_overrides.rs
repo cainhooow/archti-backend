@@ -15,11 +15,13 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(CompanyFeatureOverride::CompanyId)
                             .uuid()
+                            .unique_key()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(CompanyFeatureOverride::FeatureId)
                             .uuid()
+                            .unique_key()
                             .not_null(),
                     )
                     .col(
