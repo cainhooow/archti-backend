@@ -1,12 +1,31 @@
 use sea_orm_migration::{prelude::*, schema::*, sea_orm::dynamic::Column};
 
+use crate::{
+    m20260321_041852_create_table_companies::Company,
+    m20260321_145219_create_table_plan_versions::PlanVersion,
+};
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
+        let mut company_fk = ForeignKey::create()
+            .from(CompanySubscription::Table, CompanySubscription::CompanyId)
+            .to(Company::Table, Company::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let mut plan_version_fk = ForeignKey::create()
+            .from(
+                CompanySubscription::Table,
+                CompanySubscription::PlanVersionId,
+            )
+            .to(PlanVersion::Table, PlanVersion::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
         manager
             .create_table(
                 Table::create()
@@ -117,6 +136,8 @@ impl MigrationTrait for Migration {
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
+                    .foreign_key(&mut company_fk)
+                    .foreign_key(&mut plan_version_fk)
                     .to_owned(),
             )
             .await
