@@ -9,7 +9,7 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table("post")
+                    .table(ServiceOrderAccessory::Table)
                     .col(uuid(ServiceOrderAccessory::Id).primary_key())
                     .col(
                         ColumnDef::new(ServiceOrderAccessory::ServiceOrderEquipmentSnapshotId)

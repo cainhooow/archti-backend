@@ -19,7 +19,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(Role::IsSystemRole)
                             .boolean()
-                            .default(false)
+                            .default(true)
                             .not_null(),
                     )
                     .col(

@@ -11,8 +11,15 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(RolePermission::Table)
-                    .col(uuid(RolePermission::RoleId).primary_key().not_null())
+                    .col(uuid(RolePermission::RoleId).not_null())
                     .col(uuid(RolePermission::PermissionId).not_null())
+                    .primary_key(
+                        Index::create()
+                            .name("pk-role_permission")
+                            .col(RolePermission::RoleId)
+                            .col(RolePermission::PermissionId)
+                            .primary(),
+                    )
                     .col(
                         ColumnDef::new(RolePermission::CreatedAt)
                             .timestamp()

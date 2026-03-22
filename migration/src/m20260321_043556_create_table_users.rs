@@ -25,7 +25,12 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(User::FullName).string_len(160).not_null())
                     .col(ColumnDef::new(User::Phone).string_len(32).null())
-                    .col(ColumnDef::new(User::StatusKey).string_len(40).not_null())
+                    .col(
+                        ColumnDef::new(User::StatusKey)
+                            .string_len(40)
+                            .default("active")
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(User::IsSuperAdmin)
                             .boolean()

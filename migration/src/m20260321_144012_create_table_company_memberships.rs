@@ -15,9 +15,15 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(CompanyMembership::CompanyId)
                             .uuid()
+                            .unique_key()
                             .not_null(),
                     )
-                    .col(ColumnDef::new(CompanyMembership::UserId).uuid().not_null())
+                    .col(
+                        ColumnDef::new(CompanyMembership::UserId)
+                            .uuid()
+                            .unique_key()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(CompanyMembership::MembershipType)
                             .string_len(40)
@@ -26,6 +32,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(CompanyMembership::StatusKey)
                             .string_len(40)
+                            .default("active")
                             .not_null(),
                     )
                     .col(

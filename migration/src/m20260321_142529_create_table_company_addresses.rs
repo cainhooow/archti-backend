@@ -57,7 +57,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(CompanyAddress::IsPrimary)
                             .boolean()
-                            .default(false)
+                            .default(true)
                             .not_null(),
                     )
                     .col(

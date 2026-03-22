@@ -12,8 +12,15 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(MembershipRole::Table)
-                    .col(uuid(MembershipRole::MembershipId).primary_key().not_null())
+                    .col(uuid(MembershipRole::MembershipId).not_null())
                     .col(uuid(MembershipRole::RoleId).not_null())
+                    .primary_key(
+                        Index::create()
+                            .name("pk-membership_roles")
+                            .col(MembershipRole::MembershipId)
+                            .col(MembershipRole::RoleId)
+                            .primary(),
+                    )
                     .col(
                         ColumnDef::new(MembershipRole::CreatedAt)
                             .timestamp()

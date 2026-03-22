@@ -13,7 +13,12 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Permission::Table)
                     .col(uuid(Permission::Id).primary_key())
-                    .col(ColumnDef::new(Permission::Code).string_len(100).not_null())
+                    .col(
+                        ColumnDef::new(Permission::Code)
+                            .string_len(100)
+                            .unique_key()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(Permission::Module).string_len(60).not_null())
                     .col(ColumnDef::new(Permission::Action).string_len(60).not_null())
                     .col(ColumnDef::new(Permission::Description).text().null())
