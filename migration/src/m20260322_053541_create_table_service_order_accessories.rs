@@ -1,11 +1,25 @@
 use sea_orm_migration::{prelude::*, schema::*};
 
+use crate::m20260322_014211_create_table_service_order_equipment_snapshots::ServiceOrderEquipmentSnapshot;
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        let mut so_equipment_snapshot_fk = ForeignKey::create()
+            .from(
+                ServiceOrderAccessory::Table,
+                ServiceOrderAccessory::ServiceOrderEquipmentSnapshotId,
+            )
+            .to(
+                ServiceOrderEquipmentSnapshot::Table,
+                ServiceOrderEquipmentSnapshot::Id,
+            )
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
         manager
             .create_table(
                 Table::create()
@@ -22,6 +36,7 @@ impl MigrationTrait for Migration {
                             .not_null(),
                     )
                     .col(ColumnDef::new(ServiceOrderAccessory::SortOrder).integer())
+                    .foreign_key(&mut so_equipment_snapshot_fk)
                     .to_owned(),
             )
             .await
