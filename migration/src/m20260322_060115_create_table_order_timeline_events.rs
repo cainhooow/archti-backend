@@ -1,11 +1,19 @@
 use sea_orm_migration::{prelude::*, schema::*};
 
+use crate::m20260322_051337_create_table_orders::Order;
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        let mut order_fk = ForeignKey::create()
+            .from(OrderTimelineEvent::Table, OrderTimelineEvent::Id)
+            .to(Order::Table, Order::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
         manager
             .create_table(
                 Table::create()
@@ -28,6 +36,7 @@ impl MigrationTrait for Migration {
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
+                    .foreign_key(&mut order_fk)
                     .to_owned(),
             )
             .await
