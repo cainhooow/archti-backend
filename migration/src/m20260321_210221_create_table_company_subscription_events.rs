@@ -1,11 +1,53 @@
 use sea_orm_migration::{prelude::*, schema::*};
 
+use crate::{
+    m20260321_144012_create_table_company_memberships::CompanyMembership,
+    m20260321_145219_create_table_plan_versions::PlanVersion,
+    m20260321_180536_create_table_company_subscriptions::CompanySubscription,
+};
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        let mut company_subscription_fk = ForeignKey::create()
+            .from(
+                CompanySubscriptionEvent::Table,
+                CompanySubscriptionEvent::CompanySubscriptionId,
+            )
+            .to(CompanySubscription::Table, CompanySubscription::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let mut company_membership_fk = ForeignKey::create()
+            .from(
+                CompanySubscriptionEvent::Table,
+                CompanySubscriptionEvent::CreatedByMembershipId,
+            )
+            .to(CompanyMembership::Table, CompanyMembership::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let mut from_plan_version_fk = ForeignKey::create()
+            .from(
+                CompanySubscriptionEvent::Table,
+                CompanySubscriptionEvent::FromPlanVersionId,
+            )
+            .to(PlanVersion::Table, PlanVersion::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let mut to_plan_version_fk = ForeignKey::create()
+            .from(
+                CompanySubscriptionEvent::Table,
+                CompanySubscriptionEvent::ToPlanVersionId,
+            )
+            .to(PlanVersion::Table, PlanVersion::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
         manager
             .create_table(
                 Table::create()
@@ -62,6 +104,10 @@ impl MigrationTrait for Migration {
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
+                    .foreign_key(&mut company_subscription_fk)
+                    .foreign_key(&mut company_membership_fk)
+                    .foreign_key(&mut from_plan_version_fk)
+                    .foreign_key(&mut to_plan_version_fk)
                     .to_owned(),
             )
             .await
