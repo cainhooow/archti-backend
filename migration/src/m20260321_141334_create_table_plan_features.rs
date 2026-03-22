@@ -12,7 +12,12 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(PlanFeature::Table)
                     .col(uuid(PlanFeature::Id).primary_key())
-                    .col(ColumnDef::new(PlanFeature::Code).string_len(100).not_null())
+                    .col(
+                        ColumnDef::new(PlanFeature::Code)
+                            .string_len(100)
+                            .unique_key()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(PlanFeature::Name).string_len(120).not_null())
                     .col(
                         ColumnDef::new(PlanFeature::Module)
