@@ -1,11 +1,22 @@
 use sea_orm_migration::{prelude::*, schema::*};
 
+use crate::m20260322_040306_create_table_service_order_checklists::ServiceOrderChecklist;
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        let mut checklist_fk = ForeignKey::create()
+            .from(
+                ServiceOrderChecklistItem::Table,
+                ServiceOrderChecklistItem::ChecklistId,
+            )
+            .to(ServiceOrderChecklist::Table, ServiceOrderChecklist::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
         manager
             .create_table(
                 Table::create()
@@ -36,6 +47,7 @@ impl MigrationTrait for Migration {
                             .integer()
                             .not_null(),
                     )
+                    .foreign_key(&mut checklist_fk)
                     .to_owned(),
             )
             .await
