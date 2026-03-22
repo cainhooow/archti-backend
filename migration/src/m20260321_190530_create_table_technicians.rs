@@ -1,12 +1,35 @@
 use sea_orm_migration::{prelude::*, schema::*};
 
+use crate::{
+    m20260321_041852_create_table_companies::Company,
+    m20260321_144012_create_table_company_memberships::CompanyMembership,
+    m20260321_150920_create_table_specialties::Specialtie,
+};
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
+        let mut company_fk = ForeignKey::create()
+            .from(Technician::Table, Technician::CompanyId)
+            .to(Company::Table, Company::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let mut company_membership_fk = ForeignKey::create()
+            .from(Technician::Table, Technician::CompanyMembershipId)
+            .to(CompanyMembership::Table, CompanyMembership::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let mut primary_specialty_fk = ForeignKey::create()
+            .from(Technician::Table, Technician::PrimarySpecialtyId)
+            .to(Specialtie::Table, Specialtie::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
         manager
             .create_table(
                 Table::create()
@@ -52,6 +75,9 @@ impl MigrationTrait for Migration {
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
+                    .foreign_key(&mut company_fk)
+                    .foreign_key(&mut company_membership_fk)
+                    .foreign_key(&mut primary_specialty_fk)
                     .to_owned(),
             )
             .await
