@@ -19,6 +19,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(ServiceCatalogItem::Code)
                             .string_len(40)
+                            .unique_key()
                             .not_null(),
                     )
                     .col(
