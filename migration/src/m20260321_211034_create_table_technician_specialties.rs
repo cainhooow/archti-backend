@@ -10,14 +10,14 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(TechnicianSpeciality::Table)
-                    .col(
-                        uuid(TechnicianSpeciality::TechnicianId)
-                            .primary_key()
-                            .not_null(),
-                    )
-                    .col(
-                        uuid(TechnicianSpeciality::SpecialtyId)
-                            .not_null(),
+                    .col(uuid(TechnicianSpeciality::TechnicianId).not_null())
+                    .col(uuid(TechnicianSpeciality::SpecialtyId).not_null())
+                    .primary_key(
+                        Index::create()
+                            .name("pk-technician_specialties")
+                            .col(TechnicianSpeciality::TechnicianId)
+                            .col(TechnicianSpeciality::SpecialtyId)
+                            .primary(),
                     )
                     .col(
                         ColumnDef::new(TechnicianSpeciality::CreatedAt)
