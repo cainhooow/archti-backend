@@ -1,11 +1,34 @@
 use sea_orm_migration::{prelude::*, schema::*};
 
+use crate::{
+    m20260321_154602_create_table_service_expense_presets::ServiceExpensePreset,
+    m20260322_000414_create_table_service_orders::ServiceOrder,
+};
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        let mut service_order_fk = ForeignKey::create()
+            .from(
+                ServiceOrderExpenseLine::Table,
+                ServiceOrderExpenseLine::ServiceOrderId,
+            )
+            .to(ServiceOrder::Table, ServiceOrder::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let mut service_expense_preset_fk = ForeignKey::create()
+            .from(
+                ServiceOrderExpenseLine::Table,
+                ServiceOrderExpenseLine::ServiceExpensePresetId,
+            )
+            .to(ServiceExpensePreset::Table, ServiceExpensePreset::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
         manager
             .create_table(
                 Table::create()
@@ -48,6 +71,8 @@ impl MigrationTrait for Migration {
                             .integer()
                             .not_null(),
                     )
+                    .foreign_key(&mut service_order_fk)
+                    .foreign_key(&mut service_expense_preset_fk)
                     .to_owned(),
             )
             .await
