@@ -13,7 +13,12 @@ impl MigrationTrait for Migration {
                     .table(Resource::Table)
                     .col(uuid(Resource::Id).primary_key())
                     .col(ColumnDef::new(Resource::CompanyId).uuid().not_null())
-                    .col(ColumnDef::new(Resource::Code).string_len(60).not_null())
+                    .col(
+                        ColumnDef::new(Resource::Code)
+                            .string_len(60)
+                            .unique_key()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(Resource::Name).string_len(160).not_null())
                     .col(
                         ColumnDef::new(Resource::ResourceType)
