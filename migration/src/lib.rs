@@ -36,6 +36,8 @@ mod m20260321_233441_create_table_company_subscription_addons;
 mod m20260321_234254_create_table_subscription_invoices;
 mod m20260322_000414_create_table_service_orders;
 mod m20260322_011150_create_table_quotes;
+mod m20260322_014211_create_table_service_order_equipment_snapshots;
+mod m20260322_015237_create_table_service_order_service_lines;
 
 pub struct Migrator;
 
@@ -79,6 +81,8 @@ impl MigratorTrait for Migrator {
             Box::new(m20260321_234254_create_table_subscription_invoices::Migration),
             Box::new(m20260322_000414_create_table_service_orders::Migration),
             Box::new(m20260322_011150_create_table_quotes::Migration),
+            Box::new(m20260322_014211_create_table_service_order_equipment_snapshots::Migration),
+            Box::new(m20260322_015237_create_table_service_order_service_lines::Migration),
         ]
     }
 }
