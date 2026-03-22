@@ -21,13 +21,11 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(StockProduct::Ean)
                             .string_len(60)
-                            .unique_key()
                             .null(),
                     )
                     .col(
                         ColumnDef::new(StockProduct::Barcode)
                             .string_len(60)
-                            .unique_key()
                             .null(),
                     )
                     .col(
