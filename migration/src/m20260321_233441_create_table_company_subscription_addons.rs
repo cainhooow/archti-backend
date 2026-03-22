@@ -1,11 +1,34 @@
 use sea_orm_migration::{prelude::*, schema::*};
 
+use crate::{
+    m20260321_141334_create_table_plan_features::PlanFeature,
+    m20260321_180536_create_table_company_subscriptions::CompanySubscription,
+};
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        let mut company_subscription_fk = ForeignKey::create()
+            .from(
+                CompanySubscriptionAddon::Table,
+                CompanySubscriptionAddon::CompanySubscriptionId,
+            )
+            .to(CompanySubscription::Table, CompanySubscription::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let mut plan_feature_fk = ForeignKey::create()
+            .from(
+                CompanySubscriptionAddon::Table,
+                CompanySubscriptionAddon::FeatureId,
+            )
+            .to(PlanFeature::Table, PlanFeature::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
         manager
             .create_table(
                 Table::create()
@@ -72,6 +95,8 @@ impl MigrationTrait for Migration {
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
+                    .foreign_key(&mut company_subscription_fk)
+                    .foreign_key(&mut plan_feature_fk)
                     .to_owned(),
             )
             .await
