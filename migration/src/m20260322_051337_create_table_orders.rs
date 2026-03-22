@@ -12,7 +12,12 @@ impl MigrationTrait for Migration {
                     .table(Order::Table)
                     .col(uuid(Order::Id).primary_key())
                     .col(ColumnDef::new(Order::CompanyId).uuid().not_null())
-                    .col(ColumnDef::new(Order::OrderNumber).uuid().not_null())
+                    .col(
+                        ColumnDef::new(Order::OrderNumber)
+                            .uuid()
+                            .unique_key()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(Order::QuoteId).uuid().null())
                     .col(ColumnDef::new(Order::ClientId).uuid().null())
                     .col(
@@ -49,10 +54,30 @@ impl MigrationTrait for Migration {
                             .not_null(),
                     )
                     .col(ColumnDef::new(Order::Notes).text().null())
-                    .col(ColumnDef::new(Order::SubtotalCents).integer().not_null())
-                    .col(ColumnDef::new(Order::FreightCents).integer().not_null())
-                    .col(ColumnDef::new(Order::DiscountCents).integer().not_null())
-                    .col(ColumnDef::new(Order::TotalCents).integer().not_null())
+                    .col(
+                        ColumnDef::new(Order::SubtotalCents)
+                            .integer()
+                            .default(0)
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Order::FreightCents)
+                            .integer()
+                            .default(0)
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Order::DiscountCents)
+                            .integer()
+                            .default(0)
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Order::TotalCents)
+                            .integer()
+                            .default(0)
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(Order::CreatedAt)
                             .timestamp()
