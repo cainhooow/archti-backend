@@ -1,5 +1,9 @@
 use sea_orm_migration::{prelude::*, schema::*};
 
+use crate::{
+    m20260321_041852_create_table_companies::Company, m20260321_043556_create_table_users::User,
+};
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
@@ -7,6 +11,18 @@ pub struct Migration;
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
+
+        let mut company_fk = ForeignKey::create()
+            .from(CompanyMembership::Table, CompanyMembership::CompanyId)
+            .to(Company::Table, Company::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+        let mut user_fk = ForeignKey::create()
+            .from(CompanyMembership::Table, CompanyMembership::UserId)
+            .to(User::Table, User::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .to_owned();
+
         manager
             .create_table(
                 Table::create()
@@ -67,6 +83,8 @@ impl MigrationTrait for Migration {
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
+                    .foreign_key(&mut company_fk)
+                    .foreign_key(&mut user_fk)
                     .to_owned(),
             )
             .await
