@@ -46,6 +46,7 @@ mod m20260322_040822_create_table_quote_items;
 mod m20260322_051337_create_table_orders;
 mod m20260322_053541_create_table_service_order_accessories;
 mod m20260322_053944_create_table_service_order_checklist_items;
+mod m20260322_054414_create_table_service_order_checklist_attachments;
 
 pub struct Migrator;
 
@@ -99,6 +100,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260322_051337_create_table_orders::Migration),
             Box::new(m20260322_053541_create_table_service_order_accessories::Migration),
             Box::new(m20260322_053944_create_table_service_order_checklist_items::Migration),
+            Box::new(m20260322_054414_create_table_service_order_checklist_attachments::Migration),
         ]
     }
 }
