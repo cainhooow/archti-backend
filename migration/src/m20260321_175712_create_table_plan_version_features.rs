@@ -12,12 +12,19 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(PlanVersionFeature::Table)
+                    .col(uuid(PlanVersionFeature::PlanVersionId).not_null())
                     .col(
-                        uuid(PlanVersionFeature::PlanVersionId)
-                            .primary_key()
+                        ColumnDef::new(PlanVersionFeature::FeatureId)
+                            .uuid()
                             .not_null(),
                     )
-                    .col(ColumnDef::new(PlanVersionFeature::FeatureId).uuid().not_null())
+                    .primary_key(
+                        Index::create()
+                            .name("pk-plan_version_feature")
+                            .col(PlanVersionFeature::PlanVersionId)
+                            .col(PlanVersionFeature::FeatureId)
+                            .primary(),
+                    )
                     .col(
                         ColumnDef::new(PlanVersionFeature::IsEnabled)
                             .boolean()
