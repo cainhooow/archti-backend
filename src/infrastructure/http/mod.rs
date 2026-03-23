@@ -1,21 +1,30 @@
 // rustautomod
-use std::sync::Arc;
+use std::{env, sync::Arc};
 
 use salvo::prelude::*;
 use sea_orm::DatabaseConnection;
 
-use crate::infrastructure::database::estabilish_connection;
+use crate::infrastructure::{
+    database::estabilish_connection,
+    services::{cookie_service::CookieService, jwt_auth_service::JwtAuthService},
+};
 
 pub mod middlewares;
 #[derive(Default, Clone, Debug)]
 pub struct State {
     pub db: Arc<DatabaseConnection>,
+    pub auth_service: Arc<JwtAuthService>,
+    pub cookie_service: Arc<CookieService>,
 }
 
 async fn create_app_state() -> Arc<State> {
     let connection = estabilish_connection().await;
+    let jwt_secret = env::var("JWT_SECRET").expect("JWT_AUTH is not defined in .env");
+
     Arc::new(State {
         db: Arc::new(connection),
+        auth_service: Arc::new(JwtAuthService::new(jwt_secret)),
+        cookie_service: Arc::new(CookieService::new()),
     })
 }
 
