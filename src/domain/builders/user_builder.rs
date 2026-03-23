@@ -1,11 +1,4 @@
-pub struct NewUser {
-    pub email: String,
-    pub password_hash: String,
-    pub full_name: String,
-    pub phone: Option<String>,
-    pub status_key: String,
-    pub is_super_admin: bool,
-}
+use crate::domain::entities::user::NewUser;
 
 pub struct UserBuilder {
     email: String,

@@ -1,5 +1,5 @@
 use crate::domain::{
-    builders::user_builder::NewUser, entities::user::User, exceptions::RepositoryError,
+    entities::user::{User, NewUser}, exceptions::RepositoryError,
 };
 
 #[async_trait::async_trait]

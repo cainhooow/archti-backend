@@ -1,5 +1,4 @@
-use crate::domain::builders::user_builder::NewUser;
-use crate::domain::entities::user::User;
+use crate::domain::entities::user::{NewUser, User};
 use crate::domain::exceptions::RepositoryError;
 use crate::infrastructure::entities::user;
 use sea_orm::ActiveValue::Set;
@@ -83,5 +82,20 @@ impl UserRepository for SeaOrmUserRepository {
         }
     }
 
-    async fn update(&self, user: &User) -> Result<User, RepositoryError> {}
+    async fn update(&self, user: &User) -> Result<User, RepositoryError> {
+        let model = user::ActiveModel {
+            email: Set(user.email.clone()),
+            password_hash: Set(user.password_hash.clone()),
+            full_name: Set(user.full_name.clone()),
+            phone: Set(user.phone.clone()),
+            status_key: Set(user.status_key.clone()),
+            updated_at: Set(chrono::Local::now().naive_local()),
+            ..Default::default()
+        };
+        
+        match model.update(&*self.conn).await {
+            Ok(data) => Ok(User::from(data)),
+            Err(e) => Err(RepositoryError::Generic(e.to_string())),
+        }
+    }
 }
