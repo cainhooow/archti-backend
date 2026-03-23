@@ -1,5 +1,8 @@
+// rustautomod
 use salvo::http::{HeaderMap, HeaderValue, StatusError, header::CONTENT_TYPE};
 use serde::Serialize;
+
+pub mod user_resource;
 
 #[derive(Serialize)]
 pub struct DataResponse<T> {
