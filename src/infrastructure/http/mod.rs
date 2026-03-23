@@ -1,15 +1,13 @@
-// rustautomod
 use std::{env, sync::Arc};
-
 use salvo::prelude::*;
 use sea_orm::DatabaseConnection;
-
 use crate::infrastructure::{
     database::estabilish_connection,
     services::{cookie_service::CookieService, jwt_auth_service::JwtAuthService},
 };
 
 pub mod middlewares;
+
 #[derive(Default, Clone, Debug)]
 pub struct State {
     pub db: Arc<DatabaseConnection>,
