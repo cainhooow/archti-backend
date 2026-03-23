@@ -9,30 +9,36 @@ pub struct UserBuilder {
     is_super_admin: bool,
 }
 
-impl UserBuilder {
-    pub fn new() -> Self {
+impl Default for UserBuilder {
+    fn default() -> Self {
         Self {
             email: String::new(),
             password_hash: String::new(),
             full_name: String::new(),
             phone: None,
-            status_key: String::new(),
+            status_key: "INACTIVE".to_string(),
             is_super_admin: false,
         }
     }
+}
 
-    pub fn email(mut self, email: String) -> Self {
-        self.email = email;
+impl UserBuilder {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn email(mut self, email: impl Into<String>) -> Self {
+        self.email = email.into();
         self
     }
 
-    pub fn password_hash(mut self, password_hash: String) -> Self {
-        self.password_hash = password_hash;
+    pub fn password_hash(mut self, password_hash: impl Into<String>) -> Self {
+        self.password_hash = password_hash.into();
         self
     }
 
-    pub fn full_name(mut self, full_name: String) -> Self {
-        self.full_name = full_name;
+    pub fn full_name(mut self, full_name: impl Into<String>) -> Self {
+        self.full_name = full_name.into();
         self
     }
 
@@ -41,8 +47,8 @@ impl UserBuilder {
         self
     }
 
-    pub fn status_key(mut self, status_key: String) -> Self {
-        self.status_key = status_key;
+    pub fn status_key(mut self, status_key: impl Into<String>) -> Self {
+        self.status_key = status_key.into();
         self
     }
 
