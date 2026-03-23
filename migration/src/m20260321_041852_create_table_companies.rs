@@ -26,7 +26,12 @@ impl MigrationTrait for Migration {
                             .string_len(120)
                             .not_null(),
                     )
-                    .col(ColumnDef::new(Company::Document).string_len(32).unique_key().not_null())
+                    .col(
+                        ColumnDef::new(Company::Document)
+                            .string_len(32)
+                            .unique_key()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(Company::ContactName)
                             .string_len(120)

@@ -1,3 +1,4 @@
+// rustautomod
 use std::sync::Arc;
 
 use salvo::prelude::*;
@@ -5,6 +6,7 @@ use sea_orm::DatabaseConnection;
 
 use crate::infrastructure::database::estabilish_connection;
 
+pub mod middlewares;
 #[derive(Default, Clone, Debug)]
 pub struct State {
     pub db: Arc<DatabaseConnection>,
