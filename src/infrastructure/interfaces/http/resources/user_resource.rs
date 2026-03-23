@@ -1,13 +1,20 @@
 use chrono::NaiveDateTime;
+use garde::Validate;
 use serde::{Deserialize, Serialize};
 
 use crate::domain::entities::user::User;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UserRequest {
+    #[garde(email)]
     pub email: String,
+    #[garde(ascii, length(min = 8))]
+    #[serde(rename(deserialize = "password"))]
     pub password_hash: String,
+    #[garde(ascii, length(min = 1))]
+    #[serde(rename(deserialize = "fullName"))]
     pub full_name: Option<String>,
+    #[garde(ascii, length(min = 1))]
     pub phone: Option<String>,
 }
 
@@ -15,12 +22,18 @@ pub struct UserRequest {
 pub struct UserResource {
     pub id: Option<String>,
     pub email: String,
+    #[serde(rename(serialize = "fullName"))]
     pub full_name: String,
     pub phone: Option<String>,
+    #[serde(rename(serialize = "status"))]
     pub status_key: String,
+    #[serde(rename(serialize = "isSuperAdmin"))]
     pub is_super_admin: bool,
+    #[serde(rename(serialize = "lastLoginAt"))]
     pub last_login_at: Option<NaiveDateTime>,
+    #[serde(rename(serialize = "createdAt"))]
     pub created_at: Option<NaiveDateTime>,
+    #[serde(rename(serialize = "updatedAt"))]
     pub updated_at: Option<NaiveDateTime>,
 }
 
