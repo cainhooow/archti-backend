@@ -1,7 +1,6 @@
 use chrono::NaiveDateTime;
 use garde::Validate;
 use serde::{Deserialize, Serialize};
-
 use crate::domain::entities::user::User;
 
 #[derive(Serialize, Deserialize, Validate)]

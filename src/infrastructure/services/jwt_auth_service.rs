@@ -2,6 +2,11 @@ use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Validation, errors::Erro
 use serde::{Deserialize, Serialize};
 use time::{Duration, OffsetDateTime};
 
+use crate::application::{
+    exceptions::{AppError, AppResult},
+    ports::token_service::{TokenOutput, TokenService},
+};
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct JwtClaims {
     pub sub: String,
@@ -9,26 +14,13 @@ pub struct JwtClaims {
     pub typ: String,
 }
 
-#[derive(Default, Debug)]
+#[derive(Debug, Default)]
 pub struct JwtAuthService {
     secret: String,
 }
 
 pub const ACCESS_TOKEN_NAME: &'static str = "accesstkn";
 pub const REFRESH_TOKEN_NAME: &'static str = "refreshtkn";
-
-#[derive(Serialize)]
-pub struct Tokens {
-    #[serde(rename(serialize = "accessToken"))]
-    pub access_token: String,
-    #[serde(rename(serialize = "refreshToken"))]
-    pub refresh_token: String,
-}
-
-pub struct AuthorizationHeader<'l> {
-    pub token_type: &'l str,
-    pub token: &'l str,
-}
 
 impl JwtAuthService {
     pub fn new(secret: String) -> Self {
@@ -45,72 +37,62 @@ impl JwtAuthService {
         Ok(token)
     }
 
-    pub fn generate(&self, user_id: String) -> Result<Tokens, Error> {
-        let access_token = self.generate_access_token(user_id.clone())?;
-        let refresh_token = self.generate_refresh_token(user_id.clone())?;
-
-        Ok(Tokens {
-            access_token,
-            refresh_token,
-        })
-    }
-
-    pub fn generate_access_token(&self, user_id: String) -> Result<String, Error> {
-        let claims = JwtClaims {
-            sub: user_id,
-            exp: (OffsetDateTime::now_utc() + Duration::minutes(15)).unix_timestamp(),
-            typ: String::from(ACCESS_TOKEN_NAME),
-        };
-
-        let token = self.generate_token(claims)?;
-        Ok(token)
-    }
-
-    pub fn generate_refresh_token(&self, user_id: String) -> Result<String, Error> {
-        let claims = JwtClaims {
-            sub: user_id,
-            exp: (OffsetDateTime::now_utc() + Duration::days(7)).unix_timestamp(),
-            typ: String::from(REFRESH_TOKEN_NAME),
-        };
-
-        let token = self.generate_token(claims)?;
-        Ok(token)
-    }
-
-    pub fn validate_token(&self, token: &str) -> Result<JwtClaims, String> {
+    fn decode_token(&self, token: &str) -> Result<JwtClaims, Error> {
         jsonwebtoken::decode::<JwtClaims>(
             token,
             &DecodingKey::from_secret(self.secret.as_bytes()),
             &Validation::new(Algorithm::HS256),
         )
         .map(|data| data.claims)
-        .map_err(|e| e.to_string())
+    }
+}
+
+impl TokenService for JwtAuthService {
+    fn generate_access_token(&self, user_id: &str) -> AppResult<TokenOutput> {
+        let exp = (OffsetDateTime::now_utc() + Duration::minutes(15)).unix_timestamp();
+        let claims = JwtClaims {
+            sub: user_id.to_string(),
+            exp,
+            typ: ACCESS_TOKEN_NAME.to_string(),
+        };
+
+        let token = self
+            .generate_token(claims)
+            .map_err(|err| AppError::Unexpected(err.to_string()))?;
+
+        Ok(TokenOutput {
+            token,
+            expires_at: exp,
+        })
     }
 
-    pub fn refresh_access_token(&self, refresh_token: &str) -> Result<String, String> {
-        let claims = self.validate_token(refresh_token)?;
+    fn generate_refresh_token(&self, user_id: &str) -> AppResult<TokenOutput> {
+        let exp = (OffsetDateTime::now_utc() + Duration::days(7)).unix_timestamp();
+        let claims = JwtClaims {
+            sub: user_id.to_string(),
+            exp,
+            typ: REFRESH_TOKEN_NAME.to_string(),
+        };
 
-        if claims.typ != "refreshtkn" {
-            return Err("Invalid token type".into());
-        }
+        let token = self
+            .generate_token(claims)
+            .map_err(|err| AppError::Unexpected(err.to_string()))?;
 
-        self.generate_access_token(claims.sub)
-            .map_err(|e| e.to_string())
+        Ok(TokenOutput {
+            token,
+            expires_at: exp,
+        })
     }
 
-    pub fn validate_from_authorization<'r>(
-        &'r self,
-        token: &'r str,
-    ) -> Result<AuthorizationHeader<'r>, ()> {
-        let parts: Vec<&str> = token.split(" ").collect();
+    fn verify_token(&self, token: &str) -> AppResult<String> {
+        let claims = self
+            .decode_token(token)
+            .map_err(|err| AppError::Unexpected(err.to_string()))?;
 
-        let token_type = parts[0];
-        if !token_type.eq("Bearer") || token_type.is_empty() {
-            return Err(());
+        if claims.typ != ACCESS_TOKEN_NAME {
+            return Err(AppError::Unexpected("Invalid token type".to_string()));
         }
 
-        let token = parts[1];
-
-        Ok(AuthorizationHeader { token_type, token })
+        Ok(claims.sub)
     }
 }

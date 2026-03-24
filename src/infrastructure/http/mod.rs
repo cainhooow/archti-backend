@@ -1,8 +1,11 @@
+use crate::application::ports::password_hasher::PasswordHasher;
+use crate::application::ports::token_service::TokenService;
+
 use super::database::estabilish_connection;
-use super::security::Argon2HasherImpl;
-use super::services::{cookie_service::CookieService, jwt_auth_service::JwtAuthService};
 use super::http::middlewares::app_middleware::AppMiddleware;
 use super::interfaces::http::routers::*;
+use super::security::Argon2HasherImpl;
+use super::services::{cookie_service::CookieService, jwt_auth_service::JwtAuthService};
 
 use salvo::prelude::*;
 use sea_orm::DatabaseConnection;
@@ -10,11 +13,11 @@ use std::{env, sync::Arc};
 
 pub mod middlewares;
 
-#[derive(Default, Clone, Debug)]
+#[derive(Clone)]
 pub struct State {
     pub db: Arc<DatabaseConnection>,
-    pub hasher: Arc<Argon2HasherImpl>,
-    pub auth_service: Arc<JwtAuthService>,
+    pub hasher: Arc<dyn PasswordHasher>,
+    pub auth_service: Arc<dyn TokenService>,
     pub cookie_service: Arc<CookieService>,
 }
 

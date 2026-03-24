@@ -24,17 +24,21 @@ impl Handler for AuthMiddleware {
             let state = depot.obtain::<Arc<State>>().unwrap();
             let auth_header = auth_header.to_str().unwrap_or("");
 
-            match state.auth_service.validate_from_authorization(auth_header) {
-                Ok(auth) => match state.auth_service.validate_token(auth.token) {
-                    Ok(claims) => {
-                        depot.insert(DEPOT_KEY_ID, claims.sub);
-                        ctrl.call_next(req, depot, res).await;
-                    }
-                    Err(_) => {
-                        res.render(DataResponse::error("Invalid Access Token"));
-                        res.status_code(StatusCode::UNAUTHORIZED);
-                    }
-                },
+            let parts: Vec<&str> = auth_header.split(" ").collect();
+            let token_type = parts.get(0).copied().unwrap_or("");
+            if token_type != "Bearer" {
+                res.render(DataResponse::error("Invalid Authorization Header"));
+                res.status_code(StatusCode::UNAUTHORIZED);
+                return;
+            }
+
+            let token = parts.get(1).copied().unwrap_or("");
+
+            match state.auth_service.verify_token(token) {
+                Ok(claims) => {
+                    depot.insert(DEPOT_KEY_ID, claims);
+                    ctrl.call_next(req, depot, res).await;
+                }
                 Err(_) => {
                     res.render(DataResponse::error("Invalid Access Token"));
                     res.status_code(StatusCode::UNAUTHORIZED);
@@ -44,9 +48,9 @@ impl Handler for AuthMiddleware {
             let token = auth_cookie.value();
             let state = depot.obtain::<Arc<State>>().unwrap();
 
-            match state.auth_service.validate_token(token) {
+            match state.auth_service.verify_token(token) {
                 Ok(claims) => {
-                    depot.insert(DEPOT_KEY_ID, claims.sub);
+                    depot.insert(DEPOT_KEY_ID, claims);
                     ctrl.call_next(req, depot, res).await;
                 }
                 Err(_) => {
