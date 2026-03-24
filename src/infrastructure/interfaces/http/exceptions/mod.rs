@@ -1,8 +1,8 @@
 use std::num::{IntErrorKind, ParseIntError};
 
-use crate::{
-    application::exceptions::AppError, infrastructure::interfaces::http::resources::DataResponse,
-};
+use crate::application::exceptions::AppError;
+
+use crate::infrastructure::interfaces::http::resources::DataResponse;
 use argon2::password_hash::Error as ArgonError;
 use jsonwebtoken::errors::{Error as JWTError, ErrorKind as JWTErrorKind};
 

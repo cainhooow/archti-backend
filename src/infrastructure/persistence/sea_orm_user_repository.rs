@@ -1,6 +1,6 @@
+use crate::infrastructure::entities::user;
 use crate::domain::entities::user::{NewUser, User};
 use crate::domain::exceptions::RepositoryError;
-use crate::infrastructure::entities::user;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter,

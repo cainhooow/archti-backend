@@ -1,5 +1,7 @@
-use crate::{application::exceptions::AppResult, domain::{entities::user::User, repositories::user_repository_interface::UserRepository}};
-
+use crate::application::exceptions::AppResult;
+use crate::domain::{
+    entities::user::User, repositories::user_repository_interface::UserRepository,
+};
 
 pub struct FindUserByEmail {
     pub email: String,

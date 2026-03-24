@@ -1,14 +1,12 @@
+use crate::domain::{
+    builders::user_builder::UserBuilder, entities::user::User,
+    repositories::user_repository_interface::UserRepository,
+};
 use std::sync::Arc;
 
-use crate::{
-    application::{
-        exceptions::{AppError, AppResult},
-        ports::password_hasher::PasswordHasher,
-    },
-    domain::{
-        builders::user_builder::UserBuilder, entities::user::User,
-        repositories::user_repository_interface::UserRepository,
-    },
+use crate::application::{
+    exceptions::{AppError, AppResult},
+    ports::password_hasher::PasswordHasher,
 };
 
 pub struct CreateUserUseCase<U: UserRepository> {

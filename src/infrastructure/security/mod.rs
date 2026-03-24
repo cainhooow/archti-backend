@@ -1,5 +1,4 @@
 use crate::application::ports::password_hasher::PasswordHasher;
-
 use argon2::Argon2;
 use argon2::password_hash::{
     PasswordHash, PasswordHasher as Argon2Hasher, PasswordVerifier, SaltString, rand_core::OsRng,

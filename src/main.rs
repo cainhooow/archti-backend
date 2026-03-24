@@ -1,8 +1,8 @@
 use crate::infrastructure::http::http_server_init;
 
-mod infrastructure;
 mod application;
 mod domain;
+mod infrastructure;
 
 #[tokio::main]
 async fn main() {

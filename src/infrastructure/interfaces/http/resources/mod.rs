@@ -1,4 +1,3 @@
-// rustautomod
 use salvo::http::{HeaderMap, HeaderValue, StatusError, header::CONTENT_TYPE};
 use serde::Serialize;
 

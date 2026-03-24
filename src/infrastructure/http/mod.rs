@@ -1,10 +1,9 @@
-use crate::infrastructure::{
-    database::estabilish_connection,
-    http::middlewares::app_middleware::AppMiddleware,
-    interfaces::http::routers,
-    security::Argon2HasherImpl,
-    services::{cookie_service::CookieService, jwt_auth_service::JwtAuthService},
-};
+use super::database::estabilish_connection;
+use super::security::Argon2HasherImpl;
+use super::services::{cookie_service::CookieService, jwt_auth_service::JwtAuthService};
+use super::http::middlewares::app_middleware::AppMiddleware;
+use super::interfaces::http::routers::*;
+
 use salvo::prelude::*;
 use sea_orm::DatabaseConnection;
 use std::{env, sync::Arc};
@@ -22,7 +21,6 @@ pub struct State {
 async fn create_app_state() -> Arc<State> {
     let connection = estabilish_connection().await;
     let jwt_secret = env::var("JWT_SECRET").expect("JWT_AUTH is not defined in .env");
-
     Arc::new(State {
         db: Arc::new(connection),
         hasher: Arc::new(Argon2HasherImpl::default()),
@@ -36,7 +34,7 @@ fn create_router(state: Arc<State>) -> Router {
         .hoop(affix_state::inject(state))
         .hoop(Logger::new())
         .hoop(AppMiddleware)
-        .push(routers::v1::router())
+        .push(v1::router())
 }
 
 pub async fn http_server_init() {

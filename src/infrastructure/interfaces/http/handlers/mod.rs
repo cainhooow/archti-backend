@@ -1,1 +1,2 @@
+// rustautomod
 pub mod auth;
