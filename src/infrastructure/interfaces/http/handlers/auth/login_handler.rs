@@ -44,8 +44,14 @@ pub async fn login_handler(
                 .execute(command)
                 .await
             {
-                Ok(data) => {
-                    res.render(DataResponse::success(AuthResource::from(data)));
+                Ok(login_response) => {
+                    _ = state.cookie_service.generate_sessions(
+                        &login_response.access_token,
+                        &login_response.refresh_token,
+                        res,
+                    );
+
+                    res.render(DataResponse::success(AuthResource::from(login_response)));
                     res.status_code(StatusCode::OK);
                     Ok(())
                 }

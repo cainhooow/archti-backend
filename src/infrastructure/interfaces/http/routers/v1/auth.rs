@@ -13,4 +13,5 @@ pub fn router() -> Router {
     Router::with_path("/auth")
         .push(register::router())
         .push(login::router())
+        .push(me::router())
 }

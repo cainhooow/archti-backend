@@ -9,7 +9,7 @@ use crate::infrastructure::{
 
 pub const DEPOT_KEY_ID: &'static str = "user_id";
 
-pub struct AuthMiddleware {}
+pub struct AuthMiddleware;
 
 #[async_trait::async_trait]
 impl Handler for AuthMiddleware {
