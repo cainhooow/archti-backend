@@ -1,0 +1,2 @@
+// rustautomod
+pub mod user;
