@@ -17,7 +17,7 @@ pub struct User {
 #[derive(Clone, Debug)]
 pub struct NewUser {
     pub email: String,
-    pub password_hash: String,
+    pub password: String,
     pub full_name: String,
     pub phone: Option<String>,
     pub status_key: String,

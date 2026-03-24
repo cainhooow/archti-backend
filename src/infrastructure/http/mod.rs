@@ -1,6 +1,8 @@
 use crate::infrastructure::{
     database::estabilish_connection,
+    http::middlewares::app_middleware::AppMiddleware,
     interfaces::http::routers,
+    security::Argon2HasherImpl,
     services::{cookie_service::CookieService, jwt_auth_service::JwtAuthService},
 };
 use salvo::prelude::*;
@@ -12,6 +14,7 @@ pub mod middlewares;
 #[derive(Default, Clone, Debug)]
 pub struct State {
     pub db: Arc<DatabaseConnection>,
+    pub hasher: Arc<Argon2HasherImpl>,
     pub auth_service: Arc<JwtAuthService>,
     pub cookie_service: Arc<CookieService>,
 }
@@ -22,6 +25,7 @@ async fn create_app_state() -> Arc<State> {
 
     Arc::new(State {
         db: Arc::new(connection),
+        hasher: Arc::new(Argon2HasherImpl::default()),
         auth_service: Arc::new(JwtAuthService::new(jwt_secret)),
         cookie_service: Arc::new(CookieService::new()),
     })
@@ -30,6 +34,8 @@ async fn create_app_state() -> Arc<State> {
 fn create_router(state: Arc<State>) -> Router {
     Router::with_path("api")
         .hoop(affix_state::inject(state))
+        .hoop(Logger::new())
+        .hoop(AppMiddleware)
         .push(routers::v1::router())
 }
 

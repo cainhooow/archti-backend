@@ -57,12 +57,13 @@ impl UserRepository for SeaOrmUserRepository {
 
     async fn save(&self, user: &NewUser) -> Result<User, RepositoryError> {
         let new_user = user::ActiveModel {
+            id: Set(Uuid::new_v4()),
             email: Set(user.email.clone()),
             full_name: Set(user.full_name.clone()),
             phone: Set(user.phone.clone()),
             status_key: Set(user.status_key.clone()),
             is_super_admin: Set(user.is_super_admin),
-            password_hash: Set(user.password_hash.clone()),
+            password_hash: Set(user.password.clone()),
             ..Default::default()
         };
 
@@ -92,7 +93,7 @@ impl UserRepository for SeaOrmUserRepository {
             updated_at: Set(chrono::Local::now().naive_local()),
             ..Default::default()
         };
-        
+
         match model.update(&*self.conn).await {
             Ok(data) => Ok(User::from(data)),
             Err(e) => Err(RepositoryError::Generic(e.to_string())),

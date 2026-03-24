@@ -9,8 +9,7 @@ pub struct UserRequest {
     #[garde(email)]
     pub email: String,
     #[garde(ascii, length(min = 8))]
-    #[serde(rename(deserialize = "password"))]
-    pub password_hash: String,
+    pub password: String,
     #[garde(ascii, length(min = 1))]
     #[serde(rename(deserialize = "fullName"))]
     pub full_name: String,

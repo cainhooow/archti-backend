@@ -16,11 +16,12 @@ use crate::{
             user_resource::{UserRequest, UserResource},
         },
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
+        security::Argon2HasherImpl,
     },
 };
 
 #[handler]
-async fn register_handler(
+pub async fn register_handler(
     req: &mut Request,
     res: &mut Response,
     depot: &mut Depot,
@@ -30,6 +31,7 @@ async fn register_handler(
         .map_err(|_| AppError::InternalServerError("Failed to obtain app state".to_string()))?;
 
     let repository = SeaOrmUserRepository::new(state.db.clone());
+    let hasher = state.hasher.clone();
 
     match req.parse_body::<UserRequest>().await {
         Ok(validator) => {
@@ -40,10 +42,13 @@ async fn register_handler(
                 .email(validator.email)
                 .full_name(validator.full_name)
                 .phone(validator.phone)
-                .password_hash(validator.password_hash)
+                .password_hash(validator.password)
                 .build();
 
-            match CreateUserUseCase::new(repository).execute(&user).await {
+            match CreateUserUseCase::new(repository, hasher)
+                .execute(&user)
+                .await
+            {
                 Ok(user) => {
                     res.render(DataResponse::success(UserResource::from(user)));
                     return Ok(());

@@ -5,4 +5,5 @@ pub mod http;
 pub mod interfaces;
 pub mod mappers;
 pub mod persistence;
+pub mod security;
 pub mod services;

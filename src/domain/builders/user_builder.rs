@@ -60,7 +60,7 @@ impl UserBuilder {
     pub fn build(self) -> NewUser {
         NewUser {
             email: self.email,
-            password_hash: self.password_hash,
+            password: self.password_hash,
             full_name: self.full_name,
             phone: self.phone,
             status_key: self.status_key,
