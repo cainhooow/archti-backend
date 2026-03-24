@@ -6,7 +6,7 @@ use crate::{
         ports::password_hasher::PasswordHasher,
     },
     domain::{
-        entities::user::{NewUser, User},
+        builders::user_builder::UserBuilder, entities::user::User,
         repositories::user_repository_interface::UserRepository,
     },
 };
@@ -14,6 +14,13 @@ use crate::{
 pub struct CreateUserUseCase<U: UserRepository> {
     user_repository: U,
     hasher: Arc<dyn PasswordHasher>,
+}
+
+pub struct CreateUserCommand {
+    pub email: String,
+    pub password: String,
+    pub full_name: String,
+    pub phone: Option<String>,
 }
 
 impl<U: UserRepository> CreateUserUseCase<U> {
@@ -24,19 +31,21 @@ impl<U: UserRepository> CreateUserUseCase<U> {
         }
     }
 
-    pub async fn execute(&self, new_user: &NewUser) -> AppResult<User> {
+    pub async fn execute(&self, command: CreateUserCommand) -> AppResult<User> {
         let hashed_password = self
             .hasher
-            .hash(&new_user.password)
+            .hash(&command.password)
             .map_err(|err| AppError::EncryptionError(err.to_string()))?;
 
-        let user = self
-            .user_repository
-            .save(&NewUser {
-                password: hashed_password,
-                ..new_user.clone()
-            })
-            .await?;
+        let new_user = UserBuilder::new()
+            .email(command.email)
+            .full_name(command.full_name)
+            .password_hash(hashed_password)
+            .phone(command.phone)
+            .build();
+
+        let user = self.user_repository.save(&new_user).await?;
+
         Ok(user)
     }
 }

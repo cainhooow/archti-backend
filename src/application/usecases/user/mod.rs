@@ -1,2 +1,2 @@
 // rustautomod
-pub mod user_usecases;
+pub mod create_user_usecase;

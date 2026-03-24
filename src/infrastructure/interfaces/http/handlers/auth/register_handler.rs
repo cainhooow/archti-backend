@@ -6,9 +6,8 @@ use salvo::prelude::*;
 use crate::{
     application::{
         exceptions::{AppError, AppResult},
-        usecases::user::user_usecases::CreateUserUseCase,
+        usecases::user::create_user_usecase::{CreateUserCommand, CreateUserUseCase},
     },
-    domain::builders::user_builder::UserBuilder,
     infrastructure::{
         http::State,
         interfaces::http::resources::{
@@ -16,7 +15,6 @@ use crate::{
             user_resource::{UserRequest, UserResource},
         },
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
-        security::Argon2HasherImpl,
     },
 };
 
@@ -37,16 +35,13 @@ pub async fn register_handler(
         Ok(validator) => {
             _ = validator.validate()?;
 
-            let user_builder = UserBuilder::new();
-            let user = user_builder
-                .email(validator.email)
-                .full_name(validator.full_name)
-                .phone(validator.phone)
-                .password_hash(validator.password)
-                .build();
-
             match CreateUserUseCase::new(repository, hasher)
-                .execute(&user)
+                .execute(CreateUserCommand {
+                    email: validator.email,
+                    password: validator.password,
+                    full_name: validator.full_name,
+                    phone: validator.phone,
+                })
                 .await
             {
                 Ok(user) => {
