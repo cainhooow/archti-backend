@@ -1,10 +1,11 @@
-use std::{env, sync::Arc};
-use salvo::prelude::*;
-use sea_orm::DatabaseConnection;
 use crate::infrastructure::{
     database::estabilish_connection,
+    interfaces::http::routers,
     services::{cookie_service::CookieService, jwt_auth_service::JwtAuthService},
 };
+use salvo::prelude::*;
+use sea_orm::DatabaseConnection;
+use std::{env, sync::Arc};
 
 pub mod middlewares;
 
@@ -27,7 +28,9 @@ async fn create_app_state() -> Arc<State> {
 }
 
 fn create_router(state: Arc<State>) -> Router {
-    Router::with_path("api").hoop(affix_state::inject(state))
+    Router::with_path("api")
+        .hoop(affix_state::inject(state))
+        .push(routers::v1::router())
 }
 
 pub async fn http_server_init() {

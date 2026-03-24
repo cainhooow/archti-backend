@@ -13,7 +13,7 @@ pub struct UserRequest {
     pub password_hash: String,
     #[garde(ascii, length(min = 1))]
     #[serde(rename(deserialize = "fullName"))]
-    pub full_name: Option<String>,
+    pub full_name: String,
     #[garde(ascii, length(min = 1))]
     pub phone: Option<String>,
 }
