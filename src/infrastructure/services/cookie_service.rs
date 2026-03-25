@@ -41,6 +41,20 @@ impl CookieService {
         cookie
     }
 
+    pub fn clear_cookie<'c>(&'c self, name: impl Into<String>, res: &mut Response) {
+        let app_mode = env::var("APP_ENV").expect("APP_ENV is not defined in .env");
+
+        let cookie = Cookie::build((name.into(), ""))
+            .http_only(true)
+            .secure(app_mode.eq("production"))
+            .same_site(SameSite::Strict)
+            .path("/")
+            .removal()
+            .build();
+        
+        res.add_cookie(cookie);
+    }
+
     pub fn generate_sessions(
         &self,
         access: &TokenOutput,
@@ -67,5 +81,10 @@ impl CookieService {
 
         res.add_cookie(access_token);
         res.add_cookie(refresh_cookie);
+    }
+
+    pub fn clear_sessions<'c>(&'c self, res: &mut Response) {
+        self.clear_cookie(COOKIE_SESSION_NAME, res);
+        self.clear_cookie(COOKIE_REFRESH_NAME, res);
     }
 }

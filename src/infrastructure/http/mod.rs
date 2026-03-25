@@ -1,5 +1,6 @@
 use crate::application::ports::password_hasher::PasswordHasher;
 use crate::application::ports::token_service::TokenService;
+use crate::infrastructure::http::middlewares::log_middleware::LogMiddleware;
 
 use super::database::estabilish_connection;
 use super::http::middlewares::app_middleware::AppMiddleware;
@@ -8,6 +9,7 @@ use super::security::Argon2HasherImpl;
 use super::services::{cookie_service::CookieService, jwt_auth_service::JwtAuthService};
 
 use salvo::prelude::*;
+use salvo::logging::Logger as SalvoLogger;
 use sea_orm::DatabaseConnection;
 use std::{env, sync::Arc};
 
@@ -35,8 +37,9 @@ async fn create_app_state() -> Arc<State> {
 fn create_router(state: Arc<State>) -> Router {
     Router::with_path("api")
         .hoop(affix_state::inject(state))
-        .hoop(Logger::new())
+        .hoop(SalvoLogger::new())
         .hoop(AppMiddleware)
+        .hoop(LogMiddleware)
         .push(v1::router())
 }
 

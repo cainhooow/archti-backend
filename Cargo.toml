@@ -15,6 +15,7 @@ salvo = { version = "0.89.2", features = [
     "flash",
     "jwt-auth",
     "logging",
+    "cookie"
 ] }
 sea-orm = { version = "2.0.0-rc", features = ["macros", "sqlx-postgres"] }
 tokio = { version = "1.50.0", features = ["macros"] }
