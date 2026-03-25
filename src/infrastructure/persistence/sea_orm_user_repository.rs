@@ -3,7 +3,7 @@ use crate::domain::entities::user::{NewUser, User};
 use crate::domain::exceptions::RepositoryError;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter,
     QuerySelect,
 };
 use std::str::FromStr;

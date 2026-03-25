@@ -1,14 +1,13 @@
 use std::sync::Arc;
 
 use salvo::prelude::*;
-use serde::{Deserialize, Serialize};
+use serde::{Serialize};
 
 use crate::{
     application::exceptions::{AppError, AppResult},
     infrastructure::{
         http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
         interfaces::http::resources::DataResponse,
-        services::cookie_service::{COOKIE_REFRESH_NAME, COOKIE_SESSION_NAME},
     },
 };
 

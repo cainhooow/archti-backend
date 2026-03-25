@@ -2,10 +2,7 @@ use std::env;
 
 use salvo::{
     Response,
-    http::{
-        cookie::{Cookie, CookieBuilder, Expiration, SameSite},
-        header::REFRESH,
-    },
+    http::cookie::{Cookie, CookieBuilder, Expiration, SameSite},
 };
 use time::{Duration, OffsetDateTime};
 
@@ -51,7 +48,7 @@ impl CookieService {
             .path("/")
             .removal()
             .build();
-        
+
         res.add_cookie(cookie);
     }
 

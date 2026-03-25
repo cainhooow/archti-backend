@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     application::exceptions::{AppError, AppResult},
     infrastructure::{
-        http::{State, middlewares::auth_middleware::DEPOT_KEY_AUTHORIZATION},
+        http::{State},
         interfaces::http::resources::DataResponse,
         services::cookie_service::COOKIE_REFRESH_NAME,
     },
