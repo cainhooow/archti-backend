@@ -1,7 +1,8 @@
+use crate::application::ports::document_encryption::DocumentEncryption;
 use crate::application::ports::password_hasher::PasswordHasher;
 use crate::application::ports::token_service::TokenService;
 use crate::infrastructure::http::middlewares::log_middleware::LogMiddleware;
-
+use crate::infrastructure::security::document_encryption::AppDocumentEncryption;
 use super::database::estabilish_connection;
 use super::http::middlewares::app_middleware::AppMiddleware;
 use super::interfaces::http::routers::*;
@@ -19,6 +20,7 @@ pub mod middlewares;
 pub struct State {
     pub db: Arc<DatabaseConnection>,
     pub hasher: Arc<dyn PasswordHasher>,
+    pub crypto: Arc<dyn DocumentEncryption>,
     pub auth_service: Arc<dyn TokenService>,
     pub cookie_service: Arc<CookieService>,
 }
@@ -29,6 +31,7 @@ async fn create_app_state() -> Arc<State> {
     Arc::new(State {
         db: Arc::new(connection),
         hasher: Arc::new(Argon2HasherImpl::default()),
+        crypto: Arc::new(AppDocumentEncryption::default()),
         auth_service: Arc::new(JwtAuthService::new(jwt_secret)),
         cookie_service: Arc::new(CookieService::new()),
     })
