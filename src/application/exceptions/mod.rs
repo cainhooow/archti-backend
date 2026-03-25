@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use crate::domain::exceptions::RepositoryError;
+use crate::domain::exceptions::{MailerError, RepositoryError};
 
 #[derive(Debug, Error)]
 pub enum AppError {
@@ -37,6 +37,14 @@ impl From<RepositoryError> for AppError {
         match value {
             RepositoryError::Generic(e) => AppError::Repository(e),
             RepositoryError::NotFound => AppError::Repository("Entity not found".into()),
+        }
+    }
+}
+
+impl From<MailerError> for AppError {
+    fn from(value: MailerError) -> Self {
+        match value {
+            MailerError::Generic(e) => AppError::Unexpected(e),
         }
     }
 }
