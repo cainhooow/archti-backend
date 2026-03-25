@@ -14,5 +14,6 @@ pub fn router() -> Router {
         .push(register::router())
         .push(login::router())
         .push(logout::router())
+        .push(refresh_token::router())
         .push(me::router())
 }

@@ -8,6 +8,7 @@ use crate::infrastructure::{
 };
 
 pub const DEPOT_KEY_ID: &'static str = "user_id";
+pub const DEPOT_KEY_AUTHORIZATION: &'static str = "authorization";
 
 pub struct AuthMiddleware;
 
@@ -37,6 +38,7 @@ impl Handler for AuthMiddleware {
             match state.auth_service.verify_token(token) {
                 Ok(claims) => {
                     depot.insert(DEPOT_KEY_ID, claims);
+                    depot.insert(DEPOT_KEY_AUTHORIZATION, String::from(token));
                     ctrl.call_next(req, depot, res).await;
                 }
                 Err(_) => {
@@ -51,6 +53,7 @@ impl Handler for AuthMiddleware {
             match state.auth_service.verify_token(token) {
                 Ok(claims) => {
                     depot.insert(DEPOT_KEY_ID, claims);
+                    depot.insert(DEPOT_KEY_AUTHORIZATION, String::from(token));
                     ctrl.call_next(req, depot, res).await;
                 }
                 Err(_) => {

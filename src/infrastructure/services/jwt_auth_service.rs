@@ -95,4 +95,42 @@ impl TokenService for JwtAuthService {
 
         Ok(claims.sub)
     }
+    
+    fn get_refresh_sub(&self, token: &str) -> AppResult<String> {
+        let claims = self
+            .decode_token(token)
+            .map_err(|err| AppError::Unexpected(err.to_string()))?;
+        
+        if claims.typ != REFRESH_TOKEN_NAME {
+            return Err(AppError::Unexpected("Invalid token type".to_string()));
+        }
+
+        Ok(claims.sub)
+    }
+
+    fn renew_token(&self, token: &str) -> AppResult<TokenOutput> {
+        let claims = self
+            .decode_token(token)
+            .map_err(|err| AppError::Unexpected(err.to_string()))?;
+
+        if claims.typ != REFRESH_TOKEN_NAME {
+            return Err(AppError::Unexpected("Invalid token type".to_string()));
+        }
+
+        let exp = (OffsetDateTime::now_utc() + Duration::minutes(15)).unix_timestamp();
+        let new_claims = JwtClaims {
+            sub: claims.sub,
+            exp,
+            typ: ACCESS_TOKEN_NAME.to_string(),
+        };
+
+        let new_token = self
+            .generate_token(new_claims)
+            .map_err(|err| AppError::Unexpected(err.to_string()))?;
+
+        Ok(TokenOutput {
+            token: new_token,
+            expires_at: exp,
+        })
+    }
 }
