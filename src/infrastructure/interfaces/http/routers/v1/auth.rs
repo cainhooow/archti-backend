@@ -10,10 +10,10 @@ pub mod register;
 pub mod reset_password;
 
 pub fn router() -> Router {
-    Router::with_path("/auth")
-        .push(register::router())
-        .push(login::router())
-        .push(logout::router())
-        .push(refresh_token::router())
-        .push(me::router())
+    Router::new()
+        .push(Router::with_path("register").push(register::router()))
+        .push(Router::with_path("login").push(login::router()))
+        .push(Router::with_path("logout").push(logout::router()))
+        .push(Router::with_path("refresh-token").push(refresh_token::router()))
+        .push(Router::with_path("me").push(me::router()))
 }

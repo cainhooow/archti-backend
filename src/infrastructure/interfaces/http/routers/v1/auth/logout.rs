@@ -6,7 +6,7 @@ use crate::infrastructure::{
 };
 
 pub fn router() -> Router {
-    Router::with_path("/logout")
+    Router::new()
         .hoop(AuthMiddleware)
         .get(auth_logout_handler)
 }

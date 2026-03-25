@@ -6,5 +6,6 @@ pub use salvo::prelude::*;
 
 pub fn router() -> Router {
     Router::with_path("/v1")
-        .push(auth::router())
+        .push(Router::with_path("auth").push(auth::router()))
+        .push(Router::with_path("me").push(me::router()))
 }

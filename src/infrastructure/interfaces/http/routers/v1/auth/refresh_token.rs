@@ -6,5 +6,5 @@ use crate::infrastructure::{
 };
 
 pub fn router() -> Router {
-    Router::with_path("/refresh-token").post(auth_refresh_handler)
+    Router::new().post(auth_refresh_handler)
 }
