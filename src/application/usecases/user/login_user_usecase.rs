@@ -6,10 +6,10 @@ use crate::{
             token_service::{TokenOutput, TokenService},
         },
     },
-    domain::{entities::user::User, repositories::user_repository_interface::UserRepository},
+    domain::{entities::user::User, repositories::user_repository_interface::UserReadRepository},
 };
 
-pub struct LoginUserUseCase<R: UserRepository, T: TokenService, H: PasswordHasher> {
+pub struct LoginUserUseCase<R: UserReadRepository, T: TokenService, H: PasswordHasher> {
     repository: R,
     token_service: T,
     hasher: H,
@@ -26,7 +26,7 @@ pub struct LoginResponse {
     pub refresh_token: TokenOutput,
 }
 
-impl<R: UserRepository, T: TokenService, H: PasswordHasher> LoginUserUseCase<R, T, H> {
+impl<R: UserReadRepository, T: TokenService, H: PasswordHasher> LoginUserUseCase<R, T, H> {
     pub fn new(repository: R, token_service: T, hasher: H) -> Self {
         Self {
             repository,
@@ -36,7 +36,7 @@ impl<R: UserRepository, T: TokenService, H: PasswordHasher> LoginUserUseCase<R, 
     }
 
     pub async fn execute(&self, command: LoginUserCommand) -> AppResult<LoginResponse> {
-        let user = self.repository.find_by_email(&command.email).await?;
+        let user = self.repository.by_email(&command.email).await?;
 
         if !self.hasher.verify(&command.password, &user.password_hash) {
             return Err(AppError::InvalidCredentials(format!(

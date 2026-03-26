@@ -1,4 +1,4 @@
-use crate::domain::{entities::user::User, repositories::user_repository_interface::UserRepository};
+use crate::domain::{entities::user::User, repositories::user_repository_interface::UserReadRepository};
 use crate::application::exceptions::AppResult;
 
 
@@ -6,17 +6,17 @@ pub struct FindUserById {
     pub id: String,
 }
 
-pub struct FindUserByIdQuery<R: UserRepository> {
+pub struct FindUserByIdQuery<R: UserReadRepository> {
     repository: R,
 }
 
-impl<R: UserRepository> FindUserByIdQuery<R> {
+impl<R: UserReadRepository> FindUserByIdQuery<R> {
     pub fn new(repository: R) -> Self {
         Self { repository }
     }
 
     pub async fn handle(&self, query: FindUserById) -> AppResult<User> {
-        let user = self.repository.find_by_id(&query.id).await?;
+        let user = self.repository.by_id(&query.id).await?;
         Ok(user)
     }
 }

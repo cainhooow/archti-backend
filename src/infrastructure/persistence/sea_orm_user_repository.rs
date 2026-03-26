@@ -10,7 +10,7 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 use crate::domain::repositories::user_repository_interface::{
-    CreateUserRepository, UserRepository,
+    CreateUserRepository, UserReadRepository,
 };
 
 pub struct SeaOrmUserRepository {
@@ -57,8 +57,8 @@ impl CreateUserRepository for SeaOrmUserRepository {
 }
 
 #[async_trait::async_trait]
-impl UserRepository for SeaOrmUserRepository {
-    async fn find_by_id(&self, id: &str) -> Result<User, RepositoryError> {
+impl UserReadRepository for SeaOrmUserRepository {
+    async fn by_id(&self, id: &str) -> Result<User, RepositoryError> {
         match user::Entity::find_by_id(Uuid::from_str(id).map_err(|_| RepositoryError::NotFound)?)
             .one(&*self.conn)
             .await
@@ -69,7 +69,7 @@ impl UserRepository for SeaOrmUserRepository {
         }
     }
 
-    async fn find_by_email(&self, email: &str) -> Result<User, RepositoryError> {
+    async fn by_email(&self, email: &str) -> Result<User, RepositoryError> {
         match user::Entity::find()
             .filter(user::Column::Email.eq(email))
             .one(&*self.conn)

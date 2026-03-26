@@ -1,7 +1,8 @@
 use crate::domain::{
     entities::user::User,
-    repositories::user_repository_interface::{CreateUserRepository, UserRepository},
+    repositories::user_repository_interface::{CreateUserRepository},
 };
+
 use std::sync::Arc;
 
 use crate::application::{

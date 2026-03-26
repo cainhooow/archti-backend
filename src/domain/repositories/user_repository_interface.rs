@@ -7,7 +7,7 @@ pub trait CreateUserRepository: Send + Sync {
 }
 
 #[async_trait::async_trait]
-pub trait UserRepository: Send + Sync {
-    async fn find_by_id(&self, id: &str) -> Result<User, RepositoryError>;
-    async fn find_by_email(&self, email: &str) -> Result<User, RepositoryError>;
+pub trait UserReadRepository: Send + Sync {
+    async fn by_id(&self, id: &str) -> Result<User, RepositoryError>;
+    async fn by_email(&self, email: &str) -> Result<User, RepositoryError>;
 }
