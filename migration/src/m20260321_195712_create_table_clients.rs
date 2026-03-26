@@ -1,4 +1,4 @@
-use sea_orm_migration::{prelude::*, schema::*, sea_orm::dynamic::Column};
+use sea_orm_migration::{prelude::*, schema::*};
 
 use crate::{
     m20260321_041852_create_table_companies::Company,
