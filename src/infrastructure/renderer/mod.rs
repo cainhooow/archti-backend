@@ -8,6 +8,26 @@ pub struct HandlebarsRenderer {
     registry: Handlebars<'static>,
 }
 
+pub struct InlineCssRenderer<R> {
+    inner: R,
+}
+
+impl<R> InlineCssRenderer<R> {
+    pub fn new(inner: R) -> Self {
+        Self { inner }
+    }
+}
+
+impl<R> TemplateRenderer for InlineCssRenderer<R>
+where
+    R: TemplateRenderer,
+{
+    fn render(&self, template_name: &str, data: serde_json::Value) -> Result<String, String> {
+        let html = self.inner.render(template_name, data)?;
+        css_inline::inline(&html).map_err(|err| err.to_string())
+    }
+}
+
 impl HandlebarsRenderer {
     pub fn new<P: AsRef<Path>>(template_path: P) -> Self {
         let mut hb = Handlebars::new();

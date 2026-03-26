@@ -36,7 +36,9 @@ impl<R: UserReadRepository, T: TokenService, H: PasswordHasher> LoginUserUseCase
     }
 
     pub async fn execute(&self, command: LoginUserCommand) -> AppResult<LoginResponse> {
-        let user = self.repository.by_email(&command.email).await?;
+        let user = self.repository.by_email(&command.email).await.map_err(|_| AppError::InvalidCredentials(
+            format!("Password or email is incorrect")
+        ))?;
 
         if !self.hasher.verify(&command.password, &user.password_hash) {
             return Err(AppError::InvalidCredentials(format!(

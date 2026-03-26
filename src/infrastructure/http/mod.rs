@@ -11,7 +11,7 @@ use crate::application::workers::notification_worker::notification_worker;
 use crate::domain::events::DomainEvents;
 use crate::infrastructure::http::middlewares::log_middleware::LogMiddleware;
 use crate::infrastructure::mailer::lettre_smtp::{LettreSMTPMailer, MailerConfig};
-use crate::infrastructure::renderer::HandlebarsRenderer;
+use crate::infrastructure::renderer::{HandlebarsRenderer, InlineCssRenderer};
 use crate::infrastructure::security::document_encryption::AppDocumentEncryption;
 
 use salvo::logging::Logger as SalvoLogger;
@@ -70,7 +70,11 @@ async fn create_app_state(tx: mpsc::UnboundedSender<DomainEvents>) -> Arc<State>
         starttls: smtp_starttls,
         auth: smtp_auth,
     });
-    let renderer = HandlebarsRenderer::new(template_path);
+
+    // base renderer
+    let core_renderer = HandlebarsRenderer::new(template_path);
+    // inline CSS renderer
+    let renderer = InlineCssRenderer::new(core_renderer);
     let notification_handler = NotificationHandler::new(Box::new(mailer), Box::new(renderer));
 
     Arc::new(State {
