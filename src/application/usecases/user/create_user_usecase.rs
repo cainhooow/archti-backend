@@ -1,5 +1,4 @@
 use crate::domain::{
-    builders::user_builder::UserBuilder, entities::user::User,
     repositories::user_repository_interface::UserRepository,
 };
 use std::sync::Arc;
@@ -35,14 +34,15 @@ impl<U: UserRepository> CreateUserUseCase<U> {
             .hash(&command.password)
             .map_err(|err| AppError::EncryptionError(err.to_string()))?;
 
-        let new_user = UserBuilder::new()
-            .email(command.email)
-            .full_name(command.full_name)
-            .password_hash(hashed_password)
-            .phone(command.phone)
-            .build();
+        let new_user = User::register(
+            command.email,
+            hashed_password,
+            command.full_name,
+            command.phone,
+        )
+        .map_err(AppError::Bad)?;
 
-        let user = self.user_repository.save(&new_user).await?;
+        let user = self.user_repository.create(&new_user).await?;
 
         Ok(user)
     }

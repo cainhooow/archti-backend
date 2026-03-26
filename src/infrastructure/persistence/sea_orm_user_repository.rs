@@ -1,10 +1,9 @@
-use crate::infrastructure::entities::user;
-use crate::domain::entities::user::{NewUser, User};
+use crate::domain::entities::user::{User};
 use crate::domain::exceptions::RepositoryError;
+use crate::infrastructure::entities::user;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter,
-    QuerySelect,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QuerySelect,
 };
 use std::str::FromStr;
 use std::sync::Arc;
@@ -55,15 +54,15 @@ impl UserRepository for SeaOrmUserRepository {
         }
     }
 
-    async fn save(&self, user: &NewUser) -> Result<User, RepositoryError> {
+    async fn create(&self, user: &User) -> Result<User, RepositoryError> {
         let new_user = user::ActiveModel {
             id: Set(Uuid::new_v4()),
             email: Set(user.email.clone()),
             full_name: Set(user.full_name.clone()),
             phone: Set(user.phone.clone()),
-            status_key: Set(user.status_key.clone()),
+            status_key: Set(user.status_key.as_str().to_string().clone()),
             is_super_admin: Set(user.is_super_admin),
-            password_hash: Set(user.password.clone()),
+            password_hash: Set(user.password_hash.clone()),
             ..Default::default()
         };
 
@@ -89,7 +88,7 @@ impl UserRepository for SeaOrmUserRepository {
             password_hash: Set(user.password_hash.clone()),
             full_name: Set(user.full_name.clone()),
             phone: Set(user.phone.clone()),
-            status_key: Set(user.status_key.clone()),
+            status_key: Set(user.status_key.as_str().to_string().clone()),
             updated_at: Set(chrono::Local::now().naive_local()),
             ..Default::default()
         };
