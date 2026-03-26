@@ -1,16 +1,16 @@
 use crate::domain::notifications::EmailMessage;
 
-pub struct PasswordForgotMail {
+pub struct PasswordChangedNotification {
     pub name: String,
 }
 
-impl EmailMessage for PasswordForgotMail {
+impl EmailMessage for PasswordChangedNotification {
     fn template(&self) -> &str {
-        "auth/password_forgot"
+        "auth/password_changed"
     }
 
     fn subject(&self) -> &str {
-        "Password Forgot"
+        "Password Changed"
     }
 
     fn data(&self) -> serde_json::Value {

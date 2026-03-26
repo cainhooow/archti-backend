@@ -4,3 +4,4 @@ pub mod queries;
 pub mod services;
 pub mod usecases;
 pub mod handlers;
+pub mod workers;

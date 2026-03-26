@@ -1,11 +1,11 @@
 use crate::domain::notifications::EmailMessage;
 
-pub struct PasswordResetMail {
+pub struct PasswordResetNotification {
     pub name: String,
     pub link: String,
 }
 
-impl EmailMessage for PasswordResetMail {
+impl EmailMessage for PasswordResetNotification {
     fn template(&self) -> &str {
         "auth/password_reset"
     }

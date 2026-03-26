@@ -7,6 +7,8 @@ use crate::application::handlers::NotificationHandler;
 use crate::application::ports::document_encryption::DocumentEncryption;
 use crate::application::ports::password_hasher::PasswordHasher;
 use crate::application::ports::token_service::TokenService;
+use crate::application::workers::notification_worker::notification_worker;
+use crate::domain::events::DomainEvents;
 use crate::infrastructure::http::middlewares::log_middleware::LogMiddleware;
 use crate::infrastructure::mailer::lettre_smtp::{LettreSMTPMailer, MailerConfig};
 use crate::infrastructure::renderer::HandlebarsRenderer;
@@ -16,6 +18,7 @@ use salvo::logging::Logger as SalvoLogger;
 use salvo::prelude::*;
 use sea_orm::DatabaseConnection;
 use std::{env, sync::Arc};
+use tokio::sync::mpsc;
 
 pub mod middlewares;
 
@@ -27,9 +30,10 @@ pub struct State {
     pub auth_service: Arc<dyn TokenService>,
     pub cookie_service: Arc<CookieService>,
     pub notifications: Arc<NotificationHandler>,
+    pub sender: mpsc::UnboundedSender<DomainEvents>,
 }
 
-async fn create_app_state() -> Arc<State> {
+async fn create_app_state(tx: mpsc::UnboundedSender<DomainEvents>) -> Arc<State> {
     let connection = estabilish_connection().await;
     let jwt_secret = env::var("JWT_SECRET").expect("JWT_AUTH is not defined in .env");
 
@@ -53,6 +57,7 @@ async fn create_app_state() -> Arc<State> {
         auth_service: Arc::new(JwtAuthService::new(jwt_secret)),
         cookie_service: Arc::new(CookieService::new()),
         notifications: Arc::new(notification_handler),
+        sender: tx,
     })
 }
 
@@ -68,8 +73,13 @@ fn create_router(state: Arc<State>) -> Router {
 pub async fn http_server_init() {
     tracing_subscriber::fmt::init();
 
+    let (tx, rx) = mpsc::unbounded_channel::<DomainEvents>();
+    let state = create_app_state(tx).await;
+    // email worker
+    let handler = state.notifications.clone();
+    tokio::spawn(async move { notification_worker(rx, handler).await });
+
     let acceptor = TcpListener::new("0.0.0.0:7231").bind().await;
-    let state = create_app_state().await;
     let router = create_router(state);
 
     Server::new(acceptor).serve(router).await;
