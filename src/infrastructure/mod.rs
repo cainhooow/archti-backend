@@ -7,3 +7,4 @@ pub mod persistence;
 pub mod security;
 pub mod services;
 pub mod mailer;
+pub mod renderer;
