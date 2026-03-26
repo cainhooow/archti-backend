@@ -48,8 +48,8 @@ pub async fn register_handler(
             {
                 Ok(user) => {
                     if let Err(err) = state.sender.send(DomainEvents::UserRegistered {
-                            email: user.email.clone(),
-                            name: user.full_name.clone(),
+                            email: user.email().to_string().clone(),
+                            name: user.full_name().to_string().clone(),
                         }) {
                         error!(%err, "failed to queue welcome notification");
                     }

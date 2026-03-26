@@ -1,7 +1,7 @@
+use crate::domain::entities::user::User;
 use chrono::NaiveDateTime;
 use garde::Validate;
 use serde::{Deserialize, Serialize};
-use crate::domain::entities::user::User;
 
 #[derive(Serialize, Deserialize, Validate)]
 pub struct UserRequest {
@@ -38,15 +38,15 @@ pub struct UserResource {
 impl From<User> for UserResource {
     fn from(value: User) -> Self {
         Self {
-            id: value.id,
-            email: value.email,
-            full_name: value.full_name,
-            phone: value.phone,
-            status_key: value.status_key.as_str().to_string(),
-            is_super_admin: value.is_super_admin,
-            last_login_at: value.last_login_at,
-            created_at: value.created_at,
-            updated_at: value.updated_at,
+            id: value.id().map(str::to_string),
+            email: value.email().to_string(),
+            full_name: value.full_name().to_string(),
+            phone: value.phone().map(str::to_string),
+            status_key: value.status().as_str().to_string(),
+            is_super_admin: value.is_super_admin(),
+            last_login_at: value.last_login_at(),
+            created_at: value.created_at(),
+            updated_at: value.updated_at(),
         }
     }
 }
@@ -54,15 +54,15 @@ impl From<User> for UserResource {
 impl From<&User> for UserResource {
     fn from(value: &User) -> Self {
         Self {
-            id: value.id.clone(),
-            email: value.email.clone(),
-            full_name: value.full_name.clone(),
-            phone: value.phone.clone(),
-            status_key: value.status_key.as_str().to_string().clone(),
-            is_super_admin: value.is_super_admin,
-            last_login_at: value.last_login_at,
-            created_at: value.created_at,
-            updated_at: value.updated_at,
+            id: value.id().map(str::to_string),
+            email: value.email().to_string(),
+            full_name: value.full_name().to_string(),
+            phone: value.phone().map(str::to_string),
+            status_key: value.status().as_str().to_string(),
+            is_super_admin: value.is_super_admin(),
+            last_login_at: value.last_login_at(),
+            created_at: value.created_at(),
+            updated_at: value.updated_at(),
         }
     }
 }

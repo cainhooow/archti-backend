@@ -8,6 +8,20 @@ pub enum UserStatus {
     DeleteRequest,
 }
 
+#[derive(Debug, Clone)]
+pub struct User {
+    id: Option<String>,
+    email: String,
+    password_hash: String,
+    full_name: String,
+    phone: Option<String>,
+    status_key: UserStatus,
+    is_super_admin: bool,
+    last_login_at: Option<NaiveDateTime>,
+    created_at: Option<NaiveDateTime>,
+    updated_at: Option<NaiveDateTime>,
+}
+
 impl UserStatus {
     pub fn as_str(&self) -> &str {
         match self {
@@ -33,20 +47,6 @@ impl TryFrom<&str> for UserStatus {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct User {
-    pub id: Option<String>,
-    pub email: String,
-    pub password_hash: String,
-    pub full_name: String,
-    pub phone: Option<String>,
-    pub status_key: UserStatus,
-    pub is_super_admin: bool,
-    pub last_login_at: Option<NaiveDateTime>,
-    pub created_at: Option<NaiveDateTime>,
-    pub updated_at: Option<NaiveDateTime>,
-}
-
 impl User {
     pub fn register(
         email: String,
@@ -70,6 +70,32 @@ impl User {
             created_at: None,
             updated_at: None,
         })
+    }
+    
+    pub fn restore(
+        id: String,
+        email: String,
+        password_hash: String,
+        full_name: String,
+        phone: Option<String>,
+        status_key: UserStatus,
+        is_super_admin: bool,
+        last_login_at: Option<NaiveDateTime>,
+        created_at: Option<NaiveDateTime>,
+        updated_at: Option<NaiveDateTime>,
+    ) -> Self {
+        Self {
+            id: Some(id),
+            email,
+            password_hash,
+            full_name,
+            phone,
+            status_key,
+            is_super_admin,
+            last_login_at,
+            created_at,
+            updated_at,
+        }
     }
 
     pub fn activate(&mut self, now: NaiveDateTime) -> Result<(), String> {
@@ -120,11 +146,39 @@ impl User {
         &self.email
     }
 
+    pub fn password_hash(&self) -> &str {
+        &self.password_hash
+    }
+
+    pub fn full_name(&self) -> &str {
+        &self.full_name
+    }
+
+    pub fn phone(&self) -> Option<&str> {
+        self.phone.as_deref()
+    }
+
+    pub fn is_super_admin(&self) -> bool {
+        self.is_super_admin
+    }
+
+    pub fn last_login_at(&self) -> Option<NaiveDateTime> {
+        self.last_login_at
+    }
+
     pub fn status(&self) -> &UserStatus {
         &self.status_key
     }
 
     pub fn is_active(&self) -> bool {
         self.status_key == UserStatus::Active
+    }
+
+    pub fn updated_at(&self) -> Option<NaiveDateTime> {
+        self.updated_at
+    }
+
+    pub fn created_at(&self) -> Option<NaiveDateTime> {
+        self.created_at
     }
 }

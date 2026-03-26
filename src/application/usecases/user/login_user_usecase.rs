@@ -40,13 +40,13 @@ impl<R: UserReadRepository, T: TokenService, H: PasswordHasher> LoginUserUseCase
             format!("Password or email is incorrect")
         ))?;
 
-        if !self.hasher.verify(&command.password, &user.password_hash) {
+        if !self.hasher.verify(&command.password, &user.password_hash()) {
             return Err(AppError::InvalidCredentials(format!(
                 "Password or email is incorrect"
             )));
         }
 
-        let user_id = user.id.as_ref().unwrap();
+        let user_id = user.id().unwrap();
 
         let access_token = self
             .token_service

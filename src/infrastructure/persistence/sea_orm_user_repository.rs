@@ -40,12 +40,12 @@ impl CreateUserRepository for SeaOrmUserRepository {
     async fn create(&self, user: &User) -> Result<User, RepositoryError> {
         let model = user::ActiveModel {
             id: Set(Uuid::new_v4()),
-            email: Set(user.email.clone()),
-            full_name: Set(user.full_name.clone()),
-            phone: Set(user.phone.clone()),
-            status_key: Set(user.status_key.as_str().to_string().clone()),
-            is_super_admin: Set(user.is_super_admin),
-            password_hash: Set(user.password_hash.clone()),
+            email: Set(user.email().to_string().clone()),
+            full_name: Set(user.full_name().to_string().clone()),
+            phone: Set(user.phone().as_deref().map(|p| p.to_string()).clone()),
+            status_key: Set(user.status().as_str().to_string().clone()),
+            is_super_admin: Set(user.is_super_admin()),
+            password_hash: Set(user.password_hash().to_string().clone()),
             ..Default::default()
         };
 
