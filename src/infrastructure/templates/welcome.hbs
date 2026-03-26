@@ -1,4 +1,29 @@
 {{#> layouts/base }}
-    <h1>Hello, {{name}}!</h1>
-    <p>You have successfully registered on our platform; now, check out the best plans we have to offer on our page.</p>
+    <p class="eyebrow">Account created</p>
+    <h1 class="title">Welcome, {{name}}.</h1>
+    <p class="text">
+        Your registration was completed successfully, and your account is now ready for the next steps inside the platform.
+    </p>
+    <p class="text">
+        From now on, you can follow updates, features, and important communications through this channel.
+    </p>
+
+    <div class="panel">
+        <div class="panel-inner">
+            <table role="presentation" width="100%">
+                <tr class="row">
+                    <td class="label-cell">Name</td>
+                    <td class="value-cell">{{name}}</td>
+                </tr>
+                <tr class="row">
+                    <td class="label-cell">Status</td>
+                    <td class="value-cell">Registration completed successfully</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <p class="note">
+        If this registration was not made by you, we recommend contacting support as soon as possible.
+    </p>
 {{/layouts/base}}
