@@ -6,10 +6,18 @@ use crate::{
             token_service::{TokenOutput, TokenService},
         },
     },
-    domain::{entities::user::User, repositories::user_repository_interface::UserReadRepository},
+    domain::{
+        entities::user::User,
+        repositories::user_repository_interface::{UserReadRepository, UserUpdateRepository},
+    },
 };
 
-pub struct LoginUserUseCase<R: UserReadRepository, T: TokenService, H: PasswordHasher> {
+pub struct LoginUserUseCase<R, T, H>
+where
+    R: UserReadRepository + UserUpdateRepository,
+    T: TokenService,
+    H: PasswordHasher,
+{
     repository: R,
     token_service: T,
     hasher: H,
@@ -26,7 +34,12 @@ pub struct LoginResponse {
     pub refresh_token: TokenOutput,
 }
 
-impl<R: UserReadRepository, T: TokenService, H: PasswordHasher> LoginUserUseCase<R, T, H> {
+impl<R, T, H> LoginUserUseCase<R, T, H>
+where
+    R: UserReadRepository + UserUpdateRepository,
+    T: TokenService,
+    H: PasswordHasher,
+{
     pub fn new(repository: R, token_service: T, hasher: H) -> Self {
         Self {
             repository,
@@ -36,9 +49,11 @@ impl<R: UserReadRepository, T: TokenService, H: PasswordHasher> LoginUserUseCase
     }
 
     pub async fn execute(&self, command: LoginUserCommand) -> AppResult<LoginResponse> {
-        let user = self.repository.by_email(&command.email).await.map_err(|_| AppError::InvalidCredentials(
-            format!("Password or email is incorrect")
-        ))?;
+        let mut user = self
+            .repository
+            .by_email(&command.email)
+            .await
+            .map_err(|_| AppError::InvalidCredentials(format!("Password or email is incorrect")))?;
 
         if !self.hasher.verify(&command.password, &user.password_hash()) {
             return Err(AppError::InvalidCredentials(format!(
@@ -46,8 +61,11 @@ impl<R: UserReadRepository, T: TokenService, H: PasswordHasher> LoginUserUseCase
             )));
         }
 
-        let user_id = user.id().unwrap();
+        user.record_login(chrono::Local::now().naive_local())
+            .map_err(AppError::Bad)?;
+        let user = self.repository.update(&user).await?;
 
+        let user_id = user.id().unwrap();
         let access_token = self
             .token_service
             .generate_access_token(user_id)
@@ -57,7 +75,7 @@ impl<R: UserReadRepository, T: TokenService, H: PasswordHasher> LoginUserUseCase
                     err.to_string()
                 ))
             })?;
-        
+
         let refresh_token = self
             .token_service
             .generate_refresh_token(user_id)

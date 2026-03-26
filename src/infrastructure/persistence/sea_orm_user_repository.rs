@@ -10,7 +10,7 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 use crate::domain::repositories::user_repository_interface::{
-    CreateUserRepository, UserReadRepository,
+    CreateUserRepository, UserReadRepository, UserUpdateRepository,
 };
 
 pub struct SeaOrmUserRepository {
@@ -50,6 +50,27 @@ impl CreateUserRepository for SeaOrmUserRepository {
         };
 
         match model.insert(&*self.conn).await {
+            Ok(data) => Ok(User::from(data)),
+            Err(e) => Err(RepositoryError::Generic(e.to_string())),
+        }
+    }
+}
+
+#[async_trait::async_trait]
+impl UserUpdateRepository for SeaOrmUserRepository {
+    async fn update(&self, user: &User) -> Result<User, RepositoryError> {
+        let model = user::ActiveModel {
+            id: Set(Uuid::from_str(user.id().as_deref().unwrap()).map_err(|_| RepositoryError::NotFound)?),
+            email: Set(user.email().to_string().clone()),
+            full_name: Set(user.full_name().to_string().clone()),
+            phone: Set(user.phone().as_deref().map(|p| p.to_string()).clone()),
+            status_key: Set(user.status().as_str().to_string().clone()),
+            is_super_admin: Set(user.is_super_admin()),
+            password_hash: Set(user.password_hash().to_string().clone()),
+            ..Default::default()
+        };
+
+        match model.update(&*self.conn).await {
             Ok(data) => Ok(User::from(data)),
             Err(e) => Err(RepositoryError::Generic(e.to_string())),
         }

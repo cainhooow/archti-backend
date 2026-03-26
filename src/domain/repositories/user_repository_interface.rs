@@ -12,6 +12,7 @@ pub trait UserReadRepository: Send + Sync {
     async fn by_email(&self, email: &str) -> Result<User, RepositoryError>;
 }
 
+#[async_trait::async_trait]
 pub trait UserUpdateRepository: Send + Sync {
     async fn update(&self, user: &User) -> Result<User, RepositoryError>;
 }
