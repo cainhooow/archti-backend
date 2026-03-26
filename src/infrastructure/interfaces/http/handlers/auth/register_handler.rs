@@ -8,6 +8,7 @@ use crate::{
         exceptions::{AppError, AppResult},
         usecases::user::create_user_usecase::{CreateUserCommand, CreateUserUseCase},
     },
+    domain::events::DomainEvents,
     infrastructure::{
         http::State,
         interfaces::http::resources::{
@@ -17,6 +18,7 @@ use crate::{
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
 };
+use tracing::error;
 
 #[handler]
 pub async fn register_handler(
@@ -45,6 +47,13 @@ pub async fn register_handler(
                 .await
             {
                 Ok(user) => {
+                    if let Err(err) = state.sender.send(DomainEvents::UserRegistered {
+                            email: user.email.clone(),
+                            name: user.full_name.clone(),
+                        }) {
+                        error!(%err, "failed to queue welcome notification");
+                    }
+
                     res.render(DataResponse::success(UserResource::from(user)));
                     return Ok(());
                 }

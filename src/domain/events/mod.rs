@@ -1,5 +1,6 @@
 pub mod user_events;
 
+#[derive(Debug)]
 pub enum DomainEvents {
     UserRegistered {
         email: String,

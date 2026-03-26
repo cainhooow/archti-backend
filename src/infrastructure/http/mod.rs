@@ -17,8 +17,9 @@ use crate::infrastructure::security::document_encryption::AppDocumentEncryption;
 use salvo::logging::Logger as SalvoLogger;
 use salvo::prelude::*;
 use sea_orm::DatabaseConnection;
-use std::{env, sync::Arc};
+use std::{env, path::PathBuf, sync::Arc};
 use tokio::sync::mpsc;
+use tracing_subscriber::EnvFilter;
 
 pub mod middlewares;
 
@@ -33,21 +34,43 @@ pub struct State {
     pub sender: mpsc::UnboundedSender<DomainEvents>,
 }
 
+fn parse_bool_env(key: &str) -> Option<bool> {
+    env::var(key).ok().map(|value| {
+        matches!(
+            value.trim().to_ascii_lowercase().as_str(),
+            "1" | "true" | "yes" | "on"
+        )
+    })
+}
+
 async fn create_app_state(tx: mpsc::UnboundedSender<DomainEvents>) -> Arc<State> {
     let connection = estabilish_connection().await;
     let jwt_secret = env::var("JWT_SECRET").expect("JWT_AUTH is not defined in .env");
+    let app_env = env::var("APP_ENV").unwrap_or_else(|_| "dev".to_string());
 
     let smtp_host = env::var("SMTP_HOST").expect("SMTP_HOST is not defined in .env");
-    let smtp_port = env::var("SMTP_PORT").expect("SMTP_PORT is not defined in .env");
+    let smtp_port = env::var("SMTP_PORT")
+        .expect("SMTP_PORT is not defined in .env")
+        .parse::<u16>()
+        .expect("SMTP_PORT must be a valid port number");
     let smtp_username = env::var("SMTP_USERNAME").expect("SMTP_USERNAME is not defined in .env");
     let smtp_password = env::var("SMTP_PASSWORD").expect("SMTP_PASSWORD is not defined in .env");
+    let smtp_starttls = parse_bool_env("SMTP_STARTTLS").unwrap_or(app_env != "dev");
+    let smtp_auth = parse_bool_env("SMTP_AUTH").unwrap_or(app_env != "dev");
+    let template_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("src")
+        .join("infrastructure")
+        .join("templates");
 
     let mailer = LettreSMTPMailer::new(MailerConfig {
-        server: smtp_host,
+        host: smtp_host,
+        port: smtp_port,
         user: smtp_username,
         password: smtp_password,
+        starttls: smtp_starttls,
+        auth: smtp_auth,
     });
-    let renderer = HandlebarsRenderer::new("../templates");
+    let renderer = HandlebarsRenderer::new(template_path);
     let notification_handler = NotificationHandler::new(Box::new(mailer), Box::new(renderer));
 
     Arc::new(State {
@@ -71,7 +94,12 @@ fn create_router(state: Arc<State>) -> Router {
 }
 
 pub async fn http_server_init() {
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt::fmt()
+        .with_env_filter(
+            EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "archgti_backend=debug,salvo=info".into()),
+        )
+        .init();
 
     let (tx, rx) = mpsc::unbounded_channel::<DomainEvents>();
     let state = create_app_state(tx).await;

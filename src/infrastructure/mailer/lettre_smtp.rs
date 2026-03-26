@@ -1,6 +1,8 @@
 use std::env;
 
 use lettre::{
+    Address,
+    message::{Mailbox, SinglePart, header::ContentType},
     AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
     transport::smtp::authentication::Credentials,
 };
@@ -12,18 +14,30 @@ pub struct LettreSMTPMailer {
 }
 
 pub struct MailerConfig {
-    pub server: String,
+    pub host: String,
+    pub port: u16,
     pub user: String,
     pub password: String,
+    pub starttls: bool,
+    pub auth: bool,
 }
 
 impl LettreSMTPMailer {
     pub fn new(config: MailerConfig) -> Self {
-        let credentials = Credentials::new(config.user, config.password);
-        let transport = AsyncSmtpTransport::<Tokio1Executor>::starttls_relay(&config.server)
-            .unwrap()
-            .credentials(credentials)
-            .build();
+        let mut transport_builder = if config.starttls {
+            AsyncSmtpTransport::<Tokio1Executor>::starttls_relay(&config.host)
+                .expect("Failed to configure SMTP STARTTLS transport")
+        } else {
+            AsyncSmtpTransport::<Tokio1Executor>::builder_dangerous(&config.host)
+        }
+        .port(config.port);
+
+        if config.auth && !config.user.trim().is_empty() {
+            transport_builder =
+                transport_builder.credentials(Credentials::new(config.user, config.password));
+        }
+
+        let transport = transport_builder.build();
         Self { transport }
     }
 }
@@ -31,22 +45,30 @@ impl LettreSMTPMailer {
 #[async_trait::async_trait]
 impl Mailer for LettreSMTPMailer {
     async fn send(&self, to: &str, subject: &str, body: String) -> Result<(), String> {
-        // mail_from_name example: {app_name}
         let mail_from_name =
-            env::var("SMTP_MAIL_FROM").expect("SMTP_MAIL_FROM is not defined in .env");
+            env::var("SMTP_MAIL_FROM").or_else(|_| env::var("APP_NAME")).map_err(|_| {
+                "SMTP_MAIL_FROM or APP_NAME must be defined in .env".to_string()
+            })?;
 
-        // mail_from example: {app_name} <{smtp_username}>
-        let mail_from = env::var("SMTP_USERNAME").expect("SMTP_USERNAME is not defined in .env");
+        let mail_from = env::var("SMTP_USERNAME")
+            .map_err(|_| "SMTP_USERNAME is not defined in .env".to_string())?;
 
-        // mail_from example: {app_name} <{smtp_username}>
-        let mail_from = format!("{} <{}>", mail_from_name, mail_from);
+        let from_mailbox = Mailbox::new(
+            Some(mail_from_name),
+            mail_from
+                .parse::<Address>()
+                .map_err(|err| err.to_string())?,
+        );
 
-        // mail example: from: {app_name} <{smtp_username}>, to: {to}, subject: {subject}, body: {body}
         let mail = Message::builder()
-            .from(mail_from.parse().unwrap())
-            .to(to.parse().unwrap())
+            .from(from_mailbox)
+            .to(to.parse::<Mailbox>().map_err(|err| err.to_string())?)
             .subject(subject)
-            .body(body)
+            .singlepart(
+                SinglePart::builder()
+                    .header(ContentType::TEXT_HTML)
+                    .body(body),
+            )
             .map_err(|e| e.to_string())?;
 
         self.transport.send(mail).await.map_err(|e| e.to_string())?;

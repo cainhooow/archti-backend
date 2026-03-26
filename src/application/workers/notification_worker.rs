@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use tokio::sync::mpsc;
+use tracing::{error, info};
 
 use crate::{
     application::handlers::NotificationHandler,
@@ -20,25 +21,34 @@ pub async fn notification_worker(
     handler: Arc<NotificationHandler>,
 ) {
     while let Some(event) = receiver.recv().await {
+        info!(?event, "notification worker received event");
         match event {
             DomainEvents::UserRegistered { email, name } => {
                 let msg = WelcomeNotification { name: name };
-                let _ = handler.send(&email, msg).await;
+                if let Err(err) = handler.send(&email, msg).await {
+                    error!(%email, %err, "failed to send welcome notification");
+                }
             }
             DomainEvents::PasswordReset { email, name, link } => {
                 let msg = PasswordResetNotification {
                     name: name,
                     link: link,
                 };
-                let _ = handler.send(&email, msg).await;
+                if let Err(err) = handler.send(&email, msg).await {
+                    error!(%email, %err, "failed to send password reset notification");
+                }
             }
             DomainEvents::PasswordForgot { email, name } => {
                 let msg = PasswordForgotNotification { name: name };
-                let _ = handler.send(&email, msg).await;
+                if let Err(err) = handler.send(&email, msg).await {
+                    error!(%email, %err, "failed to send password forgot notification");
+                }
             }
             DomainEvents::PasswordChanged { email, name } => {
                 let msg = PasswordChangedNotification { name: name };
-                let _ = handler.send(&email, msg).await;
+                if let Err(err) = handler.send(&email, msg).await {
+                    error!(%email, %err, "failed to send password changed notification");
+                }
             }
         }
     }
