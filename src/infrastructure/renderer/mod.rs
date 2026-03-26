@@ -2,7 +2,7 @@ use std::path::Path;
 
 use handlebars::{DirectorySourceOptionsBuilder, Handlebars};
 
-use crate::domain::services::renderer_service::TemplateRenderer;
+use crate::application::ports::template_renderer::TemplateRenderer;
 
 pub struct HandlebarsRenderer {
     registry: Handlebars<'static>,

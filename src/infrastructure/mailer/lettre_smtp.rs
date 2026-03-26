@@ -7,7 +7,7 @@ use lettre::{
     transport::smtp::authentication::Credentials,
 };
 
-use crate::domain::services::mailer_service::Mailer;
+use crate::application::ports::mailer::Mailer;
 
 pub struct LettreSMTPMailer {
     transport: AsyncSmtpTransport<Tokio1Executor>,

@@ -1,5 +1,3 @@
-use crate::domain::services::{mailer_service::Mailer, renderer_service::TemplateRenderer};
-
 // pub struct NotificationService {
 //     mailer: Box<dyn Mailer>,
 //     renderer: Box<dyn TemplateRenderer>,
