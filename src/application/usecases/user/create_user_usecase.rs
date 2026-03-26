@@ -1,6 +1,4 @@
-use crate::domain::{
-    repositories::user_repository_interface::UserRepository,
-};
+use crate::domain::{entities::user::User, repositories::user_repository_interface::UserRepository};
 use std::sync::Arc;
 
 use crate::application::{
