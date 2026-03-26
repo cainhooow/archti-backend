@@ -1,4 +1,7 @@
-use crate::domain::{entities::user::User, repositories::user_repository_interface::UserRepository};
+use crate::domain::{
+    entities::user::User,
+    repositories::user_repository_interface::{CreateUserRepository, UserRepository},
+};
 use std::sync::Arc;
 
 use crate::application::{
@@ -6,7 +9,7 @@ use crate::application::{
     ports::password_hasher::PasswordHasher,
 };
 
-pub struct CreateUserUseCase<U: UserRepository> {
+pub struct CreateUserUseCase<U: CreateUserRepository> {
     user_repository: U,
     hasher: Arc<dyn PasswordHasher>,
 }
@@ -18,7 +21,7 @@ pub struct CreateUserCommand {
     pub phone: Option<String>,
 }
 
-impl<U: UserRepository> CreateUserUseCase<U> {
+impl<U: CreateUserRepository> CreateUserUseCase<U> {
     pub fn new(user_repository: U, hasher: Arc<dyn PasswordHasher>) -> Self {
         Self {
             user_repository,
@@ -27,6 +30,10 @@ impl<U: UserRepository> CreateUserUseCase<U> {
     }
 
     pub async fn execute(&self, command: CreateUserCommand) -> AppResult<User> {
+        if self.user_repository.exists_by_email(&command.email).await? {
+            return Err(AppError::Bad("User already exists".to_string()));
+        }
+
         let hashed_password = self
             .hasher
             .hash(&command.password)
