@@ -13,18 +13,12 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Permission::Table)
                     .col(uuid(Permission::Id).primary_key())
+                    .col(string_len(Permission::Code, 100).unique_key().not_null())
+                    .col(string_len(Permission::Module, 60).not_null())
+                    .col(string_len(Permission::Action, 60).not_null())
+                    .col(text(Permission::Description).null())
                     .col(
-                        ColumnDef::new(Permission::Code)
-                            .string_len(100)
-                            .unique_key()
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(Permission::Module).string_len(60).not_null())
-                    .col(ColumnDef::new(Permission::Action).string_len(60).not_null())
-                    .col(ColumnDef::new(Permission::Description).text().null())
-                    .col(
-                        ColumnDef::new(Permission::CreatedAt)
-                            .timestamp()
+                        timestamp(Permission::CreatedAt)
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
