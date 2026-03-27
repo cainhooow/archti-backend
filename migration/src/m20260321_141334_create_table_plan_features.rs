@@ -12,25 +12,11 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(PlanFeature::Table)
                     .col(uuid(PlanFeature::Id).primary_key())
-                    .col(
-                        ColumnDef::new(PlanFeature::Code)
-                            .string_len(100)
-                            .unique_key()
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(PlanFeature::Name).string_len(120).not_null())
-                    .col(
-                        ColumnDef::new(PlanFeature::Module)
-                            .string_len(60)
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(PlanFeature::Description).text().null())
-                    .col(
-                        ColumnDef::new(PlanFeature::CreatedAt)
-                            .timestamp()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
-                    )
+                    .col(string_len(PlanFeature::Code, 100).unique_key().not_null())
+                    .col(string_len(PlanFeature::Name, 120).not_null())
+                    .col(string_len(PlanFeature::Module, 60).not_null())
+                    .col(text(PlanFeature::Description).null())
+                    .col(timestamp(PlanFeature::CreatedAt).default(Expr::current_timestamp()).not_null())
                     .to_owned(),
             )
             .await
