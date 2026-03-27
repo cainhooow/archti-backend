@@ -1,5 +1,7 @@
 use salvo::prelude::*;
 
+use crate::infrastructure::interfaces::http::handlers::auth::password_forgot_handler::forgot_password_handler;
+
 pub fn router() -> Router {
-    Router::new()
+    Router::new().post(forgot_password_handler)
 }

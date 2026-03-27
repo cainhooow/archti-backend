@@ -46,7 +46,7 @@ pub async fn auth_refresh_handler(
     if let Some(refresh_cookie) = req.cookies().get(COOKIE_REFRESH_NAME) {
         let token = refresh_cookie.value();
         let user_id = auth_service.get_refresh_sub(token)?;
-
+        
         FindUserByIdQuery::new(repository)
             .handle(FindUserById {
                 id: user_id.clone(),
