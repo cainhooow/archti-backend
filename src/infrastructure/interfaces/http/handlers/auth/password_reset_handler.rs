@@ -22,7 +22,7 @@ pub struct PasswordResetResponse {
 }
 
 #[handler]
-pub async fn handle_password_reset(
+pub async fn password_reset_handler(
     req: &mut Request,
     depot: &mut Depot,
     res: &mut Response,
