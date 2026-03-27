@@ -4,10 +4,13 @@ use salvo::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    application::exceptions::{AppError, AppResult},
+    application::{
+        exceptions::{AppError, AppResult},
+        queries::user::find_user_by_id::{FindUserById, FindUserByIdQuery},
+    },
     infrastructure::{
-        http::{State},
-        interfaces::http::resources::DataResponse,
+        http::State, interfaces::http::resources::DataResponse,
+        persistence::sea_orm_user_repository::SeaOrmUserRepository,
         services::cookie_service::COOKIE_REFRESH_NAME,
     },
 };
@@ -38,10 +41,18 @@ pub async fn auth_refresh_handler(
 
     let auth_service = state.auth_service.clone();
     let cookie_service = state.cookie_service.clone();
+    let repository = SeaOrmUserRepository::new(state.db.clone());
 
     if let Some(refresh_cookie) = req.cookies().get(COOKIE_REFRESH_NAME) {
         let token = refresh_cookie.value();
         let user_id = auth_service.get_refresh_sub(token)?;
+
+        FindUserByIdQuery::new(repository)
+            .handle(FindUserById {
+                id: user_id.clone(),
+            })
+            .await
+            .map_err(|err| AppError::Bad(err.to_string()))?;
 
         let new_access = auth_service.renew_token(token)?;
         let new_refresh = auth_service.generate_refresh_token(&user_id)?;
@@ -61,6 +72,13 @@ pub async fn auth_refresh_handler(
         match req.parse_body::<RefreshRequest>().await {
             Ok(request) => {
                 let user_id = auth_service.get_refresh_sub(&request.refresh_token)?;
+
+                FindUserByIdQuery::new(repository)
+                    .handle(FindUserById {
+                        id: user_id.clone(),
+                    })
+                    .await
+                    .map_err(|err| AppError::Bad(err.to_string()))?;
 
                 let new_access = auth_service.renew_token(&request.refresh_token)?;
                 let new_refresh = auth_service.generate_refresh_token(&user_id)?;
