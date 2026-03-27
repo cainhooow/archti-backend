@@ -28,9 +28,7 @@ impl MigrationTrait for Migration {
                     .col(uuid(CompanyMembership::Id).primary_key())
                     .col(uuid(CompanyMembership::CompanyId).unique_key().not_null())
                     .col(uuid(CompanyMembership::UserId).unique_key().not_null())
-                    .col(
-                        string_len(CompanyMembership::MembershipType).not_null()
-                    )
+                    .col(string_len(CompanyMembership::MembershipType, 40).not_null())
                     .col(
                         string_len(CompanyMembership::StatusKey, 40)
                             .default("active")
@@ -40,8 +38,16 @@ impl MigrationTrait for Migration {
                     .col(timestamp(CompanyMembership::InvitedAt).null())
                     .col(timestamp(CompanyMembership::AcceptedAt).null())
                     .col(timestamp(CompanyMembership::LastSeenAt).null())
-                    .col(timestamp(CompanyMembership::CreatedAt).default(Expr::current_timestamp()).not_null())
-                    .col(timestamp(CompanyMembership::UpdatedAt).default(Expr::current_timestamp()).not_null())
+                    .col(
+                        timestamp(CompanyMembership::CreatedAt)
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
+                    .col(
+                        timestamp(CompanyMembership::UpdatedAt)
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
                     .foreign_key(&mut company_fk)
                     .foreign_key(&mut user_fk)
                     .to_owned(),
