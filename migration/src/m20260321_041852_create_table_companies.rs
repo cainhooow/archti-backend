@@ -11,62 +11,24 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Company::Table)
                     .col(uuid(Company::Id).primary_key())
+                    .col(string_len(Company::LegalName, 160).not_null())
+                    .col(string_len(Company::TradeName, 160).not_null())
+                    .col(string_len(Company::ServiceType, 120).not_null())
+                    .col(string_len(Company::Document, 32).unique_key().not_null())
+                    .col(string_len(Company::ContactName, 120).not_null())
+                    .col(string_len(Company::PrimaryPhone, 32).null())
+                    .col(string_len(Company::LicensePlan, 80).not_null())
+                    .col(string_len(Company::LicenseStatus, 80).not_null())
+                    .col(integer(Company::LicenseDaysRemaining).not_null())
+                    .col(string_len(Company::OperationalBase, 120).not_null())
+                    .col(text(Company::Notes).null())
                     .col(
-                        ColumnDef::new(Company::LegalName)
-                            .string_len(160)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Company::TradeName)
-                            .string_len(160)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Company::ServiceType)
-                            .string_len(120)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Company::Document)
-                            .string_len(32)
-                            .unique_key()
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Company::ContactName)
-                            .string_len(120)
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(Company::PrimaryPhone).string_len(32).null())
-                    .col(
-                        ColumnDef::new(Company::LicensePlan)
-                            .string_len(80)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Company::LicenseStatus)
-                            .string_len(80)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Company::LicenseDaysRemaining)
-                            .integer()
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Company::OperationalBase)
-                            .string_len(120)
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(Company::Notes).text().null())
-                    .col(
-                        ColumnDef::new(Company::CreatedAt)
-                            .timestamp()
+                        timestamp(Company::CreatedAt)
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
                     .col(
-                        ColumnDef::new(Company::UpdatedAt)
+                        timestamp(Company::UpdatedAt)
                             .timestamp()
                             .default(Expr::current_timestamp())
                             .not_null(),
@@ -77,7 +39,6 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
         manager
             .drop_table(Table::drop().table(Company::Table).to_owned())
             .await
@@ -85,7 +46,6 @@ impl MigrationTrait for Migration {
 }
 
 #[derive(DeriveIden)]
-#[sea_orm(table_name = "companies")]
 pub enum Company {
     Id,
     Table,
