@@ -10,8 +10,6 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-
         let mut company_fk = ForeignKey::create()
             .from(CompanyMembership::Table, CompanyMembership::CompanyId)
             .to(Company::Table, Company::Id)

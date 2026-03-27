@@ -19,19 +19,13 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Role::Table)
                     .col(uuid(Role::Id).primary_key())
-                    .col(ColumnDef::new(Role::CompanyId).uuid().not_null())
-                    .col(ColumnDef::new(Role::Code).string_len(60).not_null())
-                    .col(ColumnDef::new(Role::Name).string_len(120).not_null())
-                    .col(ColumnDef::new(Role::Description).text().null())
+                    .col(uuid(Role::CompanyId).not_null())
+                    .col(string_len(Role::Code, 60).not_null())
+                    .col(string_len(Role::Name, 120).not_null())
+                    .col(text(Role::Description).null())
+                    .col(boolean(Role::IsSystemRole).default(true).not_null())
                     .col(
-                        ColumnDef::new(Role::IsSystemRole)
-                            .boolean()
-                            .default(true)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Role::CreatedAt)
-                            .timestamp()
+                        timestamp(Role::CreatedAt)
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
