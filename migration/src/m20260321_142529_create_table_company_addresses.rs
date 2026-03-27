@@ -21,60 +21,18 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(CompanyAddress::Table)
                     .col(uuid(CompanyAddress::Id).primary_key())
-                    .col(ColumnDef::new(CompanyAddress::CompanyId).uuid().not_null())
-                    .col(
-                        ColumnDef::new(CompanyAddress::StreetLine)
-                            .string_len(180)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyAddress::Street)
-                            .string_len(120)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyAddress::District)
-                            .string_len(120)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyAddress::City)
-                            .string_len(120)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyAddress::State)
-                            .string_len(32)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyAddress::ZipCode)
-                            .string_len(16)
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(CompanyAddress::Number).string_len(16).null())
-                    .col(
-                        ColumnDef::new(CompanyAddress::Complement)
-                            .string_len(120)
-                            .null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyAddress::Reference)
-                            .string_len(180)
-                            .null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyAddress::IsPrimary)
-                            .boolean()
-                            .default(true)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyAddress::CreatedAt)
-                            .timestamp()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
-                    )
+                    .col(uuid(CompanyAddress::CompanyId).not_null())
+                    .col(string_len(CompanyAddress::StreetLine, 180).not_null())
+                    .col(string_len(CompanyAddress::Street, 120).not_null())
+                    .col(string_len(CompanyAddress::District, 120).not_null())
+                    .col(string_len(CompanyAddress::City, 120).not_null())
+                    .col(string_len(CompanyAddress::State, 32).not_null())
+                    .col(string_len(CompanyAddress::ZipCode, 16).not_null())
+                    .col(string_len(CompanyAddress::Number, 16).null())
+                    .col(string_len(CompanyAddress::Complement, 120).null())
+                    .col(string_len(CompanyAddress::Reference, 180).null())
+                    .col(boolean(CompanyAddress::IsPrimary).default(true).not_null())
+                    .col(timestamp(CompanyAddress::CreatedAt).default(Expr::current_timestamp()).not_null()
                     .foreign_key(&mut company_fk)
                     .to_owned(),
             )
