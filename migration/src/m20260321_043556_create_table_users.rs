@@ -12,41 +12,20 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(User::Table)
                     .col(uuid(User::Id).primary_key())
+                    .col(string_len(User::Email, 160).not_null())
+                    .col(string_len(User::PasswordHash, 255).not_null())
+                    .col(string_len(User::FullName, 160).not_null())
+                    .col(string_len(User::Phone, 32).null())
+                    .col(string_len(User::StatusKey, 40).default("active").not_null())
+                    .col(boolean(User::IsSuperAdmin).default(false).not_null())
+                    .col(timestamp(User::LastLoginAt).null())
                     .col(
-                        ColumnDef::new(User::Email)
-                            .unique_key()
-                            .string_len(160)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(User::PasswordHash)
-                            .string_len(255)
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(User::FullName).string_len(160).not_null())
-                    .col(ColumnDef::new(User::Phone).string_len(32).null())
-                    .col(
-                        ColumnDef::new(User::StatusKey)
-                            .string_len(40)
-                            .default("active")
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(User::IsSuperAdmin)
-                            .boolean()
-                            .default(false)
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(User::LastLoginAt).timestamp().null())
-                    .col(
-                        ColumnDef::new(User::CreatedAt)
-                            .timestamp()
+                        timestamp(User::CreatedAt)
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
                     .col(
-                        ColumnDef::new(User::UpdatedAt)
-                            .timestamp()
+                        timestamp(User::UpdatedAt)
                             .default(Expr::current_timestamp())
                             .not_null(),
                     )
@@ -56,7 +35,6 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
         manager
             .drop_table(Table::drop().table(User::Table).to_owned())
             .await
