@@ -48,6 +48,7 @@ pub mod m20260322_054414_create_table_service_order_checklist_attachments;
 pub mod m20260322_054948_create_table_order_items;
 pub mod m20260322_055652_create_table_order_payments;
 pub mod m20260322_060115_create_table_order_timeline_events;
+mod m20260327_025720_create_table_password_reset_tokens;
 pub use sea_orm_migration::prelude::*;
 
 pub struct Migrator;
@@ -106,6 +107,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260322_054948_create_table_order_items::Migration),
             Box::new(m20260322_055652_create_table_order_payments::Migration),
             Box::new(m20260322_060115_create_table_order_timeline_events::Migration),
+            Box::new(m20260327_025720_create_table_password_reset_tokens::Migration),
         ]
     }
 }
