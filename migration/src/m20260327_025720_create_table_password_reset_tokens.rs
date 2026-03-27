@@ -22,6 +22,7 @@ impl MigrationTrait for Migration {
                     .col(uuid(PasswordResetToken::Id).primary_key())
                     .col(string(PasswordResetToken::Token).not_null())
                     .col(string(PasswordResetToken::UserId).not_null())
+                    .col(timestamp(PasswordResetToken::ExpiresAt).not_null())
                     .foreign_key(&mut user_fk)
                     .to_owned(),
             )
@@ -41,4 +42,5 @@ pub enum PasswordResetToken {
     Table,
     Token,
     UserId,
+    ExpiresAt
 }
