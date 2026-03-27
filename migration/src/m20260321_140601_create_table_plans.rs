@@ -12,38 +12,13 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Plan::Table)
                     .col(uuid(Plan::Id).primary_key())
-                    .col(
-                        ColumnDef::new(Plan::Code)
-                            .string_len(60)
-                            .unique_key()
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(Plan::Name).string_len(120).not_null())
-                    .col(ColumnDef::new(Plan::Description).text().null())
-                    .col(
-                        ColumnDef::new(Plan::StatusKey)
-                            .string_len(40)
-                            .default("active")
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Plan::IsPublic)
-                            .boolean()
-                            .default(true)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Plan::CreatedAt)
-                            .timestamp()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Plan::UpdatedAt)
-                            .timestamp()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
-                    )
+                    .col(string_len(Plan::Code, 60).unique_key().not_null())
+                    .col(string_len(Plan::Name, 120).not_null())
+                    .col(text(Plan::Description).null())
+                    .col(string_len(Plan::StatusKey, 40).default("active").not_null())
+                    .col(boolean(Plan::IsPublic).default(true).not_null())
+                    .col(timestamp(Plan::CreatedAt).default(Expr::current_timestamp()).not_null())
+                    .col(timestamp(Plan::UpdatedAt).default(Expr::current_timestamp()).not_null())
                     .to_owned(),
             )
             .await
