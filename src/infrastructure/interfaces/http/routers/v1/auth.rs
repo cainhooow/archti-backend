@@ -15,5 +15,7 @@ pub fn router() -> Router {
         .push(Router::with_path("login").push(login::router()))
         .push(Router::with_path("logout").push(logout::router()))
         .push(Router::with_path("refresh-token").push(refresh_token::router()))
+        .push(Router::with_path("forgot-password").push(forgot_password::router()))
+        .push(Router::with_path("reset-password").push(reset_password::router()))
         .push(Router::with_path("me").push(me::router()))
 }

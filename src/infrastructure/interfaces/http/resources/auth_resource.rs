@@ -14,6 +14,12 @@ pub struct AuthRequest {
     pub password: String,
 }
 
+#[derive(Serialize, Deserialize, Validate)]
+pub struct PasswordResetRequest {
+    #[garde(email)]
+    pub email: String,
+}
+
 #[derive(Serialize)]
 pub struct AuthResource {
     pub user: UserResource,
