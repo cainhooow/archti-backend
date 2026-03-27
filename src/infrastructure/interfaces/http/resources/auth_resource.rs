@@ -15,9 +15,15 @@ pub struct AuthRequest {
 }
 
 #[derive(Serialize, Deserialize, Validate)]
-pub struct PasswordResetRequest {
+pub struct PasswordForgotRequest {
     #[garde(email)]
     pub email: String,
+}
+
+#[derive(Serialize, Deserialize, Validate)]
+pub struct PasswordResetRequest {
+    #[garde(ascii, length(min = 8))]
+    pub password: String,
 }
 
 #[derive(Serialize)]

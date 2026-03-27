@@ -11,7 +11,7 @@ use crate::{
         },
     },
     infrastructure::{
-        http::State, interfaces::http::resources::auth_resource::PasswordResetRequest,
+        http::State, interfaces::http::resources::auth_resource::PasswordForgotRequest,
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
 };
@@ -31,9 +31,9 @@ pub async fn forgot_password_handler(
     let sender = state.sender.clone();
     let frontend_url = env::var("FRONTEND_URL").expect("FRONTEND_URL is not defined in .env");
 
-    match req.parse_body::<PasswordResetRequest>().await {
+    match req.parse_body::<PasswordForgotRequest>().await {
         Ok(validator) => {
-            _ = validator.validate();
+            _ = validator.validate()?;
             let email = validator.email;
 
             RequestPasswordResetUseCase::new(repository, token_service, sender, frontend_url)
