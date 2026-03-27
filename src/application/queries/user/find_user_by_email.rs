@@ -1,23 +1,29 @@
-// use crate::application::exceptions::AppResult;
-// use crate::domain::{
-//     entities::user::User, repositories::user_repository_interface::UserRepository,
-// };
+use crate::domain::{
+    entities::user::User, exceptions::RepositoryError,
+    repositories::user_repository_interface::UserReadRepository,
+};
 
-// pub struct FindUserByEmail {
-//     pub email: String,
-// }
+pub struct FindUserByEmail {
+    pub email: String,
+}
 
-// pub struct FindUserByEmailQuery<R: UserRepository> {
-//     repository: R,
-// }
+pub struct FindUserByEmailQuery<R>
+where
+    R: UserReadRepository,
+{
+    repository: R,
+}
 
-// impl<R: UserRepository> FindUserByEmailQuery<R> {
-//     pub fn new(repository: R) -> Self {
-//         Self { repository }
-//     }
+impl<R> FindUserByEmailQuery<R>
+where
+    R: UserReadRepository,
+{
+    pub fn new(repository: R) -> Self {
+        Self { repository }
+    }
 
-//     pub async fn handle(&self, query: FindUserByEmail) -> AppResult<User> {
-//         let user = self.repository.find_by_email(&query.email).await?;
-//         Ok(user)
-//     }
-// }
+    pub async fn handle(&self, query: FindUserByEmail) -> Result<User, RepositoryError> {
+        let user = self.repository.by_email(&query.email).await?;
+        Ok(user)
+    }
+}

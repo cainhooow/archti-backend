@@ -6,6 +6,7 @@ use super::services::{cookie_service::CookieService, jwt_auth_service::JwtAuthSe
 use crate::application::handlers::NotificationHandler;
 use crate::application::ports::document_encryption::DocumentEncryption;
 use crate::application::ports::password_hasher::PasswordHasher;
+use crate::application::ports::password_reset_token_service::PasswordResetTokenService;
 use crate::application::ports::token_service::TokenService;
 use crate::application::workers::notification_worker::notification_worker;
 use crate::domain::events::DomainEvents;
@@ -13,6 +14,7 @@ use crate::infrastructure::http::middlewares::log_middleware::LogMiddleware;
 use crate::infrastructure::mailer::lettre_smtp::{LettreSMTPMailer, MailerConfig};
 use crate::infrastructure::renderer::{HandlebarsRenderer, InlineCssRenderer};
 use crate::infrastructure::security::document_encryption::AppDocumentEncryption;
+use crate::infrastructure::services::password_reset_token_service::JwtPasswordResetTokenService;
 
 use salvo::logging::Logger as SalvoLogger;
 use salvo::prelude::*;
@@ -29,6 +31,7 @@ pub struct State {
     pub hasher: Arc<dyn PasswordHasher>,
     pub crypto: Arc<dyn DocumentEncryption>,
     pub auth_service: Arc<dyn TokenService>,
+    pub reset_token_service: Arc<dyn PasswordResetTokenService>,
     pub cookie_service: Arc<CookieService>,
     pub notifications: Arc<NotificationHandler>,
     pub sender: mpsc::UnboundedSender<DomainEvents>,
@@ -47,7 +50,7 @@ async fn create_app_state(tx: mpsc::UnboundedSender<DomainEvents>) -> Arc<State>
     let connection = estabilish_connection().await;
     let jwt_secret = env::var("JWT_SECRET").expect("JWT_AUTH is not defined in .env");
     let app_env = env::var("APP_ENV").unwrap_or_else(|_| "dev".to_string());
-    
+
     let smtp_host = env::var("SMTP_HOST").expect("SMTP_HOST is not defined in .env");
     let smtp_port = env::var("SMTP_PORT")
         .expect("SMTP_PORT is not defined in .env")
@@ -57,7 +60,7 @@ async fn create_app_state(tx: mpsc::UnboundedSender<DomainEvents>) -> Arc<State>
     let smtp_password = env::var("SMTP_PASSWORD").expect("SMTP_PASSWORD is not defined in .env");
     let smtp_starttls = parse_bool_env("SMTP_STARTTLS").unwrap_or(app_env != "dev");
     let smtp_auth = parse_bool_env("SMTP_AUTH").unwrap_or(app_env != "dev");
-    
+
     let template_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("src")
         .join("infrastructure")
@@ -82,7 +85,8 @@ async fn create_app_state(tx: mpsc::UnboundedSender<DomainEvents>) -> Arc<State>
         db: Arc::new(connection),
         hasher: Arc::new(Argon2HasherImpl::default()),
         crypto: Arc::new(AppDocumentEncryption::default()),
-        auth_service: Arc::new(JwtAuthService::new(jwt_secret)),
+        auth_service: Arc::new(JwtAuthService::new(jwt_secret.clone())),
+        reset_token_service: Arc::new(JwtPasswordResetTokenService::new(jwt_secret)),
         cookie_service: Arc::new(CookieService::new()),
         notifications: Arc::new(notification_handler),
         sender: tx,
