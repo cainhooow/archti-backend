@@ -28,61 +28,22 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(CompanyMembership::Table)
                     .col(uuid(CompanyMembership::Id).primary_key())
+                    .col(uuid(CompanyMembership::CompanyId).unique_key().not_null())
+                    .col(uuid(CompanyMembership::UserId).unique_key().not_null())
                     .col(
-                        ColumnDef::new(CompanyMembership::CompanyId)
-                            .uuid()
-                            .unique_key()
-                            .not_null(),
+                        string_len(CompanyMembership::MembershipType).not_null()
                     )
                     .col(
-                        ColumnDef::new(CompanyMembership::UserId)
-                            .uuid()
-                            .unique_key()
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyMembership::MembershipType)
-                            .string_len(40)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyMembership::StatusKey)
-                            .string_len(40)
+                        string_len(CompanyMembership::StatusKey, 40)
                             .default("active")
                             .not_null(),
                     )
-                    .col(
-                        ColumnDef::new(CompanyMembership::DisplayName)
-                            .string()
-                            .null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyMembership::InvitedAt)
-                            .timestamp()
-                            .null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyMembership::AcceptedAt)
-                            .timestamp()
-                            .null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyMembership::LastSeenAt)
-                            .timestamp()
-                            .null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyMembership::CreatedAt)
-                            .timestamp()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(CompanyMembership::UpdatedAt)
-                            .timestamp()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
-                    )
+                    .col(string(CompanyMembership::DisplayName).null())
+                    .col(timestamp(CompanyMembership::InvitedAt).null())
+                    .col(timestamp(CompanyMembership::AcceptedAt).null())
+                    .col(timestamp(CompanyMembership::LastSeenAt).null())
+                    .col(timestamp(CompanyMembership::CreatedAt).default(Expr::current_timestamp()).not_null())
+                    .col(timestamp(CompanyMembership::UpdatedAt).default(Expr::current_timestamp()).not_null())
                     .foreign_key(&mut company_fk)
                     .foreign_key(&mut user_fk)
                     .to_owned(),
