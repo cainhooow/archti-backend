@@ -8,8 +8,6 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-
         let mut company_fk = ForeignKey::create()
             .from(CompanyAddress::Table, CompanyAddress::CompanyId)
             .to(Company::Table, Company::Id)
@@ -32,7 +30,11 @@ impl MigrationTrait for Migration {
                     .col(string_len(CompanyAddress::Complement, 120).null())
                     .col(string_len(CompanyAddress::Reference, 180).null())
                     .col(boolean(CompanyAddress::IsPrimary).default(true).not_null())
-                    .col(timestamp(CompanyAddress::CreatedAt).default(Expr::current_timestamp()).not_null()
+                    .col(
+                        timestamp(CompanyAddress::CreatedAt)
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
                     .foreign_key(&mut company_fk)
                     .to_owned(),
             )
