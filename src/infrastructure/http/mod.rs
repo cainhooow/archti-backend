@@ -16,9 +16,11 @@ use crate::infrastructure::renderer::{HandlebarsRenderer, InlineCssRenderer};
 use crate::infrastructure::security::document_encryption::AppDocumentEncryption;
 use crate::infrastructure::services::password_reset_token_service::JwtPasswordResetTokenService;
 
+use salvo::cache::{Cache, MokaStore, RequestIssuer};
 use salvo::logging::Logger as SalvoLogger;
 use salvo::prelude::*;
 use sea_orm::DatabaseConnection;
+use std::time::Duration;
 use std::{env, path::PathBuf, sync::Arc};
 use tokio::sync::mpsc;
 use tracing_subscriber::EnvFilter;
@@ -95,6 +97,13 @@ async fn create_app_state(tx: mpsc::UnboundedSender<DomainEvents>) -> Arc<State>
 
 fn create_router(state: Arc<State>) -> Router {
     Router::with_path("api")
+        .hoop(Cache::new(
+            MokaStore::builder()
+                .time_to_live(Duration::from_secs(60))
+                .build(),
+            RequestIssuer::default(),
+        ))
+        .hoop(Timeout::new(Duration::from_secs(40)))
         .hoop(affix_state::inject(state))
         .hoop(SalvoLogger::new())
         .hoop(AppMiddleware)
