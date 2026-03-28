@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{Duration, NaiveDateTime};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum UserStatus {
@@ -18,6 +18,7 @@ pub struct User {
     status_key: UserStatus,
     is_super_admin: bool,
     last_login_at: Option<NaiveDateTime>,
+    last_password_changed_at: Option<NaiveDateTime>,
     created_at: Option<NaiveDateTime>,
     updated_at: Option<NaiveDateTime>,
 }
@@ -67,11 +68,12 @@ impl User {
             status_key: UserStatus::Inactive,
             is_super_admin: false,
             last_login_at: None,
+            last_password_changed_at: None,
             created_at: None,
             updated_at: None,
         })
     }
-    
+
     pub fn restore(
         id: String,
         email: String,
@@ -81,6 +83,7 @@ impl User {
         status_key: UserStatus,
         is_super_admin: bool,
         last_login_at: Option<NaiveDateTime>,
+        last_password_changed_at: Option<NaiveDateTime>,
         created_at: Option<NaiveDateTime>,
         updated_at: Option<NaiveDateTime>,
     ) -> Self {
@@ -93,6 +96,7 @@ impl User {
             status_key,
             is_super_admin,
             last_login_at,
+            last_password_changed_at,
             created_at,
             updated_at,
         }
@@ -138,6 +142,18 @@ impl User {
         Ok(())
     }
 
+    pub fn record_last_password_change(&mut self, now: NaiveDateTime) -> Result<(), String> {
+        if let Some(last) = self.last_password_changed_at {
+            if now - last < Duration::days(7) {
+                return Err("Password change too recent".to_string());
+            }
+        }
+
+        self.last_password_changed_at = Some(now);
+        self.updated_at = Some(now);
+        Ok(())
+    }
+
     pub fn id(&self) -> Option<&str> {
         self.id.as_deref()
     }
@@ -164,6 +180,10 @@ impl User {
 
     pub fn last_login_at(&self) -> Option<NaiveDateTime> {
         self.last_login_at
+    }
+
+    pub fn last_password_changed_at(&self) -> Option<NaiveDateTime> {
+        self.last_password_changed_at
     }
 
     pub fn status(&self) -> &UserStatus {

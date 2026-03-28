@@ -1,5 +1,7 @@
 use std::sync::Arc;
 
+use chrono::NaiveDateTime;
+
 use crate::application::exceptions::AppResult;
 
 pub struct PasswordResetTokenOutput {
@@ -10,6 +12,7 @@ pub struct PasswordResetTokenOutput {
 pub trait PasswordResetTokenService: Send + Sync {
     fn generate_reset_token(&self, user_id: &str) -> AppResult<PasswordResetTokenOutput>;
     fn verify_token(&self, token: &str) -> AppResult<String>;
+    fn validate_token(&self, token: &str, last_pass_change: NaiveDateTime) -> AppResult<String>;
 }
 
 impl PasswordResetTokenService for Arc<dyn PasswordResetTokenService> {
@@ -19,5 +22,9 @@ impl PasswordResetTokenService for Arc<dyn PasswordResetTokenService> {
 
     fn verify_token(&self, token: &str) -> AppResult<String> {
         (**self).verify_token(token)
+    }
+
+    fn validate_token(&self, token: &str, last_pass_change: NaiveDateTime) -> AppResult<String> {
+        (**self).validate_token(token, last_pass_change)
     }
 }

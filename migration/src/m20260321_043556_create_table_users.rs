@@ -19,6 +19,7 @@ impl MigrationTrait for Migration {
                     .col(string_len(User::StatusKey, 40).default("active").not_null())
                     .col(boolean(User::IsSuperAdmin).default(false).not_null())
                     .col(timestamp(User::LastLoginAt).null())
+                    .col(timestamp(User::LastPasswordChangedAt).null())
                     .col(
                         timestamp(User::CreatedAt)
                             .default(Expr::current_timestamp())
@@ -53,6 +54,7 @@ pub enum User {
     StatusKey,
     IsSuperAdmin,
     LastLoginAt,
+    LastPasswordChangedAt,
     CreatedAt,
     UpdatedAt,
 }

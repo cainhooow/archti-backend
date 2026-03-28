@@ -57,8 +57,14 @@ where
             AppError::Repository(format!("Not linked user in this reset token or expired."))
         })?;
 
+        if let Some(last_password_change) = user.last_password_changed_at() {
+            self.token_service
+                .validate_token(&command.token, last_password_change)?;
+        }
+
         let hashed_password = self.hasher.hash(&command.password)?;
         user.change_password(hashed_password, chrono::Local::now().naive_local())?;
+        user.record_last_password_change(chrono::Utc::now().naive_utc())?;
 
         self.repository
             .update(&user)

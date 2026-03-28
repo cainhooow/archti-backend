@@ -68,6 +68,7 @@ impl UserUpdateRepository for SeaOrmUserRepository {
             is_super_admin: Set(user.is_super_admin()),
             password_hash: Set(user.password_hash().to_string().clone()),
             last_login_at: Set(user.last_login_at()),
+            last_password_changed_at: Set(user.last_password_changed_at()),
             ..Default::default()
         };
 

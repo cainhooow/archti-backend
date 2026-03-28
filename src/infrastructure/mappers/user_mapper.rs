@@ -12,6 +12,7 @@ impl From<UserModel> for DomainUser {
             UserStatus::try_from(value.status_key.as_str()).unwrap(),
             value.is_super_admin,
             value.last_login_at,
+            value.last_password_changed_at,
             Some(value.created_at),
             Some(value.updated_at),
         )

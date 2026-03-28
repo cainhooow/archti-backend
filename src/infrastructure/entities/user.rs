@@ -14,6 +14,7 @@ pub struct Model {
     pub status_key: String,
     pub is_super_admin: bool,
     pub last_login_at: Option<DateTime>,
+    pub last_password_changed_at: Option<DateTime>,
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }
