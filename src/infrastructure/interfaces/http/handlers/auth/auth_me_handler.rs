@@ -9,7 +9,7 @@ use crate::{
     },
     infrastructure::{
         http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
-        interfaces::http::resources::{DataResponse, user_resource::UserResource},
+        interfaces::http::resources::{DataResponse, user_resources::UserResource},
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
 };

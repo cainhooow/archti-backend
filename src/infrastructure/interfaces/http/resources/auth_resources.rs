@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     application::usecases::user::login_user_usecase::LoginResponse,
-    infrastructure::interfaces::http::resources::user_resource::UserResource,
+    infrastructure::interfaces::http::resources::user_resources::UserResource,
 };
 
 #[derive(Serialize, Deserialize, Validate)]

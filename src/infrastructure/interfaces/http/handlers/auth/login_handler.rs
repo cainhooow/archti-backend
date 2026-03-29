@@ -11,7 +11,7 @@ use crate::{
         http::State,
         interfaces::http::resources::{
             DataResponse,
-            auth_resource::{AuthRequest, AuthResource},
+            auth_resources::{AuthRequest, AuthResource},
         },
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },

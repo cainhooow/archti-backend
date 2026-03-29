@@ -1,8 +1,9 @@
 use salvo::http::{HeaderMap, HeaderValue, StatusError, header::CONTENT_TYPE};
 use serde::Serialize;
 
-pub mod auth_resource;
-pub mod user_resource;
+pub mod auth_resources;
+pub mod user_resources;
+pub mod me_resources;
 
 #[derive(Serialize)]
 pub struct DataResponse<T> {

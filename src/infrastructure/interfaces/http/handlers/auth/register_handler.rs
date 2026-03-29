@@ -12,7 +12,7 @@ use crate::{
         http::State,
         interfaces::http::resources::{
             DataResponse,
-            user_resource::{UserRequest, UserResource},
+            user_resources::{UserRequest, UserResource},
         },
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },

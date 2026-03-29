@@ -11,7 +11,7 @@ use crate::{
     },
     infrastructure::{
         http::State,
-        interfaces::http::resources::{DataResponse, auth_resource::PasswordResetRequest},
+        interfaces::http::resources::{DataResponse, auth_resources::PasswordResetRequest},
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
 };

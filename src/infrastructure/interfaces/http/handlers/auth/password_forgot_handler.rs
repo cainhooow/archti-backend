@@ -11,7 +11,7 @@ use crate::{
         },
     },
     infrastructure::{
-        http::State, interfaces::http::resources::auth_resource::PasswordForgotRequest,
+        http::State, interfaces::http::resources::auth_resources::PasswordForgotRequest,
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
 };
