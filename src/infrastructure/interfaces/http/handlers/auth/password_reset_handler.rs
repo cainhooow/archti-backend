@@ -10,7 +10,7 @@ use crate::{
         usecases::user::password_reset_usecase::{PasswordResetCommand, PasswordResetUseCase},
     },
     infrastructure::{
-        http::State,
+        http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
         interfaces::http::resources::{DataResponse, auth_resources::PasswordResetRequest},
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
@@ -35,6 +35,10 @@ pub async fn password_reset_handler(
     let token_service = state.reset_token_service.clone();
     let hasher = state.hasher.clone();
     let sender = state.sender.clone();
+    
+    if let Ok(_) = depot.get::<String>(DEPOT_KEY_ID) {
+        return Err(AppError::Unauthorized(format!("Account already connected. Un-login and try again later.")))
+    }
 
     match req.parse_body::<PasswordResetRequest>().await {
         Ok(validator) => {
