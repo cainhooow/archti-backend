@@ -1,11 +1,8 @@
 use std::sync::Arc;
 
-use crate::{
-    application::exceptions::{AppError, AppResult},
-    infrastructure::{
-        http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
-        services::cookie_service::COOKIE_SESSION_NAME,
-    },
+use crate::infrastructure::{
+    http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
+    services::cookie_service::COOKIE_SESSION_NAME,
 };
 use salvo::{
     http::{
