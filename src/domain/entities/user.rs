@@ -65,7 +65,7 @@ impl User {
             password_hash,
             full_name,
             phone,
-            status_key: UserStatus::Inactive,
+            status_key: UserStatus::Active,
             is_super_admin: false,
             last_login_at: None,
             last_password_changed_at: None,
