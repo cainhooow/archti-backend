@@ -40,7 +40,11 @@ where
         }
 
         if let Ok(_) = self.repository.first().await {
-            return Err(AppError::Unexpected("Bootstrap can only be run once. After the superadmin account is created, this command cannot be run again.".to_string()));
+            return Err(
+                AppError::Unexpected(
+                    "Bootstrap can only be run once. After the superadmin account is created, this command cannot be run again.".to_string()
+                )
+            );
         }
 
         let mut user = User::register(
