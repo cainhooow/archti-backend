@@ -47,12 +47,15 @@ where
             );
         }
 
+        let passwod_hash = self.hasher.hash(&command.password)?;
+
         let mut user = User::register(
             command.email,
-            command.password,
+            passwod_hash,
             command.full_name,
             command.phone,
         )?;
+
         user.set_admin(chrono::Local::now().naive_local())?;
 
         let user = self.repository.create(&user).await?;
