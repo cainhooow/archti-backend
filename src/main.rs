@@ -1,8 +1,4 @@
-use crate::infrastructure::http::http_server_init;
-
-mod application;
-mod domain;
-mod infrastructure;
+use archti_backend::infrastructure::http::http_server_init;
 
 #[tokio::main]
 async fn main() {
