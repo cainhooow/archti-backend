@@ -122,6 +122,16 @@ impl User {
         Ok(())
     }
 
+    pub fn set_admin(&mut self, now: NaiveDateTime) -> Result<(), String> {
+        if self.is_super_admin {
+            return Err("This user already admin".to_string());
+        }
+
+        self.is_super_admin = true;
+        self.updated_at = Some(now);
+        Ok(())
+    }
+
     pub fn change_password(&mut self, new_hash: String, now: NaiveDateTime) -> Result<(), String> {
         if new_hash.trim().is_empty() {
             return Err("Password hash cannot be empty".to_string());
