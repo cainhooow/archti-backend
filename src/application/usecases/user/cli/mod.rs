@@ -1,1 +1,1 @@
-pub mod create_user_usecase;
+pub mod bootstrap_admin_usecase;
