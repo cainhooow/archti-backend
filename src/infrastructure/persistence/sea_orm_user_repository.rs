@@ -81,6 +81,14 @@ impl UserUpdateRepository for SeaOrmUserRepository {
 
 #[async_trait::async_trait]
 impl UserReadRepository for SeaOrmUserRepository {
+    async fn first(&self) -> Result<User, RepositoryError> {
+        match user::Entity::find().one(&*self.conn).await {
+            Ok(Some(data)) => Ok(User::from(data)),
+            Ok(None) => Err(RepositoryError::NotFound),
+            Err(e) => Err(RepositoryError::Generic(e.to_string())),
+        }
+    }
+
     async fn by_id(&self, id: &str) -> Result<User, RepositoryError> {
         match user::Entity::find_by_id(Uuid::from_str(id).map_err(|_| RepositoryError::NotFound)?)
             .one(&*self.conn)
