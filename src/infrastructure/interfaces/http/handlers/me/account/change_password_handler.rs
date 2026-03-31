@@ -38,7 +38,7 @@ pub async fn change_password_handler(
 
     match req.parse_body::<ChangePasswordRequest>().await {
         Ok(validator) => {
-            _ = validator.validate();
+            _ = validator.validate()?;
 
             match ChangePasswordUseCase::new(repository, hasher, sender)
                 .execute(ChangePasswordCommand {

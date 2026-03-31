@@ -1,8 +1,9 @@
-use sea_orm::ActiveModelTrait;
+use sea_orm::{ActiveModelTrait, EntityTrait};
 use sea_orm::{ActiveValue::Set, DatabaseConnection};
 use std::sync::Arc;
 use uuid::Uuid;
 
+use crate::domain::repositories::company_repository_interface::CompanyReadRepository;
 use crate::domain::value_objects::document_vo::Document;
 use crate::domain::{
     entities::company::Company, exceptions::RepositoryError,
@@ -51,6 +52,39 @@ impl CreateCompanyRepository for SeaOrmCompanyRepository {
 
         match model.insert(&*self.conn).await {
             Ok(model) => Ok(model.try_into().map_err(RepositoryError::Generic)?),
+            Err(err) => Err(RepositoryError::Generic(err.to_string())),
+        }
+    }
+}
+
+#[async_trait::async_trait]
+impl CompanyReadRepository for SeaOrmCompanyRepository {
+    async fn all(&self) -> Result<Vec<Company>, RepositoryError> {
+        match company::Entity::find().all(&*self.conn).await {
+            Ok(data) => Ok(data
+                .into_iter()
+                .map(|model| model.try_into().map_err(RepositoryError::Generic))
+                .collect::<Result<Vec<Company>, RepositoryError>>()?),
+            Err(err) => Err(RepositoryError::Generic(err.to_string())),
+        }
+    }
+
+    async fn by_id(&self, id: &str) -> Result<Company, RepositoryError> {
+        let id = Uuid::parse_str(id).map_err(|e| RepositoryError::Generic(e.to_string()))?;
+        match company::Entity::find_by_id(id).one(&*self.conn).await {
+            Ok(Some(data)) => Ok(data.try_into().map_err(RepositoryError::Generic)?),
+            Ok(None) => Err(RepositoryError::NotFound),
+            Err(err) => Err(RepositoryError::Generic(err.to_string())),
+        }
+    }
+
+    async fn by_document(&self, document: &Document) -> Result<Company, RepositoryError> {
+        match company::Entity::find_by_document(document.as_str())
+            .one(&*self.conn)
+            .await
+        {
+            Ok(Some(data)) => Ok(data.try_into().map_err(RepositoryError::Generic)?),
+            Ok(None) => Err(RepositoryError::NotFound),
             Err(err) => Err(RepositoryError::Generic(err.to_string())),
         }
     }
