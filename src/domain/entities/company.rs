@@ -85,7 +85,7 @@ impl Company {
     }
 
     pub fn restore(
-        id: Option<String>,
+        id: String,
         legal_name: String,
         trade_name: String,
         service_type: String,
@@ -99,7 +99,7 @@ impl Company {
         updated_at: Option<NaiveDateTime>,
     ) -> Self {
         Self {
-            id,
+            id: Some(id),
             legal_name,
             trade_name,
             service_type,
@@ -119,16 +119,20 @@ impl Company {
         legal_name: String,
         now: NaiveDateTime,
     ) -> Result<bool, String> {
-        if self
-            .updated_at
-            .map_or(true, |ts| ts < now - Duration::days(30))
-        {
-            self.legal_name = legal_name;
-            self.updated_at = Some(now);
-            return Ok(true);
-        } else {
-            return Err("You can only change your legal name every 30 days.".to_string());
-        }
+        // if self
+        //     .updated_at
+        //     .map_or(true, |ts| ts < now - Duration::days(30))
+        // {
+        //     self.legal_name = legal_name;
+        //     self.updated_at = Some(now);
+        //     return Ok(true);
+        // } else {
+        //     return Err("You can only change your legal name every 30 days.".to_string());
+        // }
+        //
+        self.legal_name = legal_name;
+        self.updated_at = Some(now);
+        Ok(true)
     }
 
     pub fn change_trade_name(
@@ -140,7 +144,6 @@ impl Company {
         self.updated_at = Some(now);
         Ok(true)
     }
-    
 
     pub fn full_name(&self) -> String {
         format!("{} - {}", self.legal_name, self.trade_name)
