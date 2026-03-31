@@ -1,12 +1,14 @@
 use chrono::{Duration, NaiveDateTime};
 
+use crate::domain::value_objects::document_vo::Document;
+
 #[derive(Debug, Clone)]
 pub struct Company {
     id: Option<String>,
     legal_name: String,
     trade_name: String,
     service_type: String,
-    document: String,
+    document: Document,
     contact_name: String,
     primary_phone: String,
     secondary_phone: Option<String>,
@@ -36,13 +38,15 @@ impl Company {
             return Err("Service type is required".to_string());
         }
 
+        if contact_name.is_empty() {
+            return Err("Contact name is required".to_string());
+        }
+
         if document.is_empty() {
             return Err("Document is required".to_string());
         }
 
-        if contact_name.is_empty() {
-            return Err("Contact name is required".to_string());
-        }
+        let document = Document::parse(document)?;
 
         if primary_phone.is_empty() {
             return Err("Primary phone is required".to_string());
@@ -97,8 +101,9 @@ impl Company {
         notes: Option<String>,
         created_at: Option<NaiveDateTime>,
         updated_at: Option<NaiveDateTime>,
-    ) -> Self {
-        Self {
+    ) -> Result<Self, String> {
+        let document = Document::parse(document)?;
+        Ok(Self {
             id: Some(id),
             legal_name,
             trade_name,
@@ -111,7 +116,7 @@ impl Company {
             notes,
             created_at: created_at,
             updated_at: updated_at,
-        }
+        })
     }
 
     pub fn change_legal_name(
@@ -165,7 +170,7 @@ impl Company {
         &self.service_type
     }
 
-    pub fn document(&self) -> &str {
+    pub fn document(&self) -> &Document {
         &self.document
     }
 

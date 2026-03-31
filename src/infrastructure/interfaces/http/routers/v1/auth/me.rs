@@ -6,7 +6,5 @@ use crate::infrastructure::{
 };
 
 pub fn router() -> Router {
-    Router::new()
-        .hoop(AuthMiddleware)
-        .get(auth_me_handler)
+    Router::new().hoop(AuthMiddleware).get(auth_me_handler)
 }

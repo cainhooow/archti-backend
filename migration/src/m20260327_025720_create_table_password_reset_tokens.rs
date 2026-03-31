@@ -41,5 +41,5 @@ pub enum PasswordResetToken {
     Table,
     Token,
     UserId,
-    ExpiresAt
+    ExpiresAt,
 }

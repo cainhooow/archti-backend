@@ -8,5 +8,5 @@ pub struct ChangePasswordRequest {
     pub old_password: String,
     #[serde(rename(deserialize = "newPassword"))]
     #[garde(ascii)]
-    pub new_password: String
+    pub new_password: String,
 }

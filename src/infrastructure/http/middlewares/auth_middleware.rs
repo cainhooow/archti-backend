@@ -34,7 +34,7 @@ impl Handler for AuthMiddleware {
             }
 
             let token = parts.get(1).copied().unwrap_or("");
-            
+
             match state.auth_service.verify_token(token) {
                 Ok(claims) => {
                     depot.insert(DEPOT_KEY_ID, claims);

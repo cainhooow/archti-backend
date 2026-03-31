@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use salvo::prelude::*;
-use serde::{Serialize};
+use serde::Serialize;
 
 use crate::{
     application::exceptions::{AppError, AppResult},

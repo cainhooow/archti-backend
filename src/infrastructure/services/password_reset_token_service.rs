@@ -86,7 +86,9 @@ impl PasswordResetTokenService for JwtPasswordResetTokenService {
         }
 
         if claims.iat <= last_pass_change.and_utc().timestamp() {
-            return Err(AppError::Domain("Token already used or expired".to_string()));
+            return Err(AppError::Domain(
+                "Token already used or expired".to_string(),
+            ));
         }
 
         Ok(claims.sub)

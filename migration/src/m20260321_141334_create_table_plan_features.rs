@@ -16,7 +16,11 @@ impl MigrationTrait for Migration {
                     .col(string_len(PlanFeature::Name, 120).not_null())
                     .col(string_len(PlanFeature::Module, 60).not_null())
                     .col(text(PlanFeature::Description).null())
-                    .col(timestamp(PlanFeature::CreatedAt).default(Expr::current_timestamp()).not_null())
+                    .col(
+                        timestamp(PlanFeature::CreatedAt)
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await

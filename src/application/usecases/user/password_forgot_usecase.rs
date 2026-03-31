@@ -51,7 +51,7 @@ where
         let user_id = user
             .id()
             .ok_or_else(|| AppError::Unexpected("User without id".to_string()))?;
-        
+
         let reset = self.token_service.generate_reset_token(user_id)?;
         let link = format!("{}/reset-password?token={}", self.frontend_url, reset.token);
 

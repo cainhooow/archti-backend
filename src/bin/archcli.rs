@@ -4,8 +4,8 @@ use archti_backend::infrastructure::database::estabilish_connection;
 use sea_orm::DatabaseConnection;
 
 use crate::commands::create_admin_user::CreateAdminUserCommand;
-mod commands;
 mod cli;
+mod commands;
 
 #[tokio::main]
 async fn main() {

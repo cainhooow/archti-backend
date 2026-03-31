@@ -1,8 +1,10 @@
 use crate::domain::entities::company::Company as DomainCompany;
 use crate::infrastructure::entities::company::Model as CompanyModel;
 
-impl From<CompanyModel> for DomainCompany {
-    fn from(model: CompanyModel) -> Self {
+impl TryFrom<CompanyModel> for DomainCompany {
+    type Error = String;
+
+    fn try_from(model: CompanyModel) -> Result<Self, Self::Error> {
         DomainCompany::restore(
             model.id.to_string(),
             model.legal_name,

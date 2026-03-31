@@ -1,9 +1,8 @@
 use std::env;
 
 use lettre::{
-    Address,
+    Address, AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
     message::{Mailbox, SinglePart, header::ContentType},
-    AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
     transport::smtp::authentication::Credentials,
 };
 
@@ -45,10 +44,9 @@ impl LettreSMTPMailer {
 #[async_trait::async_trait]
 impl Mailer for LettreSMTPMailer {
     async fn send(&self, to: &str, subject: &str, body: String) -> Result<(), String> {
-        let mail_from_name =
-            env::var("SMTP_MAIL_FROM").or_else(|_| env::var("APP_NAME")).map_err(|_| {
-                "SMTP_MAIL_FROM or APP_NAME must be defined in .env".to_string()
-            })?;
+        let mail_from_name = env::var("SMTP_MAIL_FROM")
+            .or_else(|_| env::var("APP_NAME"))
+            .map_err(|_| "SMTP_MAIL_FROM or APP_NAME must be defined in .env".to_string())?;
 
         let mail_from = env::var("SMTP_USERNAME")
             .map_err(|_| "SMTP_USERNAME is not defined in .env".to_string())?;

@@ -17,8 +17,16 @@ impl MigrationTrait for Migration {
                     .col(text(Plan::Description).null())
                     .col(string_len(Plan::StatusKey, 40).default("active").not_null())
                     .col(boolean(Plan::IsPublic).default(true).not_null())
-                    .col(timestamp(Plan::CreatedAt).default(Expr::current_timestamp()).not_null())
-                    .col(timestamp(Plan::UpdatedAt).default(Expr::current_timestamp()).not_null())
+                    .col(
+                        timestamp(Plan::CreatedAt)
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
+                    .col(
+                        timestamp(Plan::UpdatedAt)
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await

@@ -95,12 +95,12 @@ impl TokenService for JwtAuthService {
 
         Ok(claims.sub)
     }
-    
+
     fn get_refresh_sub(&self, token: &str) -> AppResult<String> {
         let claims = self
             .decode_token(token)
             .map_err(|err| AppError::Unexpected(err.to_string()))?;
-        
+
         if claims.typ != REFRESH_TOKEN_NAME {
             return Err(AppError::Unexpected("Invalid token type".to_string()));
         }

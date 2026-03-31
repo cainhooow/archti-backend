@@ -11,7 +11,8 @@ use crate::{
         },
     },
     infrastructure::{
-        http::{State, middlewares::auth_middleware::DEPOT_KEY_ID}, interfaces::http::resources::auth_resources::PasswordForgotRequest,
+        http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
+        interfaces::http::resources::auth_resources::PasswordForgotRequest,
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
 };
@@ -30,9 +31,11 @@ pub async fn forgot_password_handler(
     let token_service = state.reset_token_service.clone();
     let sender = state.sender.clone();
     let frontend_url = env::var("FRONTEND_URL").expect("FRONTEND_URL is not defined in .env");
-    
+
     if let Ok(_) = depot.get::<String>(DEPOT_KEY_ID) {
-        return Err(AppError::Unauthorized(format!("Account already connected. Un-login and try again later.")))
+        return Err(AppError::Unauthorized(format!(
+            "Account already connected. Un-login and try again later."
+        )));
     }
 
     match req.parse_body::<PasswordForgotRequest>().await {

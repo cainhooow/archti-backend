@@ -27,11 +27,11 @@ impl TokenService for Arc<dyn TokenService> {
     fn verify_token(&self, token: &str) -> AppResult<String> {
         (**self).verify_token(token)
     }
-    
+
     fn get_refresh_sub(&self, token: &str) -> AppResult<String> {
         (**self).get_refresh_sub(token)
     }
-    
+
     fn renew_token(&self, token: &str) -> AppResult<TokenOutput> {
         (**self).renew_token(token)
     }

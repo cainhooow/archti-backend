@@ -35,9 +35,11 @@ pub async fn password_reset_handler(
     let token_service = state.reset_token_service.clone();
     let hasher = state.hasher.clone();
     let sender = state.sender.clone();
-    
+
     if let Ok(_) = depot.get::<String>(DEPOT_KEY_ID) {
-        return Err(AppError::Unauthorized(format!("Account already connected. Un-login and try again later.")))
+        return Err(AppError::Unauthorized(format!(
+            "Account already connected. Un-login and try again later."
+        )));
     }
 
     match req.parse_body::<PasswordResetRequest>().await {

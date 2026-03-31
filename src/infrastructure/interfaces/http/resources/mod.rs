@@ -2,6 +2,7 @@ use salvo::http::{HeaderMap, HeaderValue, StatusError, header::CONTENT_TYPE};
 use serde::Serialize;
 
 pub mod auth_resources;
+pub mod company_resources;
 pub mod me_resources;
 pub mod message_resource;
 pub mod user_resources;
@@ -38,7 +39,6 @@ where
                 let mut headers_map = HeaderMap::new();
                 headers_map.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
                 res.set_headers(headers_map);
-
                 let _ = res.write_body(bytes);
             }
             Err(err) => {
