@@ -22,7 +22,16 @@ impl SeaOrmCompanyRepository {
 
 #[async_trait::async_trait]
 impl CreateCompanyRepository for SeaOrmCompanyRepository {
-    async fn exists_by_document(&self, document: &str) -> Result<bool, RepositoryError> {}
+    async fn exists_by_document(&self, document: &str) -> Result<bool, RepositoryError> {
+        match company::Entity::find_by_document(document)
+            .one(&*self.conn)
+            .await
+        {
+            Ok(Some(_)) => Ok(true),
+            Ok(None) => Ok(false),
+            Err(err) => Err(RepositoryError::Generic(err.to_string())),
+        }
+    }
 
     async fn create(&self, company: &Company) -> Result<Company, RepositoryError> {
         let model = company::ActiveModel {
