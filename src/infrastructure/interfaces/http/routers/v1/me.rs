@@ -11,4 +11,5 @@ pub fn router() -> Router {
     Router::new()
         .hoop(AuthMiddleware)
         .push(Router::with_path("account").push(account::router()))
+        .push(Router::with_path("company").push(company::router()))
 }
