@@ -16,10 +16,8 @@ impl MigrationTrait for Migration {
                     .col(string_len(Company::ServiceType, 120).not_null())
                     .col(string_len(Company::Document, 32).unique_key().not_null())
                     .col(string_len(Company::ContactName, 120).not_null())
-                    .col(string_len(Company::PrimaryPhone, 32).null())
-                    .col(string_len(Company::LicensePlan, 80).not_null())
-                    .col(string_len(Company::LicenseStatus, 80).not_null())
-                    .col(integer(Company::LicenseDaysRemaining).not_null())
+                    .col(string_len(Company::PrimaryPhone, 32).not_null())
+                    .col(string_len(Company::SecondaryPhone, 32).null())
                     .col(string_len(Company::OperationalBase, 120).not_null())
                     .col(text(Company::Notes).null())
                     .col(
@@ -56,9 +54,6 @@ pub enum Company {
     ContactName,
     PrimaryPhone,
     SecondaryPhone,
-    LicensePlan,
-    LicenseStatus,
-    LicenseDaysRemaining,
     OperationalBase,
     Notes,
     CreatedAt,

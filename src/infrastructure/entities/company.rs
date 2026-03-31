@@ -13,9 +13,7 @@ pub struct Model {
     pub document: String,
     pub contact_name: String,
     pub primary_phone: String,
-    pub license_plan: String,
-    pub license_status: String,
-    pub license_days_remaining: i32,
+    pub secondary_phone: Option<String>,
     pub operational_base: String,
     #[sea_orm(column_type = "Text", nullable)]
     pub notes: Option<String>,
