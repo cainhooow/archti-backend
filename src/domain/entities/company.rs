@@ -124,17 +124,6 @@ impl Company {
         legal_name: String,
         now: NaiveDateTime,
     ) -> Result<bool, String> {
-        // if self
-        //     .updated_at
-        //     .map_or(true, |ts| ts < now - Duration::days(30))
-        // {
-        //     self.legal_name = legal_name;
-        //     self.updated_at = Some(now);
-        //     return Ok(true);
-        // } else {
-        //     return Err("You can only change your legal name every 30 days.".to_string());
-        // }
-        //
         self.legal_name = legal_name;
         self.updated_at = Some(now);
         Ok(true)
@@ -146,6 +135,50 @@ impl Company {
         now: NaiveDateTime,
     ) -> Result<bool, String> {
         self.trade_name = trade_name;
+        self.updated_at = Some(now);
+        Ok(true)
+    }
+
+    pub fn change_service_type(
+        &mut self,
+        service_type: String,
+        now: NaiveDateTime,
+    ) -> Result<bool, String> {
+        if service_type.is_empty() {
+            return Err("Service type cannot be empty".to_string());
+        }
+    
+        self.service_type = service_type;
+        self.updated_at = Some(now);
+        Ok(true)
+    }
+
+    pub fn change_contact_name(
+        &mut self,
+        contact_name: String,
+        now: NaiveDateTime,
+    ) -> Result<bool, String> {
+        self.contact_name = contact_name;
+        self.updated_at = Some(now);
+        Ok(true)
+    }
+
+    pub fn change_primary_phone(
+        &mut self,
+        primary_phone: String,
+        now: NaiveDateTime,
+    ) -> Result<bool, String> {
+        self.primary_phone = primary_phone;
+        self.updated_at = Some(now);
+        Ok(true)
+    }
+
+    pub fn change_operational_base(
+        &mut self,
+        operational_base: String,
+        now: NaiveDateTime,
+    ) -> Result<bool, String> {
+        self.operational_base = operational_base;
         self.updated_at = Some(now);
         Ok(true)
     }
