@@ -1,5 +1,5 @@
 use sea_orm::ActiveValue::Set;
-use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait};
+use sea_orm::{ActiveModelTrait, DatabaseConnection};
 use std::str::FromStr;
 use std::sync::Arc;
 use uuid::Uuid;

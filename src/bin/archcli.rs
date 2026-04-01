@@ -1,7 +1,6 @@
-use std::{process::exit, sync::Arc};
+use std::sync::Arc;
 
 use archti_backend::infrastructure::database::estabilish_connection;
-use sea_orm::DatabaseConnection;
 
 use crate::commands::create_admin_user::CreateAdminUserCommand;
 mod cli;
@@ -15,11 +14,11 @@ async fn main() {
     let args: Vec<String> = std::env::args().collect();
 
     let command = args.get(1).map(String::as_str);
-    let params = args.iter().skip(2).cloned().collect::<Vec<_>>();
+    let _params = args.iter().skip(2).cloned().collect::<Vec<_>>();
 
     match command {
         Some("create-admin-user") => {
-            if let Err(err) = CreateAdminUserCommand::new(db, params).handle().await {
+            if let Err(err) = CreateAdminUserCommand::new(db).handle().await {
                 eprintln!("Error: {err}");
                 std::process::exit(1);
             }

@@ -14,12 +14,11 @@ use crate::cli::prompt::{confirm, prompt, prompt_optional};
 
 pub struct CreateAdminUserCommand {
     pub db: Arc<DatabaseConnection>,
-    pub args: Vec<String>,
 }
 
 impl CreateAdminUserCommand {
-    pub fn new(db: Arc<DatabaseConnection>, args: Vec<String>) -> Self {
-        Self { db, args }
+    pub fn new(db: Arc<DatabaseConnection>) -> Self {
+        Self { db }
     }
 
     pub async fn handle(&self) -> Result<(), String> {
