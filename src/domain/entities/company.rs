@@ -124,6 +124,10 @@ impl Company {
         legal_name: String,
         now: NaiveDateTime,
     ) -> Result<bool, String> {
+        if legal_name.is_empty() {
+            return Err("Legal name cannot be empty".to_string());
+        }
+
         self.legal_name = legal_name;
         self.updated_at = Some(now);
         Ok(true)
@@ -134,6 +138,10 @@ impl Company {
         trade_name: String,
         now: NaiveDateTime,
     ) -> Result<bool, String> {
+        if trade_name.is_empty() {
+            return Err("Trade name cannot be empty".to_string());
+        }
+
         self.trade_name = trade_name;
         self.updated_at = Some(now);
         Ok(true)
@@ -158,6 +166,10 @@ impl Company {
         contact_name: String,
         now: NaiveDateTime,
     ) -> Result<bool, String> {
+        if contact_name.is_empty() {
+            return Err("Contact name cannot be empty".to_string());
+        }
+
         self.contact_name = contact_name;
         self.updated_at = Some(now);
         Ok(true)
@@ -168,6 +180,10 @@ impl Company {
         primary_phone: String,
         now: NaiveDateTime,
     ) -> Result<bool, String> {
+        if primary_phone.is_empty() {
+            return Err("Primary phone cannot be empty".to_string());
+        }
+
         self.primary_phone = primary_phone;
         self.updated_at = Some(now);
         Ok(true)

@@ -5,6 +5,7 @@ use tokio::sync::mpsc;
 
 use crate::{
     application::{
+        company::CompanyApplication,
         events::IntegrationEvent,
         handlers::NotificationHandler,
         identity::IdentityApplication,
@@ -16,7 +17,11 @@ use crate::{
     infrastructure::{
         database::estabilish_connection,
         mailer::lettre_smtp::{LettreSMTPMailer, MailerConfig},
-        persistence::sea_orm_user_repository::SeaOrmUserRepository,
+        persistence::{
+            sea_orm_company_repository::SeaOrmCompanyRepository,
+            sea_orm_membership_repository::SeaOrmMembershipRepository,
+            sea_orm_user_repository::SeaOrmUserRepository,
+        },
         renderer::{HandlebarsRenderer, InlineCssRenderer},
         security::{Argon2HasherImpl, document_encryption::AppDocumentEncryption},
         services::{
@@ -27,6 +32,8 @@ use crate::{
 };
 
 pub type IdentityApp = IdentityApplication<Arc<SeaOrmUserRepository>>;
+pub type CompanyApp =
+    CompanyApplication<Arc<SeaOrmCompanyRepository>, Arc<SeaOrmMembershipRepository>>;
 
 pub struct AppContainer {
     pub db: Arc<DatabaseConnection>,
@@ -35,6 +42,7 @@ pub struct AppContainer {
     pub cookie_service: Arc<CookieService>,
     pub notifications: Arc<NotificationHandler>,
     pub identity: Arc<IdentityApp>,
+    pub company: Arc<CompanyApp>,
 }
 
 fn parse_bool_env(key: &str) -> Option<bool> {
@@ -94,6 +102,11 @@ pub async fn build_app_container(tx: mpsc::UnboundedSender<IntegrationEvent>) ->
         frontend_url,
     ));
 
+    let company = Arc::new(CompanyApplication::new(
+        Arc::new(SeaOrmCompanyRepository::new(db.clone())),
+        Arc::new(SeaOrmMembershipRepository::new(db.clone())),
+    ));
+
     Arc::new(AppContainer {
         db,
         crypto: Arc::new(AppDocumentEncryption::default()),
@@ -101,5 +114,6 @@ pub async fn build_app_container(tx: mpsc::UnboundedSender<IntegrationEvent>) ->
         cookie_service: Arc::new(CookieService::new()),
         notifications: Arc::new(notification_handler),
         identity,
+        company,
     })
 }

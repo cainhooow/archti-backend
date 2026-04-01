@@ -16,8 +16,8 @@ pub struct Model {
     pub invited_at: Option<DateTime>,
     pub accepted_at: Option<DateTime>,
     pub last_seen_at: Option<DateTime>,
-    pub created_at: DateTime,
-    pub updated_at: DateTime,
+    pub created_at: Option<DateTime>,
+    pub updated_at: Option<DateTime>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

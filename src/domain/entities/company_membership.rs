@@ -18,7 +18,7 @@ pub struct CompanyMembership {
     user_id: String,
     membership_type: MembershipType,
     status_key: MembershipStatus,
-    display_name: String,
+    display_name: Option<String>,
     invited_at: Option<NaiveDateTime>,
     accepted_at: Option<NaiveDateTime>,
     last_seen_at: Option<NaiveDateTime>,
@@ -93,13 +93,41 @@ impl CompanyMembership {
             user_id,
             membership_type,
             status_key,
-            display_name,
+            display_name: Some(display_name),
             invited_at: None,
             accepted_at: None,
             last_seen_at: None,
             created_at: None,
             updated_at: None,
         })
+    }
+
+    pub fn restore(
+        id: String,
+        company_id: String,
+        user_id: String,
+        membership_type: MembershipType,
+        status_key: MembershipStatus,
+        display_name: Option<String>,
+        invited_at: Option<NaiveDateTime>,
+        accepted_at: Option<NaiveDateTime>,
+        last_seen_at: Option<NaiveDateTime>,
+        created_at: Option<NaiveDateTime>,
+        updated_at: Option<NaiveDateTime>,
+    ) -> Self {
+        Self {
+            id: Some(id),
+            company_id,
+            user_id,
+            membership_type,
+            status_key,
+            display_name,
+            invited_at,
+            accepted_at,
+            last_seen_at,
+            created_at,
+            updated_at,
+        }
     }
 
     pub fn id(&self) -> Option<&str> {
@@ -122,8 +150,8 @@ impl CompanyMembership {
         &self.status_key
     }
 
-    pub fn display_name(&self) -> &str {
-        &self.display_name
+    pub fn display_name(&self) -> Option<String> {
+        self.display_name.clone()
     }
 
     pub fn invited_at(&self) -> Option<NaiveDateTime> {

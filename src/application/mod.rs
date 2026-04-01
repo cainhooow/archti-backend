@@ -1,3 +1,4 @@
+pub mod company;
 pub mod events;
 pub mod exceptions;
 pub mod handlers;
