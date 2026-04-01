@@ -94,9 +94,9 @@ impl From<JWTError> for AppError {
     }
 }
 
-impl From<garde::Report> for AppError {
+impl From<garde::Report> for HttpError {
     fn from(value: garde::Report) -> Self {
         let message = value.to_string();
-        AppError::Validation(message)
+        HttpError::BadRequest(message)
     }
 }
