@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::infrastructure::{
-    http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
+    http::{HttpState, middlewares::auth_middleware::DEPOT_KEY_ID},
     services::cookie_service::COOKIE_SESSION_NAME,
 };
 use salvo::{
@@ -23,7 +23,7 @@ impl Handler for AppMiddleware {
         res: &mut Response,
         ctrl: &mut FlowCtrl,
     ) {
-        let state = depot.obtain::<Arc<State>>().unwrap().clone();
+        let state = depot.obtain::<Arc<HttpState>>().unwrap().clone();
 
         let mut headers = HeaderMap::new();
         _ = req.add_header(
@@ -45,7 +45,7 @@ impl Handler for AppMiddleware {
             }
 
             let token = parts.get(1).copied().unwrap_or("");
-            match state.auth_service.verify_token(token) {
+            match state.app.auth_service.verify_token(token) {
                 Ok(claims) => {
                     depot.insert(DEPOT_KEY_ID, claims);
                     res.set_headers(headers);
@@ -59,7 +59,7 @@ impl Handler for AppMiddleware {
             }
         } else if let Some(auth_cookie) = req.cookie(COOKIE_SESSION_NAME) {
             let token = auth_cookie.value();
-            match state.auth_service.verify_token(token) {
+            match state.app.auth_service.verify_token(token) {
                 Ok(claims) => {
                     depot.insert(DEPOT_KEY_ID, claims);
                     res.set_headers(headers);

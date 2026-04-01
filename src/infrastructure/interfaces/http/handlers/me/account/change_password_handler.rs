@@ -6,7 +6,7 @@ use salvo::prelude::*;
 use crate::{
     application::usecases::user::password_change_usecase::ChangePasswordCommand,
     infrastructure::{
-        http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
+        http::{HttpState, middlewares::auth_middleware::DEPOT_KEY_ID},
         interfaces::http::{
             exceptions::HttpError,
             resources::{
@@ -24,7 +24,7 @@ pub async fn change_password_handler(
     res: &mut Response,
 ) -> Result<(), HttpError> {
     let state = depot
-        .obtain::<Arc<State>>()
+        .obtain::<Arc<HttpState>>()
         .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
 
     let user_id = depot
@@ -37,6 +37,7 @@ pub async fn change_password_handler(
             validator.validate()?;
 
             let is_changed = state
+                .app
                 .identity
                 .change_password(ChangePasswordCommand {
                     old_password: validator.old_password,

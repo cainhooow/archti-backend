@@ -6,7 +6,7 @@ use salvo::prelude::*;
 use crate::{
     application::usecases::user::password_forgot_usecase::RequestPasswordResetCommand,
     infrastructure::{
-        http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
+        http::{HttpState, middlewares::auth_middleware::DEPOT_KEY_ID},
         interfaces::http::{
             exceptions::HttpError, resources::auth_resources::PasswordForgotRequest,
         },
@@ -20,7 +20,7 @@ pub async fn forgot_password_handler(
     _res: &mut Response,
 ) -> Result<(), HttpError> {
     let state = depot
-        .obtain::<Arc<State>>()
+        .obtain::<Arc<HttpState>>()
         .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
 
     if let Ok(_) = depot.get::<String>(DEPOT_KEY_ID) {
@@ -35,6 +35,7 @@ pub async fn forgot_password_handler(
             let email = validator.email;
 
             state
+                .app
                 .identity
                 .request_password_reset(RequestPasswordResetCommand { email })
                 .await?;

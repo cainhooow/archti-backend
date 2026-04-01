@@ -7,7 +7,7 @@ use serde::Serialize;
 use crate::{
     application::usecases::user::password_reset_usecase::PasswordResetCommand,
     infrastructure::{
-        http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
+        http::{HttpState, middlewares::auth_middleware::DEPOT_KEY_ID},
         interfaces::http::{
             exceptions::HttpError,
             resources::{DataResponse, auth_resources::PasswordResetRequest},
@@ -27,7 +27,7 @@ pub async fn password_reset_handler(
     res: &mut Response,
 ) -> Result<(), HttpError> {
     let state = depot
-        .obtain::<Arc<State>>()
+        .obtain::<Arc<HttpState>>()
         .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
 
     if let Ok(_) = depot.get::<String>(DEPOT_KEY_ID) {
@@ -46,6 +46,7 @@ pub async fn password_reset_handler(
                 .to_string();
 
             let is_changed = state
+                .app
                 .identity
                 .reset_password(PasswordResetCommand {
                     token,

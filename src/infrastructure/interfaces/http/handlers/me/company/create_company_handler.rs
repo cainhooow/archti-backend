@@ -8,7 +8,7 @@ use crate::{
         CreateCompanyCommand, CreateCompanyUseCase,
     },
     infrastructure::{
-        http::State,
+        http::HttpState,
         interfaces::http::{
             exceptions::HttpError,
             resources::{
@@ -27,10 +27,10 @@ pub async fn create_company_handler(
     res: &mut Response,
 ) -> Result<(), HttpError> {
     let state = depot
-        .obtain::<Arc<State>>()
+        .obtain::<Arc<HttpState>>()
         .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state.")))?;
 
-    let repository = SeaOrmCompanyRepository::new(state.db.clone());
+    let repository = SeaOrmCompanyRepository::new(state.app.db.clone());
 
     match req.parse_body::<CompanyRequest>().await {
         Ok(validator) => {

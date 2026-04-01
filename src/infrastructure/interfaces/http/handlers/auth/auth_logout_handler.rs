@@ -4,7 +4,7 @@ use salvo::prelude::*;
 use serde::Serialize;
 
 use crate::infrastructure::{
-    http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
+    http::{HttpState, middlewares::auth_middleware::DEPOT_KEY_ID},
     interfaces::http::{exceptions::HttpError, resources::DataResponse},
 };
 
@@ -20,14 +20,14 @@ pub async fn auth_logout_handler(
     res: &mut Response,
 ) -> Result<(), HttpError> {
     let state = depot
-        .obtain::<Arc<State>>()
+        .obtain::<Arc<HttpState>>()
         .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
 
     let _user_id = depot
         .get::<String>(DEPOT_KEY_ID)
         .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain user id")))?;
 
-    state.cookie_service.clear_sessions(res);
+    state.app.cookie_service.clear_sessions(res);
 
     res.render(DataResponse::success(Message {
         message: format!("Logged out successfully"),

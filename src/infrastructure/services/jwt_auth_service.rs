@@ -36,9 +36,7 @@ impl JwtAuthService {
 
     fn map_token_decode_error(err: Error) -> AppError {
         match err.kind() {
-            ErrorKind::InvalidToken | ErrorKind::ExpiredSignature => {
-                AppError::AuthenticationFailed
-            }
+            ErrorKind::InvalidToken | ErrorKind::ExpiredSignature => AppError::AuthenticationFailed,
             _ => AppError::Unexpected(format!("Failed to decode jwt token: {err}")),
         }
     }

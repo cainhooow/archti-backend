@@ -6,7 +6,7 @@ use salvo::prelude::*;
 use crate::{
     application::usecases::user::create_user_usecase::CreateUserCommand,
     infrastructure::{
-        http::State,
+        http::HttpState,
         interfaces::http::{
             exceptions::HttpError,
             resources::{
@@ -24,7 +24,7 @@ pub async fn register_handler(
     depot: &mut Depot,
 ) -> Result<(), HttpError> {
     let state = depot
-        .obtain::<Arc<State>>()
+        .obtain::<Arc<HttpState>>()
         .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
     match req.parse_body::<UserRequest>().await {
@@ -32,6 +32,7 @@ pub async fn register_handler(
             validator.validate()?;
 
             let user = state
+                .app
                 .identity
                 .register(CreateUserCommand {
                     email: validator.email,

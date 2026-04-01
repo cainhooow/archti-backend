@@ -3,16 +3,14 @@ use std::sync::Arc;
 use tokio::sync::mpsc;
 use tracing::{error, info};
 
-use crate::{
-    application::{
-        events::IntegrationEvent,
-        handlers::NotificationHandler,
-        notifications::{
-            password_changed_notification::PasswordChangedNotification,
-            password_forgot_notification::PasswordForgotNotification,
-            password_reset_notification::PasswordResetNotification,
-            welcome_notification::WelcomeNotification,
-        },
+use crate::application::{
+    events::IntegrationEvent,
+    handlers::NotificationHandler,
+    notifications::{
+        password_changed_notification::PasswordChangedNotification,
+        password_forgot_notification::PasswordForgotNotification,
+        password_reset_notification::PasswordResetNotification,
+        welcome_notification::WelcomeNotification,
     },
 };
 

@@ -147,7 +147,7 @@ impl Company {
         if service_type.is_empty() {
             return Err("Service type cannot be empty".to_string());
         }
-    
+
         self.service_type = service_type;
         self.updated_at = Some(now);
         Ok(true)

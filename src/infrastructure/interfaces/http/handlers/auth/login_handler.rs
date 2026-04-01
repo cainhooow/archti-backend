@@ -5,7 +5,7 @@ use std::sync::Arc;
 use crate::{
     application::usecases::user::login_user_usecase::LoginUserCommand,
     infrastructure::{
-        http::State,
+        http::HttpState,
         interfaces::http::{
             exceptions::HttpError,
             resources::{
@@ -23,7 +23,7 @@ pub async fn login_handler(
     res: &mut Response,
 ) -> Result<(), HttpError> {
     let state = depot
-        .obtain::<Arc<State>>()
+        .obtain::<Arc<HttpState>>()
         .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
     match req.parse_body::<AuthRequest>().await {
@@ -35,9 +35,9 @@ pub async fn login_handler(
                 password: validator.password,
             };
 
-            let login_response = state.identity.login(command).await?;
+            let login_response = state.app.identity.login(command).await?;
 
-            _ = state.cookie_service.generate_sessions(
+            _ = state.app.cookie_service.generate_sessions(
                 &login_response.access_token,
                 &login_response.refresh_token,
                 res,
