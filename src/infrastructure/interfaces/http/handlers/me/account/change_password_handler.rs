@@ -41,32 +41,26 @@ pub async fn change_password_handler(
 
     match req.parse_body::<ChangePasswordRequest>().await {
         Ok(validator) => {
-            _ = validator
-                .validate()
-                .map_err(|e| HttpError::BadRequest(e.to_string()))?;
+            validator.validate()?;
 
-            match ChangePasswordUseCase::new(repository, hasher, sender)
+            let is_changed = ChangePasswordUseCase::new(repository, hasher, sender)
                 .execute(ChangePasswordCommand {
                     old_password: validator.old_password,
                     new_password: validator.new_password,
                     user_id,
                 })
-                .await
-            {
-                Ok(is_changed) => {
-                    if is_changed {
-                        res.status_code(StatusCode::OK);
-                        res.render(DataResponse::success(MessageResource {
-                            message: format!("Password changed successfully."),
-                        }));
-                    } else {
-                        res.status_code(StatusCode::FORBIDDEN);
-                        res.render(DataResponse::error(MessageResource {
-                            message: format!("Failed to change password"),
-                        }));
-                    }
-                }
-                Err(err) => return Err(HttpError::InternalServerError(err.to_string())),
+                .await?;
+
+            if is_changed {
+                res.status_code(StatusCode::OK);
+                res.render(DataResponse::success(MessageResource {
+                    message: format!("Password changed successfully."),
+                }));
+            } else {
+                res.status_code(StatusCode::FORBIDDEN);
+                res.render(DataResponse::error(MessageResource {
+                    message: format!("Failed to change password"),
+                }));
             }
         }
         Err(err) => return Err(HttpError::BadRequest(err.to_string())),

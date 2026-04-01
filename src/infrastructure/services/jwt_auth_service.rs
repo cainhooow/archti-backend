@@ -1,4 +1,7 @@
-use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Validation, errors::Error};
+use jsonwebtoken::{
+    Algorithm, DecodingKey, EncodingKey, Validation,
+    errors::{Error, ErrorKind},
+};
 use serde::{Deserialize, Serialize};
 use time::{Duration, OffsetDateTime};
 
@@ -25,6 +28,19 @@ pub const REFRESH_TOKEN_NAME: &'static str = "refreshtkn";
 impl JwtAuthService {
     pub fn new(secret: String) -> Self {
         Self { secret }
+    }
+
+    fn map_token_generation_error(err: Error) -> AppError {
+        AppError::External(format!("Failed to generate jwt token: {err}"))
+    }
+
+    fn map_token_decode_error(err: Error) -> AppError {
+        match err.kind() {
+            ErrorKind::InvalidToken | ErrorKind::ExpiredSignature => {
+                AppError::AuthenticationFailed
+            }
+            _ => AppError::Unexpected(format!("Failed to decode jwt token: {err}")),
+        }
     }
 
     fn generate_token(&self, claims: JwtClaims) -> Result<String, Error> {
@@ -58,7 +74,7 @@ impl TokenService for JwtAuthService {
 
         let token = self
             .generate_token(claims)
-            .map_err(|err| AppError::Unexpected(err.to_string()))?;
+            .map_err(Self::map_token_generation_error)?;
 
         Ok(TokenOutput {
             token,
@@ -76,7 +92,7 @@ impl TokenService for JwtAuthService {
 
         let token = self
             .generate_token(claims)
-            .map_err(|err| AppError::Unexpected(err.to_string()))?;
+            .map_err(Self::map_token_generation_error)?;
 
         Ok(TokenOutput {
             token,
@@ -87,10 +103,10 @@ impl TokenService for JwtAuthService {
     fn verify_token(&self, token: &str) -> AppResult<String> {
         let claims = self
             .decode_token(token)
-            .map_err(|err| AppError::Unexpected(err.to_string()))?;
+            .map_err(Self::map_token_decode_error)?;
 
         if claims.typ != ACCESS_TOKEN_NAME {
-            return Err(AppError::Unexpected("Invalid token type".to_string()));
+            return Err(AppError::AuthenticationFailed);
         }
 
         Ok(claims.sub)
@@ -99,10 +115,10 @@ impl TokenService for JwtAuthService {
     fn get_refresh_sub(&self, token: &str) -> AppResult<String> {
         let claims = self
             .decode_token(token)
-            .map_err(|err| AppError::Unexpected(err.to_string()))?;
+            .map_err(Self::map_token_decode_error)?;
 
         if claims.typ != REFRESH_TOKEN_NAME {
-            return Err(AppError::Unexpected("Invalid token type".to_string()));
+            return Err(AppError::AuthenticationFailed);
         }
 
         Ok(claims.sub)
@@ -111,10 +127,10 @@ impl TokenService for JwtAuthService {
     fn renew_token(&self, token: &str) -> AppResult<TokenOutput> {
         let claims = self
             .decode_token(token)
-            .map_err(|err| AppError::Unexpected(err.to_string()))?;
+            .map_err(Self::map_token_decode_error)?;
 
         if claims.typ != REFRESH_TOKEN_NAME {
-            return Err(AppError::Unexpected("Invalid token type".to_string()));
+            return Err(AppError::AuthenticationFailed);
         }
 
         let exp = (OffsetDateTime::now_utc() + Duration::minutes(15)).unix_timestamp();
@@ -126,7 +142,7 @@ impl TokenService for JwtAuthService {
 
         let new_token = self
             .generate_token(new_claims)
-            .map_err(|err| AppError::Unexpected(err.to_string()))?;
+            .map_err(Self::map_token_generation_error)?;
 
         Ok(TokenOutput {
             token: new_token,

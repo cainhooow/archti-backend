@@ -33,32 +33,26 @@ pub async fn login_handler(
 
     match req.parse_body::<AuthRequest>().await {
         Ok(validator) => {
-            _ = validator
-                .validate()
-                .map_err(|err| HttpError::BadRequest(err.to_string()))?;
+            validator.validate()?;
 
             let command = LoginUserCommand {
                 email: validator.email,
                 password: validator.password,
             };
 
-            match LoginUserUseCase::new(repository, token_service, hasher)
+            let login_response = LoginUserUseCase::new(repository, token_service, hasher)
                 .execute(command)
-                .await
-            {
-                Ok(login_response) => {
-                    _ = state.cookie_service.generate_sessions(
-                        &login_response.access_token,
-                        &login_response.refresh_token,
-                        res,
-                    );
+                .await?;
 
-                    res.render(DataResponse::success(AuthResource::from(login_response)));
-                    res.status_code(StatusCode::OK);
-                    Ok(())
-                }
-                Err(err) => Err(HttpError::InternalServerError(err.to_string())),
-            }
+            _ = state.cookie_service.generate_sessions(
+                &login_response.access_token,
+                &login_response.refresh_token,
+                res,
+            );
+
+            res.render(DataResponse::success(AuthResource::from(login_response)));
+            res.status_code(StatusCode::OK);
+            Ok(())
         }
         Err(err) => Err(HttpError::BadRequest(err.to_string())),
     }

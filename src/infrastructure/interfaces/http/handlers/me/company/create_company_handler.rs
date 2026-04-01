@@ -34,11 +34,9 @@ pub async fn create_company_handler(
 
     match req.parse_body::<CompanyRequest>().await {
         Ok(validator) => {
-            _ = validator
-                .validate()
-                .map_err(|e| HttpError::BadRequest(e.to_string()))?;
+            validator.validate()?;
 
-            match CreateCompanyUseCase::new(repository)
+            let company = CreateCompanyUseCase::new(repository)
                 .execute(CreateCompanyCommand {
                     legal_name: validator.legal_name,
                     trade_name: validator.trade_name,
@@ -50,17 +48,11 @@ pub async fn create_company_handler(
                     operational_base: validator.operational_base,
                     notes: validator.notes,
                 })
-                .await
-            {
-                Ok(company) => {
-                    res.status_code(StatusCode::CREATED);
-                    res.render(DataResponse::success(CompanyResource::from(company)));
-                    Ok(())
-                }
-                Err(e) => {
-                    return Err(HttpError::InternalServerError(e.to_string()));
-                }
-            }
+                .await?;
+
+            res.status_code(StatusCode::CREATED);
+            res.render(DataResponse::success(CompanyResource::from(company)));
+            Ok(())
         }
         Err(e) => {
             return Err(HttpError::BadRequest(e.to_string()));

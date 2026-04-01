@@ -3,8 +3,6 @@ use thiserror::Error;
 
 use crate::application::exceptions::AppError;
 use crate::infrastructure::interfaces::http::resources::DataResponse;
-use argon2::password_hash::Error as ArgonError;
-use jsonwebtoken::errors::{Error as JWTError, ErrorKind as JWTErrorKind};
 
 use salvo::prelude::*;
 
@@ -58,38 +56,14 @@ impl Writer for HttpError {
     }
 }
 
-impl From<ParseIntError> for AppError {
+impl From<ParseIntError> for HttpError {
     fn from(value: ParseIntError) -> Self {
-        println!("ParseIntError: {}", value);
         let error_kind = value.kind();
         match error_kind {
             IntErrorKind::InvalidDigit => {
-                AppError::Unexpected(format!("Provided value is invalid int(i32, i64)"))
+                HttpError::BadRequest("Provided value is not a valid integer".to_string())
             }
-            _ => AppError::Unexpected(format!("ParseIntError")),
-        }
-    }
-}
-
-impl From<ArgonError> for AppError {
-    fn from(value: ArgonError) -> Self {
-        println!("Argon2Error: {}", value);
-        match value {
-            _ => AppError::Unexpected(format!("Argon2Error: {}", value.to_string())),
-        }
-    }
-}
-
-impl From<JWTError> for AppError {
-    fn from(value: JWTError) -> Self {
-        println!("JWTError: {}", value);
-        let error_kind = value.kind();
-        match error_kind {
-            JWTErrorKind::InvalidToken => AppError::AuthenticationFailed,
-            JWTErrorKind::Json(msg) => {
-                AppError::Unexpected(format!("Invalid JWToken: {}", msg.to_string()))
-            }
-            _ => AppError::Unexpected(format!("JWTError: {}", value.to_string())),
+            _ => HttpError::BadRequest("Invalid integer value".to_string()),
         }
     }
 }

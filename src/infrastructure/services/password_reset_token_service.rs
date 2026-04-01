@@ -1,5 +1,8 @@
 use chrono::NaiveDateTime;
-use jsonwebtoken::{DecodingKey, EncodingKey, Validation};
+use jsonwebtoken::{
+    DecodingKey, EncodingKey, Validation,
+    errors::{Error, ErrorKind},
+};
 use serde::{Deserialize, Serialize};
 use time::{Duration, OffsetDateTime};
 
@@ -28,13 +31,26 @@ impl JwtPasswordResetTokenService {
         Self { secret }
     }
 
+    fn map_token_generation_error(err: Error) -> AppError {
+        AppError::External(format!("Failed to generate password reset token: {err}"))
+    }
+
+    fn map_token_decode_error(err: Error) -> AppError {
+        match err.kind() {
+            ErrorKind::InvalidToken | ErrorKind::ExpiredSignature => {
+                AppError::AuthenticationFailed
+            }
+            _ => AppError::Unexpected(format!("Failed to decode password reset token: {err}")),
+        }
+    }
+
     pub fn generate(&self, claims: PasswordResetClaims) -> AppResult<String> {
         jsonwebtoken::encode(
             &jsonwebtoken::Header::default(),
             &claims,
             &EncodingKey::from_secret(self.secret.as_bytes()),
         )
-        .map_err(|err| AppError::Unexpected(err.to_string()))
+        .map_err(Self::map_token_generation_error)
     }
 
     pub fn decode(&self, token: &str) -> AppResult<PasswordResetClaims> {
@@ -44,7 +60,7 @@ impl JwtPasswordResetTokenService {
             &Validation::new(jsonwebtoken::Algorithm::HS256),
         )
         .map(|data| data.claims)
-        .map_err(|err| AppError::Unexpected(err.to_string()))
+        .map_err(Self::map_token_decode_error)
     }
 }
 

@@ -33,30 +33,22 @@ pub async fn register_handler(
 
     match req.parse_body::<UserRequest>().await {
         Ok(validator) => {
-            _ = validator
-                .validate()
-                .map_err(|e| HttpError::BadRequest(e.to_string()))?;
+            validator.validate()?;
 
-            match CreateUserUseCase::new(repository, hasher, state.sender.clone())
+            let user = CreateUserUseCase::new(repository, hasher, state.sender.clone())
                 .execute(CreateUserCommand {
                     email: validator.email,
                     password: validator.password,
                     full_name: validator.full_name,
                     phone: validator.phone,
                 })
-                .await
-            {
-                Ok(user) => {
-                    res.render(DataResponse::success(UserResource::from(user)));
-                    return Ok(());
-                }
-                Err(err) => {
-                    return Err(HttpError::InternalServerError(err.to_string()));
-                }
-            }
+                .await?;
+
+            res.render(DataResponse::success(UserResource::from(user)));
+            Ok(())
         }
         Err(err) => {
             return Err(HttpError::BadRequest(err.to_string()));
         }
-    };
+    }
 }

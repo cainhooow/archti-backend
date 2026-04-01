@@ -49,8 +49,7 @@ pub async fn auth_refresh_handler(
             .handle(FindUserById {
                 id: user_id.clone(),
             })
-            .await
-            .map_err(|err| HttpError::InternalServerError(err.to_string()))?;
+            .await?;
 
         let new_access = auth_service.renew_token(token)?;
         let new_refresh = auth_service.generate_refresh_token(&user_id)?;
@@ -75,8 +74,7 @@ pub async fn auth_refresh_handler(
                     .handle(FindUserById {
                         id: user_id.clone(),
                     })
-                    .await
-                    .map_err(|err| HttpError::InternalServerError(err.to_string()))?;
+                    .await?;
 
                 let new_access = auth_service.renew_token(&request.refresh_token)?;
                 let new_refresh = auth_service.generate_refresh_token(&user_id)?;

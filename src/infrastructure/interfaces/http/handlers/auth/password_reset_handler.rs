@@ -46,9 +46,7 @@ pub async fn password_reset_handler(
 
     match req.parse_body::<PasswordResetRequest>().await {
         Ok(validator) => {
-            _ = validator
-                .validate()
-                .map_err(|e| HttpError::BadRequest(e.to_string()))?;
+            validator.validate()?;
             let token = req
                 .params()
                 .get("token")

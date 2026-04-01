@@ -33,15 +33,11 @@ pub async fn auth_me_handler(
         })?
         .to_owned();
 
-    match FindUserByIdQuery::new(repository)
+    let user = FindUserByIdQuery::new(repository)
         .handle(FindUserById { id: user_id })
-        .await
-    {
-        Ok(user) => {
-            res.render(DataResponse::success(UserResource::from(user)));
-            res.status_code(StatusCode::OK);
-            Ok(())
-        }
-        Err(err) => Err(HttpError::InternalServerError(err.to_string())),
-    }
+        .await?;
+
+    res.render(DataResponse::success(UserResource::from(user)));
+    res.status_code(StatusCode::OK);
+    Ok(())
 }
