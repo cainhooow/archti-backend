@@ -1,5 +1,5 @@
 use chrono::NaiveDateTime;
-use garde::{Error, Validate};
+use garde::Validate;
 use serde::{Deserialize, Serialize};
 
 use crate::domain::entities::company::Company;

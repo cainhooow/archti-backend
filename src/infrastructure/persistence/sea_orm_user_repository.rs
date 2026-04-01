@@ -2,9 +2,7 @@ use crate::domain::entities::user::User;
 use crate::domain::exceptions::RepositoryError;
 use crate::infrastructure::entities::user;
 use sea_orm::ActiveValue::Set;
-use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QuerySelect,
-};
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use std::str::FromStr;
 use std::sync::Arc;
 use uuid::Uuid;

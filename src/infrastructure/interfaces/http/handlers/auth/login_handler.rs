@@ -35,7 +35,7 @@ pub async fn login_handler(
         Ok(validator) => {
             _ = validator
                 .validate()
-                .map_err(|err| HttpError::BadRequest(err.to_string()));
+                .map_err(|err| HttpError::BadRequest(err.to_string()))?;
 
             let command = LoginUserCommand {
                 email: validator.email,

@@ -5,9 +5,8 @@ use salvo::prelude::*;
 use serde::Serialize;
 
 use crate::{
-    application::{
-        exceptions::AppError,
-        usecases::user::password_reset_usecase::{PasswordResetCommand, PasswordResetUseCase},
+    application::usecases::user::password_reset_usecase::{
+        PasswordResetCommand, PasswordResetUseCase,
     },
     infrastructure::{
         http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
@@ -32,7 +31,7 @@ pub async fn password_reset_handler(
 ) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<State>>()
-        .map_err(|_| AppError::Unexpected(format!("Failed to obtain app state.")))?;
+        .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
 
     let repository = SeaOrmUserRepository::new(state.db.clone());
     let token_service = state.reset_token_service.clone();

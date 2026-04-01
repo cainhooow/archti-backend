@@ -4,11 +4,8 @@ use garde::Validate;
 use salvo::prelude::*;
 
 use crate::{
-    application::{
-        exceptions::{AppError},
-        usecases::user::password_forgot_usecase::{
-            RequestPasswordResetCommand, RequestPasswordResetUseCase,
-        },
+    application::usecases::user::password_forgot_usecase::{
+        RequestPasswordResetCommand, RequestPasswordResetUseCase,
     },
     infrastructure::{
         http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
@@ -27,7 +24,7 @@ pub async fn forgot_password_handler(
 ) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<State>>()
-        .map_err(|_| AppError::Unexpected(format!("Failed to obtain app state")))?;
+        .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
 
     let repository = SeaOrmUserRepository::new(state.db.clone());
     let token_service = state.reset_token_service.clone();

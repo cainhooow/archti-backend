@@ -3,12 +3,9 @@ use std::sync::Arc;
 use salvo::prelude::*;
 use serde::Serialize;
 
-use crate::{
-    application::exceptions::AppError,
-    infrastructure::{
-        http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
-        interfaces::http::{exceptions::HttpError, resources::DataResponse},
-    },
+use crate::infrastructure::{
+    http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
+    interfaces::http::{exceptions::HttpError, resources::DataResponse},
 };
 
 #[derive(Serialize)]
@@ -24,11 +21,11 @@ pub async fn auth_logout_handler(
 ) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<State>>()
-        .map_err(|_| AppError::Unexpected(format!("Failed to obtain app state")))?;
+        .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
 
     let _user_id = depot
         .get::<String>(DEPOT_KEY_ID)
-        .map_err(|_| AppError::Unexpected(format!("Failed to obtain user id")))?;
+        .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain user id")))?;
 
     state.cookie_service.clear_sessions(res);
 

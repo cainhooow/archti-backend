@@ -4,10 +4,7 @@ use salvo::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    application::{
-        exceptions::AppError,
-        queries::user::find_user_by_id::{FindUserById, FindUserByIdQuery},
-    },
+    application::queries::user::find_user_by_id::{FindUserById, FindUserByIdQuery},
     infrastructure::{
         http::State,
         interfaces::http::{exceptions::HttpError, resources::DataResponse},
@@ -38,7 +35,7 @@ pub async fn auth_refresh_handler(
 ) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<State>>()
-        .map_err(|_| AppError::Unexpected(format!("Failed to obtain app state")))?;
+        .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
 
     let auth_service = state.auth_service.clone();
     let cookie_service = state.cookie_service.clone();

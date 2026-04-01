@@ -4,9 +4,8 @@ use garde::Validate;
 use salvo::prelude::*;
 
 use crate::{
-    application::{
-        exceptions::{AppError, AppResult},
-        usecases::company::create_company_usecase::{CreateCompanyCommand, CreateCompanyUseCase},
+    application::usecases::company::create_company_usecase::{
+        CreateCompanyCommand, CreateCompanyUseCase,
     },
     infrastructure::{
         http::State,
