@@ -6,11 +6,17 @@ pub enum MembershipStatus {
     Inactive,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum MembershipType {
+    Colaborator,
+    Customer,
+}
+
 pub struct CompanyMembership {
     id: Option<String>,
     company_id: String,
     user_id: String,
-    membership_type: String,
+    membership_type: MembershipType,
     status_key: MembershipStatus,
     display_name: String,
     invited_at: Option<NaiveDateTime>,
@@ -29,6 +35,15 @@ impl MembershipStatus {
     }
 }
 
+impl MembershipType {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            MembershipType::Colaborator => "colaborator",
+            MembershipType::Customer => "customer",
+        }
+    }
+}
+
 impl TryFrom<&str> for MembershipStatus {
     type Error = String;
 
@@ -41,11 +56,23 @@ impl TryFrom<&str> for MembershipStatus {
     }
 }
 
+impl TryFrom<&str> for MembershipType {
+    type Error = String;
+
+    fn try_from(s: &str) -> Result<Self, Self::Error> {
+        match s {
+            "colaborator" => Ok(MembershipType::Colaborator),
+            "customer" => Ok(MembershipType::Customer),
+            _ => Err(format!("Invalid membership type: {}", s)),
+        }
+    }
+}
+
 impl CompanyMembership {
     pub fn register(
         company_id: String,
         user_id: String,
-        membership_type: String,
+        membership_type: MembershipType,
         status_key: MembershipStatus,
         display_name: String,
     ) -> Result<Self, String> {
@@ -54,9 +81,6 @@ impl CompanyMembership {
         }
         if user_id.is_empty() {
             return Err("user_id cannot be empty".to_string());
-        }
-        if membership_type.is_empty() {
-            return Err("membership_type cannot be empty".to_string());
         }
 
         if display_name.is_empty() {
@@ -90,7 +114,7 @@ impl CompanyMembership {
         &self.user_id
     }
 
-    pub fn membership_type(&self) -> &str {
+    pub fn membership_type(&self) -> &MembershipType {
         &self.membership_type
     }
 
