@@ -5,16 +5,13 @@ use salvo::prelude::*;
 use serde::Serialize;
 
 use crate::{
-    application::usecases::user::password_reset_usecase::{
-        PasswordResetCommand, PasswordResetUseCase,
-    },
+    application::usecases::user::password_reset_usecase::PasswordResetCommand,
     infrastructure::{
         http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
         interfaces::http::{
             exceptions::HttpError,
             resources::{DataResponse, auth_resources::PasswordResetRequest},
         },
-        persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
 };
 
@@ -33,11 +30,6 @@ pub async fn password_reset_handler(
         .obtain::<Arc<State>>()
         .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
 
-    let repository = SeaOrmUserRepository::new(state.db.clone());
-    let token_service = state.reset_token_service.clone();
-    let hasher = state.hasher.clone();
-    let sender = state.sender.clone();
-
     if let Ok(_) = depot.get::<String>(DEPOT_KEY_ID) {
         return Err(HttpError::Unauthorized(format!(
             "Account already connected. Un-login and try again later."
@@ -53,8 +45,9 @@ pub async fn password_reset_handler(
                 .ok_or(HttpError::BadRequest("Token not found".to_string()))?
                 .to_string();
 
-            let is_changed = PasswordResetUseCase::new(repository, token_service, hasher, sender)
-                .execute(PasswordResetCommand {
+            let is_changed = state
+                .identity
+                .reset_password(PasswordResetCommand {
                     token,
                     password: validator.password,
                 })

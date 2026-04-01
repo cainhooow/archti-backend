@@ -4,11 +4,9 @@ use salvo::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    application::queries::user::find_user_by_id::{FindUserById, FindUserByIdQuery},
     infrastructure::{
         http::State,
         interfaces::http::{exceptions::HttpError, resources::DataResponse},
-        persistence::sea_orm_user_repository::SeaOrmUserRepository,
         services::cookie_service::COOKIE_REFRESH_NAME,
     },
 };
@@ -37,58 +35,44 @@ pub async fn auth_refresh_handler(
         .obtain::<Arc<State>>()
         .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
 
-    let auth_service = state.auth_service.clone();
     let cookie_service = state.cookie_service.clone();
-    let repository = SeaOrmUserRepository::new(state.db.clone());
 
     if let Some(refresh_cookie) = req.cookies().get(COOKIE_REFRESH_NAME) {
-        let token = refresh_cookie.value();
-        let user_id = auth_service.get_refresh_sub(token)?;
-
-        FindUserByIdQuery::new(repository)
-            .handle(FindUserById {
-                id: user_id.clone(),
-            })
+        let refreshed = state
+            .identity
+            .refresh_session(refresh_cookie.value().to_string())
             .await?;
 
-        let new_access = auth_service.renew_token(token)?;
-        let new_refresh = auth_service.generate_refresh_token(&user_id)?;
-
-        _ = cookie_service.generate_sessions(&new_access, &new_refresh, res);
+        _ = cookie_service.generate_sessions(
+            &refreshed.access_token,
+            &refreshed.refresh_token,
+            res,
+        );
 
         res.status_code(StatusCode::OK);
         res.render(DataResponse {
             success: true,
             data: Some(RefreshResponse {
-                access_token: new_access.token,
-                refresh_token: new_refresh.token,
+                access_token: refreshed.access_token.token,
+                refresh_token: refreshed.refresh_token.token,
             }),
         });
         return Ok(());
     } else {
         match req.parse_body::<RefreshRequest>().await {
             Ok(request) => {
-                let user_id = auth_service.get_refresh_sub(&request.refresh_token)?;
-
-                FindUserByIdQuery::new(repository)
-                    .handle(FindUserById {
-                        id: user_id.clone(),
-                    })
-                    .await?;
-
-                let new_access = auth_service.renew_token(&request.refresh_token)?;
-                let new_refresh = auth_service.generate_refresh_token(&user_id)?;
+                let refreshed = state.identity.refresh_session(request.refresh_token).await?;
 
                 _ = state
                     .cookie_service
-                    .generate_sessions(&new_access, &new_refresh, res);
+                    .generate_sessions(&refreshed.access_token, &refreshed.refresh_token, res);
 
                 res.status_code(StatusCode::OK);
                 res.render(DataResponse {
                     success: true,
                     data: Some(RefreshResponse {
-                        access_token: new_access.token,
-                        refresh_token: new_refresh.token,
+                        access_token: refreshed.access_token.token,
+                        refresh_token: refreshed.refresh_token.token,
                     }),
                 });
                 return Ok(());

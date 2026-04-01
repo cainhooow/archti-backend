@@ -3,7 +3,7 @@ use salvo::prelude::*;
 use std::sync::Arc;
 
 use crate::{
-    application::usecases::user::login_user_usecase::{LoginUserCommand, LoginUserUseCase},
+    application::usecases::user::login_user_usecase::LoginUserCommand,
     infrastructure::{
         http::State,
         interfaces::http::{
@@ -13,7 +13,6 @@ use crate::{
                 auth_resources::{AuthRequest, AuthResource},
             },
         },
-        persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
 };
 
@@ -27,10 +26,6 @@ pub async fn login_handler(
         .obtain::<Arc<State>>()
         .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
-    let repository = SeaOrmUserRepository::new(state.db.clone());
-    let token_service = state.auth_service.clone();
-    let hasher = state.hasher.clone();
-
     match req.parse_body::<AuthRequest>().await {
         Ok(validator) => {
             validator.validate()?;
@@ -40,9 +35,7 @@ pub async fn login_handler(
                 password: validator.password,
             };
 
-            let login_response = LoginUserUseCase::new(repository, token_service, hasher)
-                .execute(command)
-                .await?;
+            let login_response = state.identity.login(command).await?;
 
             _ = state.cookie_service.generate_sessions(
                 &login_response.access_token,

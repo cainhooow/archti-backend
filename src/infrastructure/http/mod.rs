@@ -1,10 +1,12 @@
 use super::database::estabilish_connection;
 use super::http::middlewares::app_middleware::AppMiddleware;
 use super::interfaces::http::routers::*;
+use super::persistence::sea_orm_user_repository::SeaOrmUserRepository;
 use super::security::Argon2HasherImpl;
 use super::services::{cookie_service::CookieService, jwt_auth_service::JwtAuthService};
 use crate::application::events::IntegrationEvent;
 use crate::application::handlers::NotificationHandler;
+use crate::application::identity::IdentityApplication;
 use crate::application::ports::document_encryption::DocumentEncryption;
 use crate::application::ports::password_hasher::PasswordHasher;
 use crate::application::ports::password_reset_token_service::PasswordResetTokenService;
@@ -27,16 +29,16 @@ use tracing_subscriber::EnvFilter;
 
 pub mod middlewares;
 
+type IdentityApp = IdentityApplication<Arc<SeaOrmUserRepository>>;
+
 #[derive(Clone)]
 pub struct State {
     pub db: Arc<DatabaseConnection>,
-    pub hasher: Arc<dyn PasswordHasher>,
     pub crypto: Arc<dyn DocumentEncryption>,
     pub auth_service: Arc<dyn TokenService>,
-    pub reset_token_service: Arc<dyn PasswordResetTokenService>,
     pub cookie_service: Arc<CookieService>,
     pub notifications: Arc<NotificationHandler>,
-    pub sender: mpsc::UnboundedSender<IntegrationEvent>,
+    pub identity: Arc<IdentityApp>,
 }
 
 fn parse_bool_env(key: &str) -> Option<bool> {
@@ -52,6 +54,7 @@ async fn create_app_state(tx: mpsc::UnboundedSender<IntegrationEvent>) -> Arc<St
     let connection = estabilish_connection().await;
     let jwt_secret = env::var("JWT_SECRET").expect("JWT_AUTH is not defined in .env");
     let app_env = env::var("APP_ENV").unwrap_or_else(|_| "dev".to_string());
+    let frontend_url = env::var("FRONTEND_URL").expect("FRONTEND_URL is not defined in .env");
 
     let smtp_host = env::var("SMTP_HOST").expect("SMTP_HOST is not defined in .env");
     let smtp_port = env::var("SMTP_PORT")
@@ -82,16 +85,29 @@ async fn create_app_state(tx: mpsc::UnboundedSender<IntegrationEvent>) -> Arc<St
     // inline CSS renderer
     let renderer = InlineCssRenderer::new(core_renderer);
     let notification_handler = NotificationHandler::new(Box::new(mailer), Box::new(renderer));
+    let db = Arc::new(connection);
+    let hasher: Arc<dyn PasswordHasher> = Arc::new(Argon2HasherImpl::default());
+    let auth_service: Arc<dyn TokenService> = Arc::new(JwtAuthService::new(jwt_secret.clone()));
+
+    let reset_token_service: Arc<dyn PasswordResetTokenService> =
+        Arc::new(JwtPasswordResetTokenService::new(jwt_secret));
+
+    let identity = Arc::new(IdentityApplication::new(
+        Arc::new(SeaOrmUserRepository::new(db.clone())),
+        hasher,
+        auth_service.clone(),
+        reset_token_service,
+        tx.clone(),
+        frontend_url,
+    ));
 
     Arc::new(State {
-        db: Arc::new(connection),
-        hasher: Arc::new(Argon2HasherImpl::default()),
+        db,
         crypto: Arc::new(AppDocumentEncryption::default()),
-        auth_service: Arc::new(JwtAuthService::new(jwt_secret.clone())),
-        reset_token_service: Arc::new(JwtPasswordResetTokenService::new(jwt_secret)),
+        auth_service,
         cookie_service: Arc::new(CookieService::new()),
         notifications: Arc::new(notification_handler),
-        sender: tx,
+        identity,
     })
 }
 

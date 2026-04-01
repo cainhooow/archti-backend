@@ -1,18 +1,15 @@
-use std::{env, sync::Arc};
+use std::sync::Arc;
 
 use garde::Validate;
 use salvo::prelude::*;
 
 use crate::{
-    application::usecases::user::password_forgot_usecase::{
-        RequestPasswordResetCommand, RequestPasswordResetUseCase,
-    },
+    application::usecases::user::password_forgot_usecase::RequestPasswordResetCommand,
     infrastructure::{
         http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
         interfaces::http::{
             exceptions::HttpError, resources::auth_resources::PasswordForgotRequest,
         },
-        persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
 };
 
@@ -26,11 +23,6 @@ pub async fn forgot_password_handler(
         .obtain::<Arc<State>>()
         .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
 
-    let repository = SeaOrmUserRepository::new(state.db.clone());
-    let token_service = state.reset_token_service.clone();
-    let sender = state.sender.clone();
-    let frontend_url = env::var("FRONTEND_URL").expect("FRONTEND_URL is not defined in .env");
-
     if let Ok(_) = depot.get::<String>(DEPOT_KEY_ID) {
         return Err(HttpError::Unauthorized(format!(
             "Account already connected. Un-login and try again later."
@@ -42,8 +34,9 @@ pub async fn forgot_password_handler(
             validator.validate()?;
             let email = validator.email;
 
-            RequestPasswordResetUseCase::new(repository, token_service, sender, frontend_url)
-                .execute(RequestPasswordResetCommand { email: email })
+            state
+                .identity
+                .request_password_reset(RequestPasswordResetCommand { email })
                 .await?;
 
             Ok(())

@@ -1,6 +1,7 @@
 pub mod events;
 pub mod exceptions;
 pub mod handlers;
+pub mod identity;
 pub mod notifications;
 pub mod ports;
 pub mod queries;

@@ -4,7 +4,7 @@ use garde::Validate;
 use salvo::prelude::*;
 
 use crate::{
-    application::usecases::user::create_user_usecase::{CreateUserCommand, CreateUserUseCase},
+    application::usecases::user::create_user_usecase::CreateUserCommand,
     infrastructure::{
         http::State,
         interfaces::http::{
@@ -14,7 +14,6 @@ use crate::{
                 user_resources::{UserRequest, UserResource},
             },
         },
-        persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
 };
 
@@ -28,15 +27,13 @@ pub async fn register_handler(
         .obtain::<Arc<State>>()
         .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
-    let repository = SeaOrmUserRepository::new(state.db.clone());
-    let hasher = state.hasher.clone();
-
     match req.parse_body::<UserRequest>().await {
         Ok(validator) => {
             validator.validate()?;
 
-            let user = CreateUserUseCase::new(repository, hasher, state.sender.clone())
-                .execute(CreateUserCommand {
+            let user = state
+                .identity
+                .register(CreateUserCommand {
                     email: validator.email,
                     password: validator.password,
                     full_name: validator.full_name,
