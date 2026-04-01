@@ -51,9 +51,11 @@ where
 
     pub async fn execute(&self, command: PasswordResetCommand) -> AppResult<bool> {
         let user_id = self.token_service.verify_token(&command.token)?;
-        let mut user = self.repository.by_id(&user_id).await.map_err(|_| {
-            AppError::Repository(format!("Not linked user in this reset token or expired."))
-        })?;
+        let mut user = self
+            .repository
+            .by_id(&user_id)
+            .await
+            .map_err(|_| AppError::NotFound(format!("User not found")))?;
 
         if let Some(last_password_change) = user.last_password_changed_at() {
             self.token_service
@@ -67,7 +69,7 @@ where
         self.repository
             .update(&user)
             .await
-            .map_err(|_| AppError::Repository(format!("Failed to update user.")))?;
+            .map_err(|_| AppError::Unexpected(format!("Failed to update user")))?;
 
         self.sender
             .send(IntegrationEvent::PasswordChangedEmailRequested {

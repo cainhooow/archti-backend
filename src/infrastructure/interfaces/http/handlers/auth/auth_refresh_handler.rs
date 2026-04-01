@@ -5,11 +5,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     application::{
-        exceptions::{AppError, AppResult},
+        exceptions::AppError,
         queries::user::find_user_by_id::{FindUserById, FindUserByIdQuery},
     },
     infrastructure::{
-        http::State, interfaces::http::resources::DataResponse,
+        http::State,
+        interfaces::http::{exceptions::HttpError, resources::DataResponse},
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
         services::cookie_service::COOKIE_REFRESH_NAME,
     },
@@ -34,7 +35,7 @@ pub async fn auth_refresh_handler(
     res: &mut Response,
     depot: &mut Depot,
     req: &mut Request,
-) -> AppResult<()> {
+) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<State>>()
         .map_err(|_| AppError::Unexpected(format!("Failed to obtain app state")))?;
@@ -52,7 +53,7 @@ pub async fn auth_refresh_handler(
                 id: user_id.clone(),
             })
             .await
-            .map_err(|err| AppError::Bad(err.to_string()))?;
+            .map_err(|err| HttpError::InternalServerError(err.to_string()))?;
 
         let new_access = auth_service.renew_token(token)?;
         let new_refresh = auth_service.generate_refresh_token(&user_id)?;
@@ -78,7 +79,7 @@ pub async fn auth_refresh_handler(
                         id: user_id.clone(),
                     })
                     .await
-                    .map_err(|err| AppError::Bad(err.to_string()))?;
+                    .map_err(|err| HttpError::InternalServerError(err.to_string()))?;
 
                 let new_access = auth_service.renew_token(&request.refresh_token)?;
                 let new_refresh = auth_service.generate_refresh_token(&user_id)?;
@@ -98,10 +99,7 @@ pub async fn auth_refresh_handler(
                 return Ok(());
             }
             Err(err) => {
-                return Err(AppError::Unexpected(format!(
-                    "Failed to parse refresh request: {}",
-                    err
-                )));
+                return Err(HttpError::BadRequest(err.to_string()));
             }
         }
     }

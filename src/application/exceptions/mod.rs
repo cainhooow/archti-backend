@@ -4,24 +4,29 @@ use crate::domain::exceptions::RepositoryError;
 
 #[derive(Debug, Error)]
 pub enum AppError {
-    #[error("Domain error: {0}")]
-    Domain(String),
-    #[error("Repository error: {0}")]
-    Repository(String),
+    #[error("Validation failed: {0}")]
+    Validation(String),
+
+    #[error("Business rule violation: {0}")]
+    RuleViolation(String),
+
+    #[error("Resource not found: {0}")]
+    NotFound(String),
+
+    #[error("Conflict: {0}")]
+    Conflict(String),
+
+    #[error("Authentication failed")]
+    AuthenticationFailed,
+
+    #[error("Permission denied")]
+    PermissionDenied,
+
+    #[error("External dependency error: {0}")]
+    External(String),
+
     #[error("Unexpected error: {0}")]
     Unexpected(String),
-    #[error("Http Unauthorized: {0}")]
-    Unauthorized(String),
-    #[error("Http Forbidden: {0}")]
-    Forbidden(String),
-    #[error("Http Internal Server Error: {0}")]
-    InternalServerError(String),
-    #[error("Http Bad Request: {0}")]
-    Bad(String),
-    #[error("Invalid credentials: {0}")]
-    InvalidCredentials(String),
-    #[error("Encryption error: {0}")]
-    EncryptionError(String),
 }
 
 pub type AppResult<T> = Result<T, AppError>;
@@ -35,8 +40,8 @@ impl From<String> for AppError {
 impl From<RepositoryError> for AppError {
     fn from(value: RepositoryError) -> Self {
         match value {
-            RepositoryError::Generic(e) => AppError::Repository(e),
-            RepositoryError::NotFound => AppError::Repository("Entity not found".into()),
+            RepositoryError::NotFound => AppError::NotFound("Entity not found".into()),
+            RepositoryError::Generic(e) => AppError::Unexpected(e),
         }
     }
 }

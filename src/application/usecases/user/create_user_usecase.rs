@@ -1,6 +1,8 @@
 use tokio::sync::mpsc;
 
-use crate::domain::{entities::user::User, repositories::user_repository_interface::CreateUserRepository};
+use crate::domain::{
+    entities::user::User, repositories::user_repository_interface::CreateUserRepository,
+};
 
 use std::sync::Arc;
 
@@ -38,13 +40,13 @@ impl<U: CreateUserRepository> CreateUserUseCase<U> {
 
     pub async fn execute(&self, command: CreateUserCommand) -> AppResult<User> {
         if self.user_repository.exists_by_email(&command.email).await? {
-            return Err(AppError::Bad("User already exists".to_string()));
+            return Err(AppError::Conflict("User already exists".to_string()));
         }
 
         let hashed_password = self
             .hasher
             .hash(&command.password)
-            .map_err(|err| AppError::EncryptionError(err.to_string()))?;
+            .map_err(|err| AppError::Unexpected(err.to_string()))?;
 
         let new_user = User::register(
             command.email,
@@ -52,7 +54,7 @@ impl<U: CreateUserRepository> CreateUserUseCase<U> {
             command.full_name,
             command.phone,
         )
-        .map_err(AppError::Bad)?;
+        .map_err(|err| AppError::Unexpected(err.to_string()))?;
 
         let user = self.user_repository.create(&new_user).await?;
         self.sender

@@ -6,12 +6,15 @@ use serde::Serialize;
 
 use crate::{
     application::{
-        exceptions::{AppError, AppResult},
+        exceptions::AppError,
         usecases::user::password_reset_usecase::{PasswordResetCommand, PasswordResetUseCase},
     },
     infrastructure::{
         http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
-        interfaces::http::resources::{DataResponse, auth_resources::PasswordResetRequest},
+        interfaces::http::{
+            exceptions::HttpError,
+            resources::{DataResponse, auth_resources::PasswordResetRequest},
+        },
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
 };
@@ -26,7 +29,7 @@ pub async fn password_reset_handler(
     req: &mut Request,
     depot: &mut Depot,
     res: &mut Response,
-) -> AppResult<()> {
+) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<State>>()
         .map_err(|_| AppError::Unexpected(format!("Failed to obtain app state.")))?;
@@ -37,18 +40,20 @@ pub async fn password_reset_handler(
     let sender = state.sender.clone();
 
     if let Ok(_) = depot.get::<String>(DEPOT_KEY_ID) {
-        return Err(AppError::Unauthorized(format!(
+        return Err(HttpError::Unauthorized(format!(
             "Account already connected. Un-login and try again later."
         )));
     }
 
     match req.parse_body::<PasswordResetRequest>().await {
         Ok(validator) => {
-            _ = validator.validate()?;
+            _ = validator
+                .validate()
+                .map_err(|e| HttpError::BadRequest(e.to_string()))?;
             let token = req
                 .params()
                 .get("token")
-                .ok_or(AppError::Bad("Token not found".to_string()))?
+                .ok_or(HttpError::BadRequest("Token not found".to_string()))?
                 .to_string();
 
             let is_changed = PasswordResetUseCase::new(repository, token_service, hasher, sender)
@@ -59,7 +64,9 @@ pub async fn password_reset_handler(
                 .await?;
 
             if !is_changed {
-                return Err(AppError::Bad("Invalid or expired token".to_string()));
+                return Err(HttpError::BadRequest(
+                    "Invalid or expired token".to_string(),
+                ));
             }
 
             res.render(DataResponse::success(PasswordResetResponse {
@@ -68,7 +75,7 @@ pub async fn password_reset_handler(
             res.status_code(StatusCode::OK);
         }
         Err(err) => {
-            return Err(AppError::Bad(err.to_string()));
+            return Err(HttpError::BadRequest(err.to_string()));
         }
     }
 

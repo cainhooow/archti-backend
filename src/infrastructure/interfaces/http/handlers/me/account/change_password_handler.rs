@@ -4,14 +4,17 @@ use garde::Validate;
 use salvo::prelude::*;
 
 use crate::{
-    application::{
-        exceptions::{AppError, AppResult},
-        usecases::user::password_change_usecase::{ChangePasswordCommand, ChangePasswordUseCase},
+    application::usecases::user::password_change_usecase::{
+        ChangePasswordCommand, ChangePasswordUseCase,
     },
     infrastructure::{
         http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
-        interfaces::http::resources::{
-            DataResponse, me_resources::ChangePasswordRequest, message_resource::MessageResource,
+        interfaces::http::{
+            exceptions::HttpError,
+            resources::{
+                DataResponse, me_resources::ChangePasswordRequest,
+                message_resource::MessageResource,
+            },
         },
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
@@ -22,14 +25,14 @@ pub async fn change_password_handler(
     req: &mut Request,
     depot: &mut Depot,
     res: &mut Response,
-) -> AppResult<()> {
+) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<State>>()
-        .map_err(|_| AppError::Unexpected(format!("Failed to obtain app state")))?;
+        .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
 
     let user_id = depot
         .get::<String>(DEPOT_KEY_ID)
-        .map_err(|_| AppError::Unexpected(format!("Failed to get user depot key")))?
+        .map_err(|_| HttpError::InternalServerError(format!("Failed to get user depot key")))?
         .to_owned();
 
     let repository = SeaOrmUserRepository::new(state.db.clone());
@@ -38,7 +41,9 @@ pub async fn change_password_handler(
 
     match req.parse_body::<ChangePasswordRequest>().await {
         Ok(validator) => {
-            _ = validator.validate()?;
+            _ = validator
+                .validate()
+                .map_err(|e| HttpError::BadRequest(e.to_string()))?;
 
             match ChangePasswordUseCase::new(repository, hasher, sender)
                 .execute(ChangePasswordCommand {
@@ -61,10 +66,10 @@ pub async fn change_password_handler(
                         }));
                     }
                 }
-                Err(err) => return Err(err),
+                Err(err) => return Err(HttpError::InternalServerError(err.to_string())),
             }
         }
-        Err(err) => return Err(AppError::Bad(err.to_string())),
+        Err(err) => return Err(HttpError::BadRequest(err.to_string())),
     }
 
     Ok(())

@@ -40,7 +40,7 @@ where
         let document = Document::parse(command.document)?;
 
         if self.repository.exists_by_document(&document).await? {
-            return Err(AppError::Bad(
+            return Err(AppError::Conflict(
                 "There is already a company registered with this information.".to_string(),
             ));
         }

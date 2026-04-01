@@ -3,15 +3,15 @@ use salvo::prelude::*;
 use std::sync::Arc;
 
 use crate::{
-    application::{
-        exceptions::{AppError, AppResult},
-        usecases::user::login_user_usecase::{LoginUserCommand, LoginUserUseCase},
-    },
+    application::usecases::user::login_user_usecase::{LoginUserCommand, LoginUserUseCase},
     infrastructure::{
         http::State,
-        interfaces::http::resources::{
-            DataResponse,
-            auth_resources::{AuthRequest, AuthResource},
+        interfaces::http::{
+            exceptions::HttpError,
+            resources::{
+                DataResponse,
+                auth_resources::{AuthRequest, AuthResource},
+            },
         },
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
@@ -22,10 +22,10 @@ pub async fn login_handler(
     req: &mut Request,
     depot: &mut Depot,
     res: &mut Response,
-) -> AppResult<()> {
+) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<State>>()
-        .map_err(|_| AppError::InternalServerError("Failed to obtain app state".to_string()))?;
+        .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
     let repository = SeaOrmUserRepository::new(state.db.clone());
     let token_service = state.auth_service.clone();
@@ -33,7 +33,9 @@ pub async fn login_handler(
 
     match req.parse_body::<AuthRequest>().await {
         Ok(validator) => {
-            _ = validator.validate()?;
+            _ = validator
+                .validate()
+                .map_err(|err| HttpError::BadRequest(err.to_string()));
 
             let command = LoginUserCommand {
                 email: validator.email,
@@ -55,13 +57,9 @@ pub async fn login_handler(
                     res.status_code(StatusCode::OK);
                     Ok(())
                 }
-                Err(err) => {
-                    return Err(err);
-                }
+                Err(err) => Err(HttpError::InternalServerError(err.to_string())),
             }
         }
-        Err(err) => {
-            return Err(AppError::Bad(err.to_string()));
-        }
+        Err(err) => Err(HttpError::BadRequest(err.to_string())),
     }
 }

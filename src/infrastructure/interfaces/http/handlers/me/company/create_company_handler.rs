@@ -10,9 +10,12 @@ use crate::{
     },
     infrastructure::{
         http::State,
-        interfaces::http::resources::{
-            DataResponse,
-            company_resources::{CompanyRequest, CompanyResource},
+        interfaces::http::{
+            exceptions::HttpError,
+            resources::{
+                DataResponse,
+                company_resources::{CompanyRequest, CompanyResource},
+            },
         },
         persistence::sea_orm_company_repository::SeaOrmCompanyRepository,
     },
@@ -23,16 +26,19 @@ pub async fn create_company_handler(
     req: &mut Request,
     depot: &mut Depot,
     res: &mut Response,
-) -> AppResult<()> {
+) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<State>>()
-        .map_err(|_| AppError::Unexpected(format!("Failed to obtain app state.")))?;
+        .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state.")))?;
 
     let repository = SeaOrmCompanyRepository::new(state.db.clone());
 
     match req.parse_body::<CompanyRequest>().await {
         Ok(validator) => {
-            _ = validator.validate()?;
+            _ = validator
+                .validate()
+                .map_err(|e| HttpError::BadRequest(e.to_string()))?;
+
             match CreateCompanyUseCase::new(repository)
                 .execute(CreateCompanyCommand {
                     legal_name: validator.legal_name,
@@ -53,12 +59,12 @@ pub async fn create_company_handler(
                     Ok(())
                 }
                 Err(e) => {
-                    return Err(e);
+                    return Err(HttpError::InternalServerError(e.to_string()));
                 }
             }
         }
         Err(e) => {
-            return Err(AppError::Bad(e.to_string()));
+            return Err(HttpError::BadRequest(e.to_string()));
         }
     }
 }

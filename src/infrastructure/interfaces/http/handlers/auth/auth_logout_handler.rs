@@ -4,10 +4,10 @@ use salvo::prelude::*;
 use serde::Serialize;
 
 use crate::{
-    application::exceptions::{AppError, AppResult},
+    application::exceptions::AppError,
     infrastructure::{
         http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
-        interfaces::http::resources::DataResponse,
+        interfaces::http::{exceptions::HttpError, resources::DataResponse},
     },
 };
 
@@ -21,7 +21,7 @@ pub async fn auth_logout_handler(
     _req: &mut Request,
     depot: &mut Depot,
     res: &mut Response,
-) -> AppResult<()> {
+) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<State>>()
         .map_err(|_| AppError::Unexpected(format!("Failed to obtain app state")))?;

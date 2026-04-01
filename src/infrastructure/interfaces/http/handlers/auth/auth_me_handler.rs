@@ -4,12 +4,15 @@ use salvo::prelude::*;
 
 use crate::{
     application::{
-        exceptions::{AppError, AppResult},
+        exceptions::{AppError},
         queries::user::find_user_by_id::{FindUserById, FindUserByIdQuery},
     },
     infrastructure::{
         http::{State, middlewares::auth_middleware::DEPOT_KEY_ID},
-        interfaces::http::resources::{DataResponse, user_resources::UserResource},
+        interfaces::http::{
+            exceptions::HttpError,
+            resources::{DataResponse, user_resources::UserResource},
+        },
         persistence::sea_orm_user_repository::SeaOrmUserRepository,
     },
 };
@@ -19,7 +22,7 @@ pub async fn auth_me_handler(
     _req: &mut Request,
     depot: &mut Depot,
     res: &mut Response,
-) -> AppResult<()> {
+) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<State>>()
         .map_err(|_| AppError::Unexpected(format!("Failed to obtain app state")))?;
@@ -40,8 +43,6 @@ pub async fn auth_me_handler(
             res.status_code(StatusCode::OK);
             Ok(())
         }
-        Err(err) => {
-            return Err(err);
-        }
+        Err(err) => Err(HttpError::InternalServerError(err.to_string())),
     }
 }

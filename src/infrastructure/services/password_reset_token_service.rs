@@ -72,7 +72,7 @@ impl PasswordResetTokenService for JwtPasswordResetTokenService {
         let claims = self.decode(token)?;
 
         if claims.typ != PASSWORD_RESET_TOKEN_TYPE {
-            return Err(AppError::Domain("Invalid token type".to_string()));
+            return Err(AppError::AuthenticationFailed);
         }
 
         Ok(claims.sub)
@@ -82,13 +82,11 @@ impl PasswordResetTokenService for JwtPasswordResetTokenService {
         let claims = self.decode(token)?;
 
         if claims.typ != PASSWORD_RESET_TOKEN_TYPE {
-            return Err(AppError::Domain("Invalid token type".to_string()));
+            return Err(AppError::AuthenticationFailed);
         }
 
         if claims.iat <= last_pass_change.and_utc().timestamp() {
-            return Err(AppError::Domain(
-                "Token already used or expired".to_string(),
-            ));
+            return Err(AppError::AuthenticationFailed);
         }
 
         Ok(claims.sub)
