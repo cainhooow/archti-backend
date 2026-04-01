@@ -2,16 +2,14 @@ use tokio::sync::mpsc;
 
 use crate::{
     application::{
+        events::IntegrationEvent,
         exceptions::{AppError, AppResult},
         ports::{
             password_hasher::PasswordHasher,
             password_reset_token_service::PasswordResetTokenService,
         },
     },
-    domain::{
-        events::DomainEvents,
-        repositories::user_repository_interface::{UserReadRepository, UserUpdateRepository},
-    },
+    domain::repositories::user_repository_interface::{UserReadRepository, UserUpdateRepository},
 };
 
 pub struct PasswordResetCommand {
@@ -28,7 +26,7 @@ where
     pub repository: R,
     pub token_service: S,
     pub hasher: H,
-    pub sender: mpsc::UnboundedSender<DomainEvents>,
+    pub sender: mpsc::UnboundedSender<IntegrationEvent>,
 }
 
 impl<R, S, H> PasswordResetUseCase<R, S, H>
@@ -41,7 +39,7 @@ where
         repository: R,
         token_service: S,
         hasher: H,
-        sender: mpsc::UnboundedSender<DomainEvents>,
+        sender: mpsc::UnboundedSender<IntegrationEvent>,
     ) -> Self {
         Self {
             repository,
@@ -72,7 +70,7 @@ where
             .map_err(|_| AppError::Repository(format!("Failed to update user.")))?;
 
         self.sender
-            .send(DomainEvents::PasswordChanged {
+            .send(IntegrationEvent::PasswordChangedEmailRequested {
                 email: user.email().to_string(),
                 name: user.full_name().to_string(),
             })

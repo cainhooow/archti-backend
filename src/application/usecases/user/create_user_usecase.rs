@@ -1,13 +1,11 @@
 use tokio::sync::mpsc;
 
-use crate::domain::{
-    entities::user::User, events::DomainEvents,
-    repositories::user_repository_interface::CreateUserRepository,
-};
+use crate::domain::{entities::user::User, repositories::user_repository_interface::CreateUserRepository};
 
 use std::sync::Arc;
 
 use crate::application::{
+    events::IntegrationEvent,
     exceptions::{AppError, AppResult},
     ports::password_hasher::PasswordHasher,
 };
@@ -15,7 +13,7 @@ use crate::application::{
 pub struct CreateUserUseCase<U: CreateUserRepository> {
     user_repository: U,
     hasher: Arc<dyn PasswordHasher>,
-    sender: mpsc::UnboundedSender<DomainEvents>,
+    sender: mpsc::UnboundedSender<IntegrationEvent>,
 }
 
 pub struct CreateUserCommand {
@@ -29,7 +27,7 @@ impl<U: CreateUserRepository> CreateUserUseCase<U> {
     pub fn new(
         user_repository: U,
         hasher: Arc<dyn PasswordHasher>,
-        sender: mpsc::UnboundedSender<DomainEvents>,
+        sender: mpsc::UnboundedSender<IntegrationEvent>,
     ) -> Self {
         Self {
             user_repository,
@@ -58,7 +56,7 @@ impl<U: CreateUserRepository> CreateUserUseCase<U> {
 
         let user = self.user_repository.create(&new_user).await?;
         self.sender
-            .send(DomainEvents::UserRegistered {
+            .send(IntegrationEvent::WelcomeEmailRequested {
                 email: new_user.email().to_string(),
                 name: new_user.full_name().to_string(),
             })

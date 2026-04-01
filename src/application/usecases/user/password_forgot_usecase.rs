@@ -2,10 +2,11 @@ use tokio::sync::mpsc;
 
 use crate::{
     application::{
+        events::IntegrationEvent,
         exceptions::{AppError, AppResult},
         ports::password_reset_token_service::PasswordResetTokenService,
     },
-    domain::{events::DomainEvents, repositories::user_repository_interface::UserReadRepository},
+    domain::repositories::user_repository_interface::UserReadRepository,
 };
 
 pub struct RequestPasswordResetCommand {
@@ -19,7 +20,7 @@ where
 {
     pub repository: R,
     pub token_service: S,
-    pub sender: mpsc::UnboundedSender<DomainEvents>,
+    pub sender: mpsc::UnboundedSender<IntegrationEvent>,
     pub frontend_url: String,
 }
 
@@ -31,7 +32,7 @@ where
     pub fn new(
         repository: R,
         token_service: S,
-        sender: mpsc::UnboundedSender<DomainEvents>,
+        sender: mpsc::UnboundedSender<IntegrationEvent>,
         frontend_url: String,
     ) -> Self {
         Self {
@@ -56,7 +57,7 @@ where
         let link = format!("{}/reset-password?token={}", self.frontend_url, reset.token);
 
         self.sender
-            .send(DomainEvents::PasswordReset {
+            .send(IntegrationEvent::PasswordResetEmailRequested {
                 email: user.email().to_string(),
                 name: user.full_name().to_string(),
                 link,

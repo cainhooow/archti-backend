@@ -3,13 +3,13 @@ use super::http::middlewares::app_middleware::AppMiddleware;
 use super::interfaces::http::routers::*;
 use super::security::Argon2HasherImpl;
 use super::services::{cookie_service::CookieService, jwt_auth_service::JwtAuthService};
+use crate::application::events::IntegrationEvent;
 use crate::application::handlers::NotificationHandler;
 use crate::application::ports::document_encryption::DocumentEncryption;
 use crate::application::ports::password_hasher::PasswordHasher;
 use crate::application::ports::password_reset_token_service::PasswordResetTokenService;
 use crate::application::ports::token_service::TokenService;
 use crate::application::workers::notification_worker::notification_worker;
-use crate::domain::events::DomainEvents;
 use crate::infrastructure::http::middlewares::log_middleware::LogMiddleware;
 use crate::infrastructure::mailer::lettre_smtp::{LettreSMTPMailer, MailerConfig};
 use crate::infrastructure::renderer::{HandlebarsRenderer, InlineCssRenderer};
@@ -36,7 +36,7 @@ pub struct State {
     pub reset_token_service: Arc<dyn PasswordResetTokenService>,
     pub cookie_service: Arc<CookieService>,
     pub notifications: Arc<NotificationHandler>,
-    pub sender: mpsc::UnboundedSender<DomainEvents>,
+    pub sender: mpsc::UnboundedSender<IntegrationEvent>,
 }
 
 fn parse_bool_env(key: &str) -> Option<bool> {
@@ -48,7 +48,7 @@ fn parse_bool_env(key: &str) -> Option<bool> {
     })
 }
 
-async fn create_app_state(tx: mpsc::UnboundedSender<DomainEvents>) -> Arc<State> {
+async fn create_app_state(tx: mpsc::UnboundedSender<IntegrationEvent>) -> Arc<State> {
     let connection = estabilish_connection().await;
     let jwt_secret = env::var("JWT_SECRET").expect("JWT_AUTH is not defined in .env");
     let app_env = env::var("APP_ENV").unwrap_or_else(|_| "dev".to_string());
@@ -65,7 +65,7 @@ async fn create_app_state(tx: mpsc::UnboundedSender<DomainEvents>) -> Arc<State>
 
     let template_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("src")
-        .join("infrastructure")
+        .join("application")
         .join("templates");
 
     let mailer = LettreSMTPMailer::new(MailerConfig {
@@ -119,7 +119,7 @@ pub async fn http_server_init() {
         )
         .init();
 
-    let (tx, rx) = mpsc::unbounded_channel::<DomainEvents>();
+    let (tx, rx) = mpsc::unbounded_channel::<IntegrationEvent>();
     let state = create_app_state(tx).await;
     // email worker
     let handler = state.notifications.clone();

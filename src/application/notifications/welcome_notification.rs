@@ -1,16 +1,16 @@
-use crate::domain::notifications::EmailMessage;
+use crate::application::notifications::EmailMessage;
 
-pub struct PasswordForgotNotification {
+pub struct WelcomeNotification {
     pub name: String,
 }
 
-impl EmailMessage for PasswordForgotNotification {
+impl EmailMessage for WelcomeNotification {
     fn template(&self) -> &str {
-        "auth/password_forgot"
+        "welcome"
     }
 
     fn subject(&self) -> &str {
-        "Password Forgot"
+        "Welcome to Archti!"
     }
 
     fn data(&self) -> serde_json::Value {

@@ -4,9 +4,9 @@ use tokio::sync::mpsc;
 use tracing::{error, info};
 
 use crate::{
-    application::handlers::NotificationHandler,
-    domain::{
-        events::DomainEvents,
+    application::{
+        events::IntegrationEvent,
+        handlers::NotificationHandler,
         notifications::{
             password_changed_notification::PasswordChangedNotification,
             password_forgot_notification::PasswordForgotNotification,
@@ -17,19 +17,19 @@ use crate::{
 };
 
 pub async fn notification_worker(
-    mut receiver: mpsc::UnboundedReceiver<DomainEvents>,
+    mut receiver: mpsc::UnboundedReceiver<IntegrationEvent>,
     handler: Arc<NotificationHandler>,
 ) {
     while let Some(event) = receiver.recv().await {
         info!(?event, "notification worker received event");
         match event {
-            DomainEvents::UserRegistered { email, name } => {
+            IntegrationEvent::WelcomeEmailRequested { email, name } => {
                 let msg = WelcomeNotification { name: name };
                 if let Err(err) = handler.send(&email, msg).await {
                     error!(%email, %err, "failed to send welcome notification");
                 }
             }
-            DomainEvents::PasswordReset { email, name, link } => {
+            IntegrationEvent::PasswordResetEmailRequested { email, name, link } => {
                 let msg = PasswordResetNotification {
                     name: name,
                     link: link,
@@ -38,13 +38,13 @@ pub async fn notification_worker(
                     error!(%email, %err, "failed to send password reset notification");
                 }
             }
-            DomainEvents::PasswordForgot { email, name } => {
+            IntegrationEvent::PasswordForgotEmailRequested { email, name } => {
                 let msg = PasswordForgotNotification { name: name };
                 if let Err(err) = handler.send(&email, msg).await {
                     error!(%email, %err, "failed to send password forgot notification");
                 }
             }
-            DomainEvents::PasswordChanged { email, name } => {
+            IntegrationEvent::PasswordChangedEmailRequested { email, name } => {
                 let msg = PasswordChangedNotification { name: name };
                 if let Err(err) = handler.send(&email, msg).await {
                     error!(%email, %err, "failed to send password changed notification");

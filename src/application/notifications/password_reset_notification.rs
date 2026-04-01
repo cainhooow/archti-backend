@@ -1,4 +1,4 @@
-use crate::domain::notifications::EmailMessage;
+use crate::application::notifications::EmailMessage;
 
 pub struct PasswordResetNotification {
     pub name: String,

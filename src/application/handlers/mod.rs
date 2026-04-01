@@ -1,6 +1,8 @@
 use crate::{
-    application::ports::{mailer::Mailer, template_renderer::TemplateRenderer},
-    domain::notifications::EmailMessage,
+    application::{
+        notifications::EmailMessage,
+        ports::{mailer::Mailer, template_renderer::TemplateRenderer},
+    },
 };
 
 pub struct NotificationHandler {

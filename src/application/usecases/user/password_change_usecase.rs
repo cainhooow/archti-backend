@@ -2,13 +2,11 @@ use tokio::sync::mpsc;
 
 use crate::{
     application::{
+        events::IntegrationEvent,
         exceptions::{AppError, AppResult},
         ports::password_hasher::PasswordHasher,
     },
-    domain::{
-        events::DomainEvents,
-        repositories::user_repository_interface::{UserReadRepository, UserUpdateRepository},
-    },
+    domain::repositories::user_repository_interface::{UserReadRepository, UserUpdateRepository},
 };
 
 pub struct ChangePasswordCommand {
@@ -24,7 +22,7 @@ where
 {
     pub repository: R,
     pub hasher: H,
-    pub sender: mpsc::UnboundedSender<DomainEvents>,
+    pub sender: mpsc::UnboundedSender<IntegrationEvent>,
 }
 
 impl<R, H> ChangePasswordUseCase<R, H>
@@ -32,7 +30,7 @@ where
     R: UserUpdateRepository + UserReadRepository,
     H: PasswordHasher,
 {
-    pub fn new(repository: R, hasher: H, sender: mpsc::UnboundedSender<DomainEvents>) -> Self {
+    pub fn new(repository: R, hasher: H, sender: mpsc::UnboundedSender<IntegrationEvent>) -> Self {
         Self {
             repository,
             hasher,
@@ -69,7 +67,7 @@ where
             .map_err(|_| AppError::Repository(format!("Failed to update password")))?;
 
         self.sender
-            .send(DomainEvents::PasswordChanged {
+            .send(IntegrationEvent::PasswordChangedEmailRequested {
                 email: user.email().to_string(),
                 name: user.full_name().to_string(),
             })

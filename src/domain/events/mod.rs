@@ -1,21 +1,6 @@
-#[derive(Debug)]
-pub enum DomainEvents {
-    UserRegistered {
-        email: String,
-        name: String,
-    },
-
-    PasswordChanged {
-        email: String,
-        name: String,
-    },
-    PasswordForgot {
-        email: String,
-        name: String,
-    },
-    PasswordReset {
-        email: String,
-        name: String,
-        link: String,
-    },
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DomainEvent {
+    UserRegistered { user_id: String },
+    PasswordResetRequested { user_id: String },
+    PasswordChanged { user_id: String },
 }
