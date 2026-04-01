@@ -53,7 +53,7 @@ where
             .repository
             .by_email(&command.email)
             .await
-            .map_err(|_| AppError::NotFound(format!("User not found")))?;
+            .map_err(|_| AppError::AuthenticationFailed)?;
 
         if !self.hasher.verify(&command.password, &user.password_hash()) {
             return Err(AppError::AuthenticationFailed);

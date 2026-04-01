@@ -45,16 +45,16 @@ where
             .hasher
             .verify(&command.old_password, user.password_hash())
         {
-            return Err(AppError::Unexpected(format!("Invalid password")));
+            return Err(AppError::AuthenticationFailed);
         }
 
         if self
             .hasher
             .verify(&command.new_password, user.password_hash())
         {
-            return Err(AppError::Unexpected(format!(
-                "You cannot set a new password that is the same as the old one"
-            )));
+            return Err(AppError::RuleViolation(
+                "You cannot set a new password that is the same as the old one".to_string(),
+            ));
         }
 
         let new_hash = self.hasher.hash(&command.new_password)?;
