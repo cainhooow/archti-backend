@@ -4,11 +4,9 @@ use garde::Validate;
 use salvo::prelude::*;
 
 use crate::{
-    application::usecases::company::create_company_usecase::{
-        CreateCompanyCommand, CreateCompanyUseCase,
-    },
+    application::company::RegisterCompanyCommand,
     infrastructure::{
-        http::HttpState,
+        http::{HttpState, middlewares::auth_middleware::DEPOT_KEY_ID},
         interfaces::http::{
             exceptions::HttpError,
             resources::{
@@ -16,7 +14,6 @@ use crate::{
                 company_resources::{CompanyRequest, CompanyResource},
             },
         },
-        persistence::sea_orm_company_repository::SeaOrmCompanyRepository,
     },
 };
 
@@ -30,14 +27,23 @@ pub async fn create_company_handler(
         .obtain::<Arc<HttpState>>()
         .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state.")))?;
 
-    let repository = SeaOrmCompanyRepository::new(state.app.db.clone());
+    let user_id = depot
+        .get::<String>(DEPOT_KEY_ID)
+        .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain user id.")))?;
+    let user = state
+        .app
+        .identity
+        .current_user(String::from(user_id))
+        .await?;
 
     match req.parse_body::<CompanyRequest>().await {
         Ok(validator) => {
             validator.validate()?;
 
-            let company = CreateCompanyUseCase::new(repository)
-                .execute(CreateCompanyCommand {
+            let registry = state
+                .app
+                .company
+                .register_company(RegisterCompanyCommand {
                     legal_name: validator.legal_name,
                     trade_name: validator.trade_name,
                     service_type: validator.service_type,
@@ -47,11 +53,15 @@ pub async fn create_company_handler(
                     secondary_phone: validator.secondary_phone,
                     operational_base: validator.operational_base,
                     notes: validator.notes,
+                    owner_id: user.id().map(str::to_string).unwrap(),
+                    owner_display_name: user.full_name().to_string(),
                 })
                 .await?;
 
             res.status_code(StatusCode::CREATED);
-            res.render(DataResponse::success(CompanyResource::from(company)));
+            res.render(DataResponse::success(CompanyResource::from(
+                registry.company,
+            )));
             Ok(())
         }
         Err(e) => {
