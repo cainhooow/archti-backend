@@ -25,11 +25,11 @@ pub async fn change_password_handler(
 ) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<HttpState>>()
-        .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
+        .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
     let user_id = depot
         .get::<String>(DEPOT_KEY_ID)
-        .map_err(|_| HttpError::InternalServerError(format!("Failed to get user depot key")))?
+        .map_err(|_| HttpError::InternalServerError("Failed to get user depot key".to_string()))?
         .to_owned();
 
     match req.parse_body::<ChangePasswordRequest>().await {
@@ -49,12 +49,12 @@ pub async fn change_password_handler(
             if is_changed {
                 res.status_code(StatusCode::OK);
                 res.render(DataResponse::success(MessageResource {
-                    message: format!("Password changed successfully."),
+                    message: "Password changed successfully.".to_string(),
                 }));
             } else {
                 res.status_code(StatusCode::FORBIDDEN);
                 res.render(DataResponse::error(MessageResource {
-                    message: format!("Failed to change password"),
+                    message: "Failed to change password".to_string(),
                 }));
             }
         }

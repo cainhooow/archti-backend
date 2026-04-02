@@ -18,12 +18,12 @@ pub async fn auth_me_handler(
 ) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<HttpState>>()
-        .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
+        .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
     let user_id = depot
         .get::<String>(DEPOT_KEY_ID)
         .map_err(|_| {
-            HttpError::InternalServerError(format!("Failed to obtain user id from depot"))
+            HttpError::InternalServerError("Failed to obtain user id from depot".to_string())
         })?
         .to_owned();
 

@@ -21,12 +21,12 @@ pub async fn forgot_password_handler(
 ) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<HttpState>>()
-        .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
+        .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
     if let Ok(_) = depot.get::<String>(DEPOT_KEY_ID) {
-        return Err(HttpError::Unauthorized(format!(
-            "Account already connected. Un-login and try again later."
-        )));
+        return Err(HttpError::Unauthorized(
+            "Account already connected. Un-login and try again later.".to_string(),
+        ));
     }
 
     match req.parse_body::<PasswordForgotRequest>().await {

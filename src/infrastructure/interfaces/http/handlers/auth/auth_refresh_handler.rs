@@ -31,9 +31,9 @@ pub async fn auth_refresh_handler(
 ) -> Result<(), HttpError> {
     let state = depot
         .obtain::<Arc<HttpState>>()
-        .map_err(|_| HttpError::InternalServerError(format!("Failed to obtain app state")))?;
+        .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
-    let cookie_service = state.app.cookie_service.clone();
+    let cookie_service = &state.app.cookie_service;
 
     if let Some(refresh_cookie) = req.cookies().get(COOKIE_REFRESH_NAME) {
         let refreshed = state
