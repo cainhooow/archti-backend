@@ -26,6 +26,11 @@ impl CreateAdminUserCommand {
         let full_name = prompt("Full name")?;
         let phone = prompt_optional("Phone (optional)")?;
         let password = prompt("Password")?;
+        let confirm_password = prompt("Confirm password")?;
+
+        if password != confirm_password {
+            return Err("Passwords do not match".into());
+        }
 
         println!("email: {email}");
         println!("full_name: {full_name}");
