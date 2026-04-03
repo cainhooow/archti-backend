@@ -7,7 +7,7 @@ pub async fn estabilish_connection() -> DatabaseConnection {
     match Database::connect(&database_url).await {
         Ok(connection) => connection,
         Err(err) => {
-            panic!("Failed to connect database {:}", err.to_string());
+            panic!("Failed to connect database {:}", err);
         }
     }
 }

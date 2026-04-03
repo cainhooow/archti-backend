@@ -38,7 +38,7 @@ pub async fn auth_refresh_handler(
     let refresh_token = req
         .parse_body::<RefreshRequest>()
         .await
-        .and_then(|s| Ok(s.refresh_token.to_string()))
+        .map(|s| s.refresh_token.to_string())
         .or_else(|_| {
             req.cookie(COOKIE_REFRESH_NAME)
                 .map(|c| c.value().to_string())
@@ -49,7 +49,7 @@ pub async fn auth_refresh_handler(
 
     let refreshed = state.app.identity.refresh_session(refresh_token).await?;
 
-    _ = cookie_service.generate_sessions(&refreshed.access_token, &refreshed.refresh_token, res);
+    cookie_service.generate_sessions(&refreshed.access_token, &refreshed.refresh_token, res);
 
     res.status_code(StatusCode::OK);
     res.render(DataResponse {

@@ -7,8 +7,8 @@ use crate::infrastructure::{
     services::cookie_service::COOKIE_SESSION_NAME,
 };
 
-pub const DEPOT_KEY_ID: &'static str = "user_id";
-pub const DEPOT_KEY_AUTHORIZATION: &'static str = "authorization";
+pub const DEPOT_KEY_ID: &str = "user_id";
+pub const DEPOT_KEY_AUTHORIZATION: &str = "authorization";
 
 pub struct AuthMiddleware;
 
@@ -27,7 +27,7 @@ impl Handler for AuthMiddleware {
             .and_then(|v| v.to_str().ok())
             .and_then(|s| {
                 let parts: Vec<&str> = s.split_whitespace().collect();
-                if parts.get(0) == Some(&"Bearer") {
+                if parts.first() == Some(&"Bearer") {
                     parts.get(1).map(|&t| t.to_string())
                 } else {
                     None

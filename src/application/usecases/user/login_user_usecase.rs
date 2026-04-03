@@ -55,36 +55,24 @@ where
             .await
             .map_err(|_| AppError::AuthenticationFailed)?;
 
-        if !self.hasher.verify(&command.password, &user.password_hash()) {
+        if !self.hasher.verify(&command.password, user.password_hash()) {
             return Err(AppError::AuthenticationFailed);
         }
 
         user.record_login(chrono::Local::now().naive_local())
-            .map_err(|err| {
-                AppError::Unexpected(format!("Failed to record login: {}", err.to_string()))
-            })?;
+            .map_err(|_| AppError::Unexpected("Failed to record login".to_string()))?;
         let user = self.repository.update(&user).await?;
 
         let user_id = user.id().unwrap();
         let access_token = self
             .token_service
             .generate_access_token(user_id)
-            .map_err(|err| {
-                AppError::Unexpected(format!(
-                    "Failed to generate access_token: {}",
-                    err.to_string()
-                ))
-            })?;
+            .map_err(|_| AppError::Unexpected("Failed to generate access_token".to_string()))?;
 
         let refresh_token = self
             .token_service
             .generate_refresh_token(user_id)
-            .map_err(|err| {
-                AppError::Unexpected(format!(
-                    "Failed to generate refresh_token: {}",
-                    err.to_string()
-                ))
-            })?;
+            .map_err(|_| AppError::Unexpected("Failed to generate refresh_token".to_string()))?;
 
         Ok(LoginResponse {
             user,

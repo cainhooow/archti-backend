@@ -30,7 +30,7 @@ pub async fn auth_logout_handler(
     state.app.cookie_service.clear_sessions(res);
 
     res.render(DataResponse::success(Message {
-        message: format!("Logged out successfully"),
+        message: "Logged out successfully".to_string(),
     }));
 
     Ok(())

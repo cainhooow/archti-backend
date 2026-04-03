@@ -153,10 +153,10 @@ impl User {
     }
 
     pub fn record_last_password_change(&mut self, now: NaiveDateTime) -> Result<(), String> {
-        if let Some(last) = self.last_password_changed_at {
-            if now - last < Duration::days(7) {
-                return Err("Password change too recent".to_string());
-            }
+        if let Some(last) = self.last_password_changed_at
+            && now - last < Duration::days(7)
+        {
+            return Err("Password change too recent".to_string());
         }
 
         self.last_password_changed_at = Some(now);

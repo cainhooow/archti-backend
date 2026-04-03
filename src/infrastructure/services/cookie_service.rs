@@ -11,16 +11,16 @@ use crate::application::ports::token_service::TokenOutput;
 #[derive(Default, Debug)]
 pub struct CookieService {}
 
-pub const COOKIE_SESSION_NAME: &'static str = "session";
-pub const COOKIE_REFRESH_NAME: &'static str = "refresh";
+pub const COOKIE_SESSION_NAME: &str = "session";
+pub const COOKIE_REFRESH_NAME: &str = "refresh";
 
 impl CookieService {
     pub fn new() -> Self {
         Self {}
     }
 
-    pub fn session_cookie<'c>(
-        &'c self,
+    pub fn session_cookie(
+        &self,
         name: impl Into<String>,
         value: impl Into<String>,
         duration: Expiration,
@@ -34,11 +34,10 @@ impl CookieService {
             .path("/")
             .expires(duration);
 
-        let cookie = cookie_builder.build();
-        cookie
+        cookie_builder.build()
     }
 
-    pub fn clear_cookie<'c>(&'c self, name: impl Into<String>, res: &mut Response) {
+    pub fn clear_cookie(&self, name: impl Into<String>, res: &mut Response) {
         let app_mode = env::var("APP_ENV").expect("APP_ENV is not defined in .env");
 
         let cookie = Cookie::build((name.into(), ""))
@@ -80,7 +79,7 @@ impl CookieService {
         res.add_cookie(refresh_cookie);
     }
 
-    pub fn clear_sessions<'c>(&'c self, res: &mut Response) {
+    pub fn clear_sessions(&self, res: &mut Response) {
         self.clear_cookie(COOKIE_SESSION_NAME, res);
         self.clear_cookie(COOKIE_REFRESH_NAME, res);
     }

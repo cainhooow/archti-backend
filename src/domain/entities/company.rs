@@ -52,10 +52,8 @@ impl Company {
             return Err("Primary phone is required".to_string());
         }
 
-        if let Some(secondary_phone) = secondary_phone.clone() {
-            if secondary_phone.is_empty() {
-                return Err("Secondary phone cannot be empty".to_string());
-            }
+        if secondary_phone.is_some() && secondary_phone.as_ref().unwrap().is_empty() {
+            return Err("Secondary phone cannot be empty".to_string());
         }
 
         if operational_base.is_empty() {
@@ -114,8 +112,8 @@ impl Company {
             secondary_phone,
             operational_base,
             notes,
-            created_at: created_at,
-            updated_at: updated_at,
+            created_at,
+            updated_at,
         })
     }
 

@@ -22,28 +22,25 @@ pub async fn notification_worker(
         info!(?event, "notification worker received event");
         match event {
             IntegrationEvent::WelcomeEmailRequested { email, name } => {
-                let msg = WelcomeNotification { name: name };
+                let msg = WelcomeNotification { name };
                 if let Err(err) = handler.send(&email, msg).await {
                     error!(%email, %err, "failed to send welcome notification");
                 }
             }
             IntegrationEvent::PasswordResetEmailRequested { email, name, link } => {
-                let msg = PasswordResetNotification {
-                    name: name,
-                    link: link,
-                };
+                let msg = PasswordResetNotification { name, link };
                 if let Err(err) = handler.send(&email, msg).await {
                     error!(%email, %err, "failed to send password reset notification");
                 }
             }
             IntegrationEvent::PasswordForgotEmailRequested { email, name } => {
-                let msg = PasswordForgotNotification { name: name };
+                let msg = PasswordForgotNotification { name };
                 if let Err(err) = handler.send(&email, msg).await {
                     error!(%email, %err, "failed to send password forgot notification");
                 }
             }
             IntegrationEvent::PasswordChangedEmailRequested { email, name } => {
-                let msg = PasswordChangedNotification { name: name };
+                let msg = PasswordChangedNotification { name };
                 if let Err(err) = handler.send(&email, msg).await {
                     error!(%email, %err, "failed to send password changed notification");
                 }

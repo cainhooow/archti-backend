@@ -23,7 +23,7 @@ pub async fn forgot_password_handler(
         .obtain::<Arc<HttpState>>()
         .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
-    if let Ok(_) = depot.get::<String>(DEPOT_KEY_ID) {
+    if depot.get::<String>(DEPOT_KEY_ID).is_ok() {
         return Err(HttpError::Unauthorized(
             "Account already connected. Un-login and try again later.".to_string(),
         ));

@@ -64,7 +64,7 @@ where
         self.repository
             .update(&user)
             .await
-            .map_err(|_| AppError::Unexpected(format!("Failed to update password")))?;
+            .map_err(|_| AppError::Unexpected("Failed to update password".to_string()))?;
 
         self.sender
             .send(IntegrationEvent::PasswordChangedEmailRequested {

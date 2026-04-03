@@ -31,7 +31,7 @@ impl Handler for AppMiddleware {
             .and_then(|v| v.to_str().ok())
             .and_then(|s| {
                 let parts: Vec<&str> = s.split_whitespace().collect();
-                if parts.get(0) == Some(&"Bearer") {
+                if parts.first() == Some(&"Bearer") {
                     parts.get(1).map(|&t| t.to_string())
                 } else {
                     None

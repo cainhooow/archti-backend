@@ -38,12 +38,12 @@ impl CreateUserRepository for SeaOrmUserRepository {
     async fn create(&self, user: &User) -> Result<User, RepositoryError> {
         let model = user::ActiveModel {
             id: Set(Uuid::new_v4()),
-            email: Set(user.email().to_string().clone()),
-            full_name: Set(user.full_name().to_string().clone()),
-            phone: Set(user.phone().as_deref().map(|p| p.to_string()).clone()),
-            status_key: Set(user.status().as_str().to_string().clone()),
+            email: Set(user.email().to_string()),
+            full_name: Set(user.full_name().to_string()),
+            phone: Set(user.phone().map(|p| p.to_string())),
+            status_key: Set(user.status().as_str().to_string()),
             is_super_admin: Set(user.is_super_admin()),
-            password_hash: Set(user.password_hash().to_string().clone()),
+            password_hash: Set(user.password_hash().to_string()),
             ..Default::default()
         };
 
@@ -58,13 +58,13 @@ impl CreateUserRepository for SeaOrmUserRepository {
 impl UserUpdateRepository for SeaOrmUserRepository {
     async fn update(&self, user: &User) -> Result<User, RepositoryError> {
         let model = user::ActiveModel {
-            id: Set(Uuid::from_str(user.id().as_deref().unwrap()).unwrap()),
-            email: Set(user.email().to_string().clone()),
-            full_name: Set(user.full_name().to_string().clone()),
-            phone: Set(user.phone().map(str::to_string).clone()),
-            status_key: Set(user.status().as_str().to_string().clone()),
+            id: Set(Uuid::from_str(user.id().unwrap()).unwrap()),
+            email: Set(user.email().to_string()),
+            full_name: Set(user.full_name().to_string()),
+            phone: Set(user.phone().map(str::to_string)),
+            status_key: Set(user.status().as_str().to_string()),
             is_super_admin: Set(user.is_super_admin()),
-            password_hash: Set(user.password_hash().to_string().clone()),
+            password_hash: Set(user.password_hash().to_string()),
             last_login_at: Set(user.last_login_at()),
             last_password_changed_at: Set(user.last_password_changed_at()),
             ..Default::default()

@@ -25,7 +25,7 @@ impl DocumentEncryptionPort for AppDocumentEncryption {
         let decrypted = magic
             .decrypt_base64_to_bytes(text)
             .map_err(|e| e.to_string())?;
-        let decrypted = decrypted.into_iter().map(|b| b as u8).collect::<Vec<u8>>();
+        let decrypted = decrypted.into_iter().collect::<Vec<u8>>();
 
         Ok(decrypted)
     }

@@ -22,8 +22,8 @@ pub struct JwtAuthService {
     secret: String,
 }
 
-pub const ACCESS_TOKEN_NAME: &'static str = "accesstkn";
-pub const REFRESH_TOKEN_NAME: &'static str = "refreshtkn";
+pub const ACCESS_TOKEN_NAME: &str = "accesstkn";
+pub const REFRESH_TOKEN_NAME: &str = "refreshtkn";
 
 impl JwtAuthService {
     pub fn new(secret: String) -> Self {

@@ -35,11 +35,11 @@ where
     }
 
     pub async fn execute(&self, command: BootstrapAdminCommand) -> AppResult<User> {
-        if let Ok(_) = self.repository.by_email(&command.email).await {
+        if self.repository.by_email(&command.email).await.is_ok() {
             return Err(AppError::Conflict("User already exists".to_string()));
         }
 
-        if let Ok(_) = self.repository.first().await {
+        if self.repository.first().await.is_ok() {
             return Err(AppError::Unexpected(
                 "Bootstrap can only be run once. After the superadmin account is created, this command cannot be run again.".to_string(),
             ));

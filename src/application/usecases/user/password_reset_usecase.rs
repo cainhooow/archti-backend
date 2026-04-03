@@ -55,7 +55,7 @@ where
             .repository
             .by_id(&user_id)
             .await
-            .map_err(|_| AppError::NotFound(format!("User not found")))?;
+            .map_err(|_| AppError::NotFound("User not found".to_string()))?;
 
         if let Some(last_password_change) = user.last_password_changed_at() {
             self.token_service
@@ -69,7 +69,7 @@ where
         self.repository
             .update(&user)
             .await
-            .map_err(|_| AppError::Unexpected(format!("Failed to update user")))?;
+            .map_err(|_| AppError::Unexpected("Failed to update user".to_string()))?;
 
         self.sender
             .send(IntegrationEvent::PasswordChangedEmailRequested {

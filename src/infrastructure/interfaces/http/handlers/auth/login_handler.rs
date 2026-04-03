@@ -37,7 +37,7 @@ pub async fn login_handler(
 
             let login_response = state.app.identity.login(command).await?;
 
-            _ = state.app.cookie_service.generate_sessions(
+            state.app.cookie_service.generate_sessions(
                 &login_response.access_token,
                 &login_response.refresh_token,
                 res,

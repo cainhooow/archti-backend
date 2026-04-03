@@ -30,10 +30,8 @@ impl Role {
             return Err("Name cannot be empty".to_string());
         }
 
-        if let Some(desc) = &description {
-            if desc.is_empty() {
-                return Err("Description cannot be empty".to_string());
-            }
+        if description.is_some() && description.as_ref().unwrap().is_empty() {
+            return Err("Description cannot be empty".to_string());
         }
 
         Ok(Self {

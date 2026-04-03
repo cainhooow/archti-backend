@@ -62,7 +62,9 @@ where
                 name: user.full_name().to_string(),
                 link,
             })
-            .map_err(|_| AppError::Unexpected(format!("Failed to enqueue password reset event")))?;
+            .map_err(|_| {
+                AppError::Unexpected("Failed to enqueue password reset event".to_string())
+            })?;
 
         Ok(())
     }
