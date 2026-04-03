@@ -35,56 +35,30 @@ pub async fn auth_refresh_handler(
 
     let cookie_service = &state.app.cookie_service;
 
-    if let Some(refresh_cookie) = req.cookies().get(COOKIE_REFRESH_NAME) {
-        let refreshed = state
-            .app
-            .identity
-            .refresh_session(refresh_cookie.value().to_string())
-            .await?;
+    let refresh_token = req
+        .parse_body::<RefreshRequest>()
+        .await
+        .and_then(|s| Ok(s.refresh_token.to_string()))
+        .or_else(|_| {
+            req.cookie(COOKIE_REFRESH_NAME)
+                .map(|c| c.value().to_string())
+                .ok_or(HttpError::BadRequest(
+                    "refreshToken is required".to_string(),
+                ))
+        })?;
 
-        _ = cookie_service.generate_sessions(
-            &refreshed.access_token,
-            &refreshed.refresh_token,
-            res,
-        );
+    let refreshed = state.app.identity.refresh_session(refresh_token).await?;
 
-        res.status_code(StatusCode::OK);
-        res.render(DataResponse {
-            success: true,
-            data: Some(RefreshResponse {
-                access_token: refreshed.access_token.token,
-                refresh_token: refreshed.refresh_token.token,
-            }),
-        });
-        return Ok(());
-    } else {
-        match req.parse_body::<RefreshRequest>().await {
-            Ok(request) => {
-                let refreshed = state
-                    .app
-                    .identity
-                    .refresh_session(request.refresh_token)
-                    .await?;
+    _ = cookie_service.generate_sessions(&refreshed.access_token, &refreshed.refresh_token, res);
 
-                _ = state.app.cookie_service.generate_sessions(
-                    &refreshed.access_token,
-                    &refreshed.refresh_token,
-                    res,
-                );
+    res.status_code(StatusCode::OK);
+    res.render(DataResponse {
+        success: true,
+        data: Some(RefreshResponse {
+            access_token: refreshed.access_token.token,
+            refresh_token: refreshed.refresh_token.token,
+        }),
+    });
 
-                res.status_code(StatusCode::OK);
-                res.render(DataResponse {
-                    success: true,
-                    data: Some(RefreshResponse {
-                        access_token: refreshed.access_token.token,
-                        refresh_token: refreshed.refresh_token.token,
-                    }),
-                });
-                return Ok(());
-            }
-            Err(err) => {
-                return Err(HttpError::BadRequest(err.to_string()));
-            }
-        }
-    }
+    Ok(())
 }
