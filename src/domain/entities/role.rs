@@ -47,6 +47,26 @@ impl Role {
         })
     }
 
+    pub fn restore(
+        id: String,
+        company_id: String,
+        code: String,
+        name: String,
+        description: Option<String>,
+        is_system_role: bool,
+        created_at: NaiveDateTime,
+    ) -> Self {
+        Self {
+            id: Some(id),
+            company_id,
+            code,
+            name,
+            description,
+            is_system_role,
+            created_at,
+        }
+    }
+
     pub fn id(&self) -> Option<&str> {
         self.id.as_deref()
     }
