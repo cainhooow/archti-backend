@@ -6,7 +6,7 @@ use crate::{
         exceptions::{AppError, AppResult},
         ports::password_hasher::PasswordHasher,
     },
-    domain::repositories::user_repository_interface::{UserReadRepository, UserUpdateRepository},
+    domain::repositories::user_repository_trait::{UserReadRepository, UserUpdateRepository},
 };
 
 pub struct ChangePasswordCommand {

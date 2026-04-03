@@ -7,7 +7,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::domain::repositories::user_repository_interface::{
+use crate::domain::repositories::user_repository_trait::{
     CreateUserRepository, UserReadRepository, UserUpdateRepository,
 };
 

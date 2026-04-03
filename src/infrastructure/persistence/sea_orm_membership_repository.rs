@@ -4,10 +4,10 @@ use std::str::FromStr;
 use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::domain::repositories::membership_repository_interface::MembershipReadRepository;
+use crate::domain::repositories::membership_repository_trait::MembershipReadRepository;
 use crate::domain::{
     entities::company_membership::CompanyMembership, exceptions::RepositoryError,
-    repositories::membership_repository_interface::CreateMembershipRepository,
+    repositories::membership_repository_trait::CreateMembershipRepository,
 };
 
 use crate::infrastructure::entities::company_membership;

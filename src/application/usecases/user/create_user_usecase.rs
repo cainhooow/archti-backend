@@ -1,7 +1,7 @@
 use tokio::sync::mpsc;
 
 use crate::domain::{
-    entities::user::User, repositories::user_repository_interface::CreateUserRepository,
+    entities::user::User, repositories::user_repository_trait::CreateUserRepository,
 };
 
 use std::sync::Arc;

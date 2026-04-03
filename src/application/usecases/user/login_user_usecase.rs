@@ -8,7 +8,7 @@ use crate::{
     },
     domain::{
         entities::user::User,
-        repositories::user_repository_interface::{UserReadRepository, UserUpdateRepository},
+        repositories::user_repository_trait::{UserReadRepository, UserUpdateRepository},
     },
 };
 

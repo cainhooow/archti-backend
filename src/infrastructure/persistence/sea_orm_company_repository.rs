@@ -3,11 +3,11 @@ use sea_orm::{ActiveValue::Set, DatabaseConnection};
 use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::domain::repositories::company_repository_interface::CompanyReadRepository;
+use crate::domain::repositories::company_repository_trait::CompanyReadRepository;
 use crate::domain::value_objects::document_vo::Document;
 use crate::domain::{
     entities::company::Company, exceptions::RepositoryError,
-    repositories::company_repository_interface::CreateCompanyRepository,
+    repositories::company_repository_trait::CreateCompanyRepository,
 };
 
 use crate::infrastructure::entities::company;

@@ -9,7 +9,7 @@ use crate::{
             password_reset_token_service::PasswordResetTokenService,
         },
     },
-    domain::repositories::user_repository_interface::{UserReadRepository, UserUpdateRepository},
+    domain::repositories::user_repository_trait::{UserReadRepository, UserUpdateRepository},
 };
 
 pub struct PasswordResetCommand {

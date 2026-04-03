@@ -5,7 +5,7 @@ use crate::{
     },
     domain::{
         entities::user::User,
-        repositories::user_repository_interface::{CreateUserRepository, UserReadRepository},
+        repositories::user_repository_trait::{CreateUserRepository, UserReadRepository},
     },
 };
 

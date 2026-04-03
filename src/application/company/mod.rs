@@ -9,8 +9,8 @@ use crate::{
             company_membership::{CompanyMembership, MembershipStatus, MembershipType},
         },
         repositories::{
-            company_repository_interface::{CompanyReadRepository, CreateCompanyRepository},
-            membership_repository_interface::CreateMembershipRepository,
+            company_repository_trait::{CompanyReadRepository, CreateCompanyRepository},
+            membership_repository_trait::CreateMembershipRepository,
         },
     },
 };

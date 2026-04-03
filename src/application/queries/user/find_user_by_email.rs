@@ -1,6 +1,6 @@
 use crate::domain::{
     entities::user::User, exceptions::RepositoryError,
-    repositories::user_repository_interface::UserReadRepository,
+    repositories::user_repository_trait::UserReadRepository,
 };
 
 pub struct FindUserByEmail {

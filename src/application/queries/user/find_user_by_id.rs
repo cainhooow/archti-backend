@@ -1,6 +1,6 @@
 use crate::application::exceptions::AppResult;
 use crate::domain::{
-    entities::user::User, repositories::user_repository_interface::UserReadRepository,
+    entities::user::User, repositories::user_repository_trait::UserReadRepository,
 };
 
 pub struct FindUserById {

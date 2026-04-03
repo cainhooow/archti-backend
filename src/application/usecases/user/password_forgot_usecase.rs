@@ -6,7 +6,7 @@ use crate::{
         exceptions::{AppError, AppResult},
         ports::password_reset_token_service::PasswordResetTokenService,
     },
-    domain::repositories::user_repository_interface::UserReadRepository,
+    domain::repositories::user_repository_trait::UserReadRepository,
 };
 
 pub struct RequestPasswordResetCommand {

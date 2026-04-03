@@ -21,7 +21,7 @@ use crate::{
     },
     domain::{
         entities::user::User,
-        repositories::user_repository_interface::{
+        repositories::user_repository_trait::{
             CreateUserRepository, UserReadRepository, UserUpdateRepository,
         },
     },
