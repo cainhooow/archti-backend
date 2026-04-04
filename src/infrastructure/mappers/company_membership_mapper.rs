@@ -2,9 +2,7 @@ use crate::domain::entities::company_membership::CompanyMembership as DomainComp
 use crate::domain::entities::company_membership::{
     CompanyMembership, MembershipStatus, MembershipType,
 };
-use crate::infrastructure::entities::company_membership::{
-    Model as CompanyMembershipModel, ModelEx as CompanyMembershipModelEx,
-};
+use crate::infrastructure::entities::company_membership::Model as CompanyMembershipModel;
 
 impl TryFrom<CompanyMembershipModel> for DomainCompanyMembership {
     type Error = String;

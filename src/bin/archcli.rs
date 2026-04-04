@@ -24,6 +24,7 @@ async fn main() {
             }
         }
         Some("init-permissions") => {}
+        Some("create-permissions") => {}
         Some(other) => {
             eprintln!("Unknown command {other}");
             std::process::exit(1);
