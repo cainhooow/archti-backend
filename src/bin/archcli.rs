@@ -23,6 +23,7 @@ async fn main() {
                 std::process::exit(1);
             }
         }
+        Some("init-permissions") => {}
         Some(other) => {
             eprintln!("Unknown command {other}");
             std::process::exit(1);
