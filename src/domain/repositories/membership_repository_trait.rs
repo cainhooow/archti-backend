@@ -46,7 +46,7 @@ where
 
 #[async_trait::async_trait]
 pub trait MembershipReadRepository: Send + Sync {
-    async fn by_id(&self, membership_id: String) -> Result<CompanyMembership, RepositoryError>;
+    async fn by_id(&self, membership_id: &str) -> Result<CompanyMembership, RepositoryError>;
 }
 
 #[async_trait::async_trait]
@@ -54,19 +54,18 @@ impl<T> MembershipReadRepository for Arc<T>
 where
     T: MembershipReadRepository + ?Sized,
 {
-    async fn by_id(&self, membership_id: String) -> Result<CompanyMembership, RepositoryError> {
+    async fn by_id(&self, membership_id: &str) -> Result<CompanyMembership, RepositoryError> {
         (**self).by_id(membership_id).await
     }
 }
 
 #[async_trait::async_trait]
 pub trait MembershipRoleRepository: Send + Sync {
-    async fn assign_role(&self, membership_id: String, role: String)
-    -> Result<(), RepositoryError>;
-    async fn remove_role(&self, membership_id: String, role: String)
-    -> Result<(), RepositoryError>;
-    async fn list_roles(&self, membership_id: String) -> Result<Vec<String>, RepositoryError>;
-    async fn has_role(&self, membership_id: String, role: String) -> Result<bool, RepositoryError>;
+    async fn assign_role(
+        &self,
+        membership_id: String,
+        role_id: String,
+    ) -> Result<(), RepositoryError>;
 }
 
 #[async_trait::async_trait]
@@ -77,21 +76,8 @@ where
     async fn assign_role(
         &self,
         membership_id: String,
-        role: String,
+        role_id: String,
     ) -> Result<(), RepositoryError> {
-        (**self).assign_role(membership_id, role).await
-    }
-    async fn remove_role(
-        &self,
-        membership_id: String,
-        role: String,
-    ) -> Result<(), RepositoryError> {
-        (**self).remove_role(membership_id, role).await
-    }
-    async fn list_roles(&self, membership_id: String) -> Result<Vec<String>, RepositoryError> {
-        (**self).list_roles(membership_id).await
-    }
-    async fn has_role(&self, membership_id: String, role: String) -> Result<bool, RepositoryError> {
-        (**self).has_role(membership_id, role).await
+        (**self).assign_role(membership_id, role_id).await
     }
 }
