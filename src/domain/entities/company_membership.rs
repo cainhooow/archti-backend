@@ -146,6 +146,8 @@ impl CompanyMembership {
         &self.membership_type
     }
 
+    // pub fn assign_role(&mut self, role: MembershipRole) -> Result<bool, String> {}
+
     pub fn status(&self) -> &MembershipStatus {
         &self.status_key
     }
