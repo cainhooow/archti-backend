@@ -2,7 +2,9 @@ use std::sync::Arc;
 
 use archti_backend::infrastructure::database::estabilish_connection;
 
+use crate::commands::create_permission::CreatePermissionCliCommand;
 use crate::commands::create_admin_user::CreateAdminUserCommand;
+use crate::commands::init_default_permissions::InitDefaultPermissionsCommand;
 mod cli;
 mod commands;
 
@@ -14,7 +16,7 @@ async fn main() {
     let args: Vec<String> = std::env::args().collect();
 
     let command = args.get(1).map(String::as_str);
-    let _params = args.iter().skip(2).cloned().collect::<Vec<_>>();
+    let params = args.iter().skip(2).cloned().collect::<Vec<_>>();
 
     match command {
         Some("create-admin-user") => {
@@ -23,8 +25,18 @@ async fn main() {
                 std::process::exit(1);
             }
         }
-        Some("init-permissions") => {}
-        Some("create-permissions") => {}
+        Some("init-permissions") => {
+            if let Err(err) = InitDefaultPermissionsCommand::new(db).handle().await {
+                eprintln!("Error: {err}");
+                std::process::exit(1);
+            }
+        }
+        Some("create-permission") | Some("create-permissions") => {
+            if let Err(err) = CreatePermissionCliCommand::new(db).handle(&params).await {
+                eprintln!("Error: {err}");
+                std::process::exit(1);
+            }
+        }
         Some(other) => {
             eprintln!("Unknown command {other}");
             std::process::exit(1);

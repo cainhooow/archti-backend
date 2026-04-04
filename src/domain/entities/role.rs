@@ -1,5 +1,11 @@
 use chrono::NaiveDateTime;
 
+pub const COMPANY_OWNER_CODE: &str = "company.owner";
+pub const COMPANY_OWNER_NAME: &str = "Company Owner";
+pub const COMPANY_OWNER_DESCRIPTION: &str =
+    "System role automatically granted to the company creator";
+
+#[derive(Debug, Clone)]
 pub struct Role {
     pub id: Option<String>,
     pub company_id: String,
@@ -19,6 +25,11 @@ impl Role {
         is_system_role: bool,
         created_at: NaiveDateTime,
     ) -> Result<Self, String> {
+        let company_id = company_id.trim().to_string();
+        let code = code.trim().to_string();
+        let name = name.trim().to_string();
+        let description = description.map(|value| value.trim().to_string());
+
         if company_id.is_empty() {
             return Err("Company ID cannot be empty".to_string());
         }
@@ -32,6 +43,10 @@ impl Role {
 
         if description.is_some() && description.as_ref().unwrap().is_empty() {
             return Err("Description cannot be empty".to_string());
+        }
+
+        if !is_valid_role_code(&code) {
+            return Err("Role code must use lowercase letters, numbers, dots, or underscores".to_string());
         }
 
         Ok(Self {
@@ -91,5 +106,36 @@ impl Role {
 
     pub fn created_at(&self) -> NaiveDateTime {
         self.created_at
+    }
+}
+
+fn is_valid_role_code(value: &str) -> bool {
+    let mut chars = value.chars();
+
+    match chars.next() {
+        Some(first) if first.is_ascii_lowercase() => {}
+        _ => return false,
+    }
+
+    chars.all(|ch| ch.is_ascii_lowercase() || ch.is_ascii_digit() || ch == '.' || ch == '_')
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Role;
+
+    #[test]
+    fn rejects_role_code_with_uppercase_letters() {
+        let error = Role::create(
+            "company-id".to_string(),
+            "Company.Owner".to_string(),
+            "Owner".to_string(),
+            None,
+            true,
+            chrono::Local::now().naive_local(),
+        )
+        .expect_err("role should be rejected");
+
+        assert!(error.contains("Role code must use lowercase"));
     }
 }

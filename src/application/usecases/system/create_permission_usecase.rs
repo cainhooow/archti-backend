@@ -2,6 +2,7 @@ use crate::{
     application::exceptions::{AppError, AppResult},
     domain::{
         entities::permission::Permission,
+        exceptions::RepositoryError,
         repositories::permission_repository_trait::{
             PermissionCreateRepository, PermissionReadRepository,
         },
@@ -31,11 +32,15 @@ where
     }
 
     pub async fn execute(&self, command: CreatePermissionCommand) -> AppResult<Permission> {
-        if self.repository.by_code(&command.code).await.is_ok() {
-            return Err(AppError::Conflict(format!(
-                "Permission with code '{}' already exists",
-                command.code
-            )));
+        match self.repository.by_code(&command.code).await {
+            Ok(_) => {
+                return Err(AppError::Conflict(format!(
+                    "Permission with code '{}' already exists",
+                    command.code
+                )));
+            }
+            Err(RepositoryError::NotFound) => {}
+            Err(err) => return Err(err.into()),
         }
 
         let permission = Permission::create(

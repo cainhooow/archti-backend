@@ -20,7 +20,11 @@ where
 #[async_trait::async_trait]
 pub trait RoleReadRepository: Send + Sync {
     async fn find_by_id(&self, id: &str) -> Result<Role, RepositoryError>;
-    async fn find_by_code(&self, code: &str) -> Result<Role, RepositoryError>;
+    async fn find_by_company_and_code(
+        &self,
+        company_id: &str,
+        code: &str,
+    ) -> Result<Role, RepositoryError>;
 }
 
 #[async_trait::async_trait]
@@ -32,7 +36,34 @@ where
         (**self).find_by_id(id).await
     }
 
-    async fn find_by_code(&self, code: &str) -> Result<Role, RepositoryError> {
-        (**self).find_by_code(code).await
+    async fn find_by_company_and_code(
+        &self,
+        company_id: &str,
+        code: &str,
+    ) -> Result<Role, RepositoryError> {
+        (**self).find_by_company_and_code(company_id, code).await
+    }
+}
+
+#[async_trait::async_trait]
+pub trait RolePermissionRepository: Send + Sync {
+    async fn assign_permission(
+        &self,
+        role_id: &str,
+        permission_code: &str,
+    ) -> Result<(), RepositoryError>;
+}
+
+#[async_trait::async_trait]
+impl<T> RolePermissionRepository for Arc<T>
+where
+    T: RolePermissionRepository + ?Sized,
+{
+    async fn assign_permission(
+        &self,
+        role_id: &str,
+        permission_code: &str,
+    ) -> Result<(), RepositoryError> {
+        (**self).assign_permission(role_id, permission_code).await
     }
 }

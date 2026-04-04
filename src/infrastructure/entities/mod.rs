@@ -6,4 +6,5 @@ pub mod order;
 pub mod permission;
 pub mod prelude;
 pub mod role;
+pub mod role_permission;
 pub mod user;

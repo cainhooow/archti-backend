@@ -152,6 +152,10 @@ impl CompanyMembership {
         &self.status_key
     }
 
+    pub fn is_active(&self) -> bool {
+        matches!(self.status_key, MembershipStatus::Active)
+    }
+
     pub fn display_name(&self) -> Option<String> {
         self.display_name.clone()
     }

@@ -9,6 +9,7 @@ use crate::{
         events::IntegrationEvent,
         handlers::NotificationHandler,
         identity::IdentityApplication,
+        services::access_control_service::AccessControlService,
         ports::{
             document_encryption::DocumentEncryption, password_hasher::PasswordHasher,
             password_reset_token_service::PasswordResetTokenService, token_service::TokenService,
@@ -20,6 +21,8 @@ use crate::{
         persistence::{
             sea_orm_company_repository::SeaOrmCompanyRepository,
             sea_orm_membership_repository::SeaOrmMembershipRepository,
+            sea_orm_permission_repository::SeaOrmPermissionRepository,
+            sea_orm_role_repository::SeaOrmRoleRepository,
             sea_orm_user_repository::SeaOrmUserRepository,
         },
         renderer::{HandlebarsRenderer, InlineCssRenderer},
@@ -32,8 +35,14 @@ use crate::{
 };
 
 pub type IdentityApp = IdentityApplication<Arc<SeaOrmUserRepository>>;
-pub type CompanyApp =
-    CompanyApplication<Arc<SeaOrmCompanyRepository>, Arc<SeaOrmMembershipRepository>>;
+pub type AccessControlApp =
+    AccessControlService<Arc<SeaOrmUserRepository>, Arc<SeaOrmMembershipRepository>>;
+pub type CompanyApp = CompanyApplication<
+    Arc<SeaOrmCompanyRepository>,
+    Arc<SeaOrmMembershipRepository>,
+    Arc<SeaOrmRoleRepository>,
+    Arc<SeaOrmPermissionRepository>,
+>;
 
 pub struct AppContainer {
     pub db: Arc<DatabaseConnection>,
@@ -42,6 +51,7 @@ pub struct AppContainer {
     pub cookie_service: Arc<CookieService>,
     pub notifications: Arc<NotificationHandler>,
     pub identity: Arc<IdentityApp>,
+    pub access_control: Arc<AccessControlApp>,
     pub company: Arc<CompanyApp>,
 }
 
@@ -105,6 +115,12 @@ pub async fn build_app_container(tx: mpsc::UnboundedSender<IntegrationEvent>) ->
     let company = Arc::new(CompanyApplication::new(
         Arc::new(SeaOrmCompanyRepository::new(db.clone())),
         Arc::new(SeaOrmMembershipRepository::new(db.clone())),
+        Arc::new(SeaOrmRoleRepository::new(db.clone())),
+        Arc::new(SeaOrmPermissionRepository::new(db.clone())),
+    ));
+    let access_control = Arc::new(AccessControlService::new(
+        Arc::new(SeaOrmUserRepository::new(db.clone())),
+        Arc::new(SeaOrmMembershipRepository::new(db.clone())),
     ));
 
     Arc::new(AppContainer {
@@ -114,6 +130,7 @@ pub async fn build_app_container(tx: mpsc::UnboundedSender<IntegrationEvent>) ->
         cookie_service: Arc::new(CookieService::new()),
         notifications: Arc::new(notification_handler),
         identity,
+        access_control,
         company,
     })
 }
