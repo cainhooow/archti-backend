@@ -19,8 +19,8 @@ where
 
 #[async_trait::async_trait]
 pub trait RoleReadRepository: Send + Sync {
-    async fn find_by_id(&self, id: &str) -> Result<Role, RepositoryError>;
-    async fn find_by_company_and_code(
+    async fn by_id(&self, id: &str) -> Result<Role, RepositoryError>;
+    async fn by_company_and_code(
         &self,
         company_id: &str,
         code: &str,
@@ -32,16 +32,16 @@ impl<T> RoleReadRepository for Arc<T>
 where
     T: RoleReadRepository + ?Sized,
 {
-    async fn find_by_id(&self, id: &str) -> Result<Role, RepositoryError> {
-        (**self).find_by_id(id).await
+    async fn by_id(&self, id: &str) -> Result<Role, RepositoryError> {
+        (**self).by_id(id).await
     }
 
-    async fn find_by_company_and_code(
+    async fn by_company_and_code(
         &self,
         company_id: &str,
         code: &str,
     ) -> Result<Role, RepositoryError> {
-        (**self).find_by_company_and_code(company_id, code).await
+        (**self).by_company_and_code(company_id, code).await
     }
 }
 

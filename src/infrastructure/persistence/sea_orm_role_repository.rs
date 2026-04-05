@@ -45,7 +45,7 @@ impl RoleCreateRepository for SeaOrmRoleRepository {
 
 #[async_trait::async_trait]
 impl RoleReadRepository for SeaOrmRoleRepository {
-    async fn find_by_id(&self, id: &str) -> Result<Role, RepositoryError> {
+    async fn by_id(&self, id: &str) -> Result<Role, RepositoryError> {
         let id = Uuid::parse_str(id).map_err(|err| RepositoryError::Generic(err.to_string()))?;
 
         match role::Entity::find_by_id(id).one(&*self.conn).await {
@@ -55,7 +55,7 @@ impl RoleReadRepository for SeaOrmRoleRepository {
         }
     }
 
-    async fn find_by_company_and_code(
+    async fn by_company_and_code(
         &self,
         company_id: &str,
         code: &str,
@@ -83,7 +83,7 @@ impl RolePermissionRepository for SeaOrmRoleRepository {
         role_id: &str,
         permission_code: &str,
     ) -> Result<(), RepositoryError> {
-        let role = self.find_by_id(role_id).await?;
+        let role = self.by_id(role_id).await?;
         let role_id = Uuid::parse_str(role.id().ok_or(RepositoryError::NotFound)?)
             .map_err(|err| RepositoryError::Generic(err.to_string()))?;
 

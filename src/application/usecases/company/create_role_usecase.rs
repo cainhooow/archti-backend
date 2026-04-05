@@ -33,7 +33,7 @@ where
     pub async fn execute(&self, command: CreateCompanyRoleCommand) -> AppResult<Role> {
         match self
             .repository
-            .find_by_company_and_code(&command.company_id, &command.code)
+            .by_company_and_code(&command.company_id, &command.code)
             .await
         {
             Ok(role) => return Ok(role),
