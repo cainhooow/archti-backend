@@ -3,8 +3,7 @@ use std::sync::Arc;
 use salvo::prelude::*;
 
 use crate::infrastructure::{
-    http::HttpState, interfaces::http::resources::DataResponse,
-    services::cookie_service::COOKIE_SESSION_NAME,
+    http::HttpState, http::resources::DataResponse, services::cookie_service::COOKIE_SESSION_NAME,
 };
 
 pub const DEPOT_KEY_ID: &str = "user_id";

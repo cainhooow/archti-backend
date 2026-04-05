@@ -11,7 +11,7 @@ use crate::{
     infrastructure::{
         bootstrap::build_app_container,
         http::{middlewares::app_middleware::AppMiddleware, state::HttpState},
-        interfaces::http::routers::*,
+        http::routers::*,
     },
 };
 
