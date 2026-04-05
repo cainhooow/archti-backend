@@ -27,15 +27,14 @@ use crate::{
     },
 };
 
-pub trait IdentityUserRepository:
-    CreateUserRepository + UserReadRepository + UserUpdateRepository
-{
-}
+pub trait IdentityUserRepository: CreateUserRepository 
+    + UserReadRepository 
+    + UserUpdateRepository {}
 
-impl<T> IdentityUserRepository for T where
-    T: CreateUserRepository + UserReadRepository + UserUpdateRepository
-{
-}
+impl<T> IdentityUserRepository for T 
+    where T: CreateUserRepository 
+        + UserReadRepository
+        + UserUpdateRepository {}
 
 pub struct RefreshSession {
     pub access_token: TokenOutput,
