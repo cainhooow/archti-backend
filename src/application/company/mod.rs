@@ -27,27 +27,38 @@ use crate::{
     },
 };
 
-pub trait CompanyRepository: CreateCompanyRepository + CompanyReadRepository {}
+pub trait CompanyRepository: 
+    CreateCompanyRepository 
+    + CompanyReadRepository {}
 
-pub trait MembershipRepository: CreateMembershipRepository + MembershipRoleRepository {}
+pub trait MembershipRepository: 
+    CreateMembershipRepository 
+    + MembershipRoleRepository {}
 
-pub trait RoleRepository:
-    RoleCreateRepository + RoleReadRepository + RolePermissionRepository
-{
-}
+pub trait RoleRepository: 
+    RoleCreateRepository 
+    + RoleReadRepository 
+    + RolePermissionRepository {}
+    
+pub trait PermissionRepository: 
+    PermissionCreateRepository 
+    + PermissionReadRepository {}
 
-pub trait PermissionRepository: PermissionCreateRepository + PermissionReadRepository {}
+impl<T> MembershipRepository for T 
+    where T: CreateMembershipRepository + MembershipRoleRepository {}
 
-impl<T> MembershipRepository for T where T: CreateMembershipRepository + MembershipRoleRepository {}
+impl<T> RoleRepository for T 
+    where T: RoleCreateRepository 
+        + RoleReadRepository 
+        + RolePermissionRepository {}
 
-impl<T> RoleRepository for T where
-    T: RoleCreateRepository + RoleReadRepository + RolePermissionRepository
-{
-}
-
-impl<T> PermissionRepository for T where T: PermissionCreateRepository + PermissionReadRepository {}
-
-impl<T> CompanyRepository for T where T: CreateCompanyRepository + CompanyReadRepository {}
+impl<T> PermissionRepository for T 
+    where T: PermissionCreateRepository 
+        + PermissionReadRepository {}
+        
+impl<T> CompanyRepository for T 
+    where T: CreateCompanyRepository 
+        + CompanyReadRepository {}
 
 pub struct CompanyApplication<R, S, T, U>
 where
