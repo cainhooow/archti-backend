@@ -46,7 +46,9 @@ impl Role {
         }
 
         if !is_valid_role_code(&code) {
-            return Err("Role code must use lowercase letters, numbers, dots, or underscores".to_string());
+            return Err(
+                "Role code must use lowercase letters, numbers, dots, or underscores".to_string(),
+            );
         }
 
         Ok(Self {

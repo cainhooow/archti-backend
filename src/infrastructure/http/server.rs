@@ -10,8 +10,8 @@ use crate::{
     application::{events::IntegrationEvent, workers::notification_worker::notification_worker},
     infrastructure::{
         bootstrap::build_app_container,
-        http::{middlewares::app_middleware::AppMiddleware, state::HttpState},
         http::routers::*,
+        http::{middlewares::app_middleware::AppMiddleware, state::HttpState},
     },
 };
 

@@ -60,8 +60,8 @@ impl CreateMembershipRepository for SeaOrmMembershipRepository {
 #[async_trait::async_trait]
 impl MembershipReadRepository for SeaOrmMembershipRepository {
     async fn by_id(&self, membership_id: &str) -> Result<CompanyMembership, RepositoryError> {
-        let membership_id =
-            Uuid::from_str(membership_id).map_err(|err| RepositoryError::Generic(err.to_string()))?;
+        let membership_id = Uuid::from_str(membership_id)
+            .map_err(|err| RepositoryError::Generic(err.to_string()))?;
 
         match company_membership::Entity::find_by_id(membership_id)
             .one(&*self.conn)
@@ -100,9 +100,8 @@ impl MembershipReadRepository for SeaOrmMembershipRepository {
 impl MembershipRoleRepository for SeaOrmMembershipRepository {
     async fn assign_role(&self, membership_id: &str, role_id: &str) -> Result<(), RepositoryError> {
         let membership = self.by_id(membership_id).await?;
-        let membership_uuid =
-            Uuid::from_str(membership.id().ok_or(RepositoryError::NotFound)?)
-                .map_err(|err| RepositoryError::Generic(err.to_string()))?;
+        let membership_uuid = Uuid::from_str(membership.id().ok_or(RepositoryError::NotFound)?)
+            .map_err(|err| RepositoryError::Generic(err.to_string()))?;
         let role_uuid =
             Uuid::from_str(role_id).map_err(|err| RepositoryError::Generic(err.to_string()))?;
 
@@ -156,9 +155,8 @@ impl MembershipRoleRepository for SeaOrmMembershipRepository {
             return Ok(false);
         }
 
-        let membership_id =
-            Uuid::from_str(membership.id().ok_or(RepositoryError::NotFound)?)
-                .map_err(|err| RepositoryError::Generic(err.to_string()))?;
+        let membership_id = Uuid::from_str(membership.id().ok_or(RepositoryError::NotFound)?)
+            .map_err(|err| RepositoryError::Generic(err.to_string()))?;
 
         let membership_roles = membership_role::Entity::find()
             .filter(membership_role::Column::MembershipId.eq(membership_id))
@@ -170,15 +168,16 @@ impl MembershipRoleRepository for SeaOrmMembershipRepository {
             return Ok(false);
         }
 
-        let role_ids: Vec<Uuid> = membership_roles.into_iter().map(|model| model.role_id).collect();
+        let role_ids: Vec<Uuid> = membership_roles
+            .into_iter()
+            .map(|model| model.role_id)
+            .collect();
 
         let scoped_roles = role::Entity::find()
             .filter(role::Column::Id.is_in(role_ids.clone()))
             .filter(
-                role::Column::CompanyId.eq(
-                    Uuid::from_str(company_id)
-                        .map_err(|err| RepositoryError::Generic(err.to_string()))?,
-                ),
+                role::Column::CompanyId.eq(Uuid::from_str(company_id)
+                    .map_err(|err| RepositoryError::Generic(err.to_string()))?),
             )
             .all(&*self.conn)
             .await

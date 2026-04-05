@@ -2,9 +2,7 @@ use crate::{
     application::exceptions::AppResult,
     domain::{
         entities::company::Company,
-        repositories::company_repository_trait::{
-            CompanyReadRepository, CompanyUpdateRepository,
-        },
+        repositories::company_repository_trait::{CompanyReadRepository, CompanyUpdateRepository},
     },
 };
 

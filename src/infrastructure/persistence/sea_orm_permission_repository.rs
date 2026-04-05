@@ -5,7 +5,8 @@ use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, Qu
 use uuid::Uuid;
 
 use crate::domain::{
-    entities::permission::Permission, exceptions::RepositoryError,
+    entities::permission::Permission,
+    exceptions::RepositoryError,
     repositories::permission_repository_trait::{
         PermissionCreateRepository, PermissionReadRepository,
     },

@@ -31,11 +31,15 @@ impl Permission {
         }
 
         if !is_valid_permission_part(&module) {
-            return Err("Module must use lowercase letters, numbers, dots, or underscores".to_string());
+            return Err(
+                "Module must use lowercase letters, numbers, dots, or underscores".to_string(),
+            );
         }
 
         if !is_valid_permission_part(&action) {
-            return Err("Action must use lowercase letters, numbers, dots, or underscores".to_string());
+            return Err(
+                "Action must use lowercase letters, numbers, dots, or underscores".to_string(),
+            );
         }
 
         let expected_code = format!("{}.{}", module, action);

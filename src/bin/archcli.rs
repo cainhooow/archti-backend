@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use archti_backend::infrastructure::database::estabilish_connection;
 
-use crate::commands::create_permission::CreatePermissionCliCommand;
 use crate::commands::create_admin_user::CreateAdminUserCommand;
+use crate::commands::create_permission::CreatePermissionCliCommand;
 use crate::commands::init_default_permissions::InitDefaultPermissionsCommand;
 mod cli;
 mod commands;

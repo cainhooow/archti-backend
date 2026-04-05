@@ -9,11 +9,11 @@ use crate::{
         events::IntegrationEvent,
         handlers::NotificationHandler,
         identity::IdentityApplication,
-        services::access_control_service::AccessControlService,
         ports::{
             document_encryption::DocumentEncryption, password_hasher::PasswordHasher,
             password_reset_token_service::PasswordResetTokenService, token_service::TokenService,
         },
+        services::access_control_service::AccessControlService,
     },
     infrastructure::{
         database::estabilish_connection,

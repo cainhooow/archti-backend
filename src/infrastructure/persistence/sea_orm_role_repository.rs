@@ -1,5 +1,6 @@
 use crate::domain::{
-    entities::role::Role, exceptions::RepositoryError,
+    entities::role::Role,
+    exceptions::RepositoryError,
     repositories::role_repository_trait::{
         RoleCreateRepository, RolePermissionRepository, RoleReadRepository,
     },

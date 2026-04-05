@@ -1,3 +1,10 @@
+/*
+* Base Company registration with 
+* Create company 
+* -> Base roles generated 
+* -> Default permissions for owner
+* -> Roles and permissions assigned to owner
+*/
 use crate::{
     application::{
         exceptions::{AppError, AppResult},
@@ -27,19 +34,28 @@ use crate::{
     },
 };
 
+/**
+ * Repository trait for company entities.
+*/
 pub trait CompanyRepository: 
     CreateCompanyRepository 
     + CompanyReadRepository {}
-
+/**
+ * Repository trait for membership entities.
+ */
 pub trait MembershipRepository: 
     CreateMembershipRepository 
     + MembershipRoleRepository {}
-
+/**
+ * Repository trait for role entities.
+ */
 pub trait RoleRepository: 
     RoleCreateRepository 
     + RoleReadRepository 
     + RolePermissionRepository {}
-    
+/**
+ * Repository trait for permission entities.
+ */
 pub trait PermissionRepository: 
     PermissionCreateRepository 
     + PermissionReadRepository {}
@@ -92,6 +108,9 @@ pub struct RegisterCompanyResult {
     pub owner_membership: CompanyMembership,
 }
 
+/**
+* ApplicationService for registering a company.
+*/
 impl<R, S, T, U> CompanyApplication<R, S, T, U>
 where
     R: CompanyRepository + Clone,
@@ -121,7 +140,7 @@ where
         BootstrapPermissionsUseCase::new(self.permission_repository.clone())
             .execute()
             .await?;
-
+        // Company created here
         let company = CreateCompanyUseCase::new(self.company_reposistory.clone())
             .execute(CreateCompanyCommand {
                 legal_name: command.legal_name,
@@ -135,12 +154,12 @@ where
                 notes: command.notes,
             })
             .await?;
-
+        
         let company_id = company
             .id()
             .ok_or_else(|| AppError::Unexpected("Company created without id".to_string()))?
             .to_string();
-
+        
         let membership = CompanyMembership::register(
             company_id.clone(),
             command.owner_id,
@@ -150,11 +169,13 @@ where
         )
         .map_err(AppError::RuleViolation)?;
 
+        // Owner membership created here
         let owner_membership = self
             .membership_repository
             .create_membership(&membership)
             .await?;
 
+        // Owner role created here
         let owner_role = CreateCompanyRoleUseCase::new(self.role_repository.clone())
             .execute(CreateCompanyRoleCommand {
                 company_id: company_id.clone(),
@@ -180,7 +201,8 @@ where
                 .assign_permission(&owner_role_id, &permission.code())
                 .await?;
         }
-
+        
+        // Owner role permissions assigned here
         self.membership_repository
             .assign_role(&owner_membership_id, &owner_role_id)
             .await?;

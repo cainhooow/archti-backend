@@ -2,9 +2,7 @@ use crate::{
     application::exceptions::{AppError, AppResult},
     domain::{
         entities::company::Company,
-        repositories::company_repository_trait::{
-            CompanyReadRepository, CreateCompanyRepository,
-        },
+        repositories::company_repository_trait::{CompanyReadRepository, CreateCompanyRepository},
         value_objects::document_vo::Document,
     },
 };
