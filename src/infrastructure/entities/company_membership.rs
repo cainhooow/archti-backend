@@ -21,6 +21,8 @@ pub struct Model {
     pub company: Option<super::company::Entity>,
     #[sea_orm(belongs_to, from = "user_id", to = "id")]
     pub user: Option<super::user::Entity>,
+    #[sea_orm(has_many, via = "membership_role")]
+    pub roles: HasMany<super::role::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
