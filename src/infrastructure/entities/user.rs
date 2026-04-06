@@ -17,6 +17,9 @@ pub struct Model {
     pub last_password_changed_at: Option<DateTime>,
     pub created_at: DateTime,
     pub updated_at: DateTime,
+
+    #[sea_orm(has_many)]
+    pub memberships: HasMany<super::company_membership::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

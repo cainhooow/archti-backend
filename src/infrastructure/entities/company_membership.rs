@@ -6,9 +6,7 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
-    #[sea_orm(unique)]
     pub company_id: Uuid,
-    #[sea_orm(unique)]
     pub user_id: Uuid,
     pub membership_type: String,
     pub status_key: String,
@@ -18,6 +16,11 @@ pub struct Model {
     pub last_seen_at: Option<DateTime>,
     pub created_at: Option<DateTime>,
     pub updated_at: Option<DateTime>,
+
+    #[sea_orm(belongs_to, from = "company_id", to = "id")]
+    pub company: Option<super::company::Entity>,
+    #[sea_orm(belongs_to, from = "user_id", to = "id")]
+    pub user: Option<super::user::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

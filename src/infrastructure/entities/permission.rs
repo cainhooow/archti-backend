@@ -13,6 +13,9 @@ pub struct Model {
     #[sea_orm(column_type = "Text", nullable)]
     pub description: Option<String>,
     pub created_at: DateTime,
+
+    #[sea_orm(has_many, via = "role_permission")]
+    pub roles: HasMany<super::role::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

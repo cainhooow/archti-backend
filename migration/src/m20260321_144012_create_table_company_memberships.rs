@@ -26,8 +26,8 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(CompanyMembership::Table)
                     .col(uuid(CompanyMembership::Id).primary_key())
-                    .col(uuid(CompanyMembership::CompanyId).unique_key().not_null())
-                    .col(uuid(CompanyMembership::UserId).unique_key().not_null())
+                    .col(uuid(CompanyMembership::CompanyId).not_null())
+                    .col(uuid(CompanyMembership::UserId).not_null())
                     .col(string_len(CompanyMembership::MembershipType, 40).not_null())
                     .col(
                         string_len(CompanyMembership::StatusKey, 40)
