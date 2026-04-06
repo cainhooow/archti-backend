@@ -5,6 +5,8 @@ use salvo::logging::Logger as SalvoLogger;
 use salvo::prelude::*;
 use tokio::sync::mpsc;
 use tracing_subscriber::EnvFilter;
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::util::SubscriberInitExt;
 
 use crate::{
     application::{events::IntegrationEvent, workers::notification_worker::notification_worker},
@@ -34,11 +36,9 @@ fn create_router(state: Arc<HttpState>) -> Router {
 }
 
 pub async fn http_server_init() {
-    tracing_subscriber::fmt::fmt()
-        .with_env_filter(
-            EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "archgti_backend=debug,salvo=info".into()),
-        )
+    tracing_subscriber::registry()
+        .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("debug")))
+        .with(tracing_subscriber::fmt::layer())
         .init();
 
     let (tx, rx) = mpsc::unbounded_channel::<IntegrationEvent>();
