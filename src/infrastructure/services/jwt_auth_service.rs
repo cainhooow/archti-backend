@@ -15,6 +15,7 @@ pub struct JwtClaims {
     pub sub: String,
     pub exp: i64,
     pub typ: String,
+    pub iat: i64,
 }
 
 #[derive(Debug, Default)]
@@ -64,10 +65,13 @@ impl JwtAuthService {
 impl TokenService for JwtAuthService {
     fn generate_access_token(&self, user_id: &str) -> AppResult<TokenOutput> {
         let exp = (OffsetDateTime::now_utc() + Duration::minutes(15)).unix_timestamp();
+        let now = OffsetDateTime::now_utc().unix_timestamp();
+
         let claims = JwtClaims {
             sub: user_id.to_string(),
             exp,
             typ: ACCESS_TOKEN_NAME.to_string(),
+            iat: now,
         };
 
         let token = self
@@ -82,10 +86,13 @@ impl TokenService for JwtAuthService {
 
     fn generate_refresh_token(&self, user_id: &str) -> AppResult<TokenOutput> {
         let exp = (OffsetDateTime::now_utc() + Duration::days(7)).unix_timestamp();
+        let now = OffsetDateTime::now_utc().unix_timestamp();
+
         let claims = JwtClaims {
             sub: user_id.to_string(),
             exp,
             typ: REFRESH_TOKEN_NAME.to_string(),
+            iat: now,
         };
 
         let token = self
@@ -132,10 +139,13 @@ impl TokenService for JwtAuthService {
         }
 
         let exp = (OffsetDateTime::now_utc() + Duration::minutes(15)).unix_timestamp();
+        let now = OffsetDateTime::now_utc().unix_timestamp();
+
         let new_claims = JwtClaims {
             sub: claims.sub,
             exp,
             typ: ACCESS_TOKEN_NAME.to_string(),
+            iat: now,
         };
 
         let new_token = self
