@@ -1,4 +1,5 @@
 // rustautomod
+pub mod certification;
 pub mod company;
 pub mod company_membership;
 pub mod membership_role;
@@ -7,4 +8,5 @@ pub mod permission;
 pub mod prelude;
 pub mod role;
 pub mod role_permission;
+pub mod specialty;
 pub mod user;

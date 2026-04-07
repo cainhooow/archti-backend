@@ -1,6 +1,6 @@
 pub mod bootstrap;
 pub mod database;
-pub mod entities;
+pub mod models;
 pub mod http;
 pub mod mailer;
 pub mod mappers;

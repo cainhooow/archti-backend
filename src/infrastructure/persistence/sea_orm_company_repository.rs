@@ -10,7 +10,7 @@ use crate::domain::{
     repositories::company_repository_trait::CreateCompanyRepository,
 };
 
-use crate::infrastructure::entities::company;
+use crate::infrastructure::models::company;
 
 pub struct SeaOrmCompanyRepository {
     conn: Arc<DatabaseConnection>,

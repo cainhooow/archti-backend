@@ -1,5 +1,5 @@
 use crate::domain::entities::company::Company as DomainCompany;
-use crate::infrastructure::entities::company::Model as CompanyModel;
+use crate::infrastructure::models::company::Model as CompanyModel;
 
 impl TryFrom<CompanyModel> for DomainCompany {
     type Error = String;

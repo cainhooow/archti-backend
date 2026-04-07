@@ -1,5 +1,5 @@
 use crate::domain::entities::role::Role as DomainRole;
-use crate::infrastructure::entities::role::Model as RoleModel;
+use crate::infrastructure::models::role::Model as RoleModel;
 
 impl From<RoleModel> for DomainRole {
     fn from(model: RoleModel) -> Self {

@@ -1,5 +1,5 @@
 use crate::domain::entities::permission::Permission as DomainPermission;
-use crate::infrastructure::entities::permission::Model as PermissionModel;
+use crate::infrastructure::models::permission::Model as PermissionModel;
 
 impl From<PermissionModel> for DomainPermission {
     fn from(model: PermissionModel) -> Self {

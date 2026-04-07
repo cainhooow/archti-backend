@@ -1,5 +1,5 @@
 use crate::domain::entities::user::{User as DomainUser, UserStatus};
-use crate::infrastructure::entities::user::Model as UserModel;
+use crate::infrastructure::models::user::Model as UserModel;
 
 impl From<UserModel> for DomainUser {
     fn from(value: UserModel) -> Self {

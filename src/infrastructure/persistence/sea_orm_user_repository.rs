@@ -1,6 +1,6 @@
 use crate::domain::entities::user::User;
 use crate::domain::exceptions::RepositoryError;
-use crate::infrastructure::entities::user;
+use crate::infrastructure::models::user;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use std::str::FromStr;

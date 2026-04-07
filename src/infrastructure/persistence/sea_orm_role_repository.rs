@@ -5,7 +5,7 @@ use crate::domain::{
         RoleCreateRepository, RolePermissionRepository, RoleReadRepository,
     },
 };
-use crate::infrastructure::entities::{permission, role, role_permission};
+use crate::infrastructure::models::{permission, role, role_permission};
 use sea_orm::Set;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use std::sync::Arc;

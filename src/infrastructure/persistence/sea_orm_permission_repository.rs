@@ -12,7 +12,7 @@ use crate::domain::{
     },
 };
 
-use crate::infrastructure::entities::permission;
+use crate::infrastructure::models::permission;
 
 pub struct SeaOrmPermissionRepository {
     conn: Arc<DatabaseConnection>,

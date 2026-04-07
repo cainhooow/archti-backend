@@ -12,7 +12,7 @@ use crate::domain::{
     repositories::membership_repository_trait::CreateMembershipRepository,
 };
 
-use crate::infrastructure::entities::{
+use crate::infrastructure::models::{
     company_membership, membership_role, permission, role, role_permission,
 };
 
