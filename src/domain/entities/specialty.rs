@@ -27,6 +27,20 @@ impl Specialty {
         })
     }
 
+    pub fn restore(
+        id: String,
+        company_id: String,
+        name: String,
+        created_at: Option<NaiveDateTime>,
+    ) -> Self {
+        Self {
+            id: Some(id),
+            company_id,
+            name,
+            created_at,
+        }
+    }
+
     pub fn id(&self) -> Option<&str> {
         self.id.as_deref()
     }

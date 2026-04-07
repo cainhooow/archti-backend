@@ -10,7 +10,7 @@ use crate::{
         handlers::NotificationHandler,
         identity::IdentityApplication,
         ports::{
-            document_encryption::DocumentEncryption, password_hasher::PasswordHasher,
+            password_hasher::PasswordHasher,
             password_reset_token_service::PasswordResetTokenService, token_service::TokenService,
         },
         services::access_control_service::AccessControlService,
@@ -26,7 +26,7 @@ use crate::{
             sea_orm_user_repository::SeaOrmUserRepository,
         },
         renderer::{HandlebarsRenderer, InlineCssRenderer},
-        security::{Argon2HasherImpl, document_encryption::AppDocumentEncryption},
+        security::Argon2HasherImpl,
         services::{
             cookie_service::CookieService, jwt_auth_service::JwtAuthService,
             password_reset_token_service::JwtPasswordResetTokenService,
@@ -46,7 +46,7 @@ pub type CompanyApp = CompanyApplication<
 
 pub struct AppContainer {
     pub db: Arc<DatabaseConnection>,
-    pub crypto: Arc<dyn DocumentEncryption>,
+    // pub crypto: Arc<dyn DocumentEncryption>,
     pub auth_service: Arc<dyn TokenService>,
     pub cookie_service: Arc<CookieService>,
     pub notifications: Arc<NotificationHandler>,
@@ -125,7 +125,7 @@ pub async fn build_app_container(tx: mpsc::UnboundedSender<IntegrationEvent>) ->
 
     Arc::new(AppContainer {
         db,
-        crypto: Arc::new(AppDocumentEncryption::default()),
+        // crypto: Arc::new(AppDocumentEncryption::default()),
         auth_service,
         cookie_service: Arc::new(CookieService::new()),
         notifications: Arc::new(notification_handler),
