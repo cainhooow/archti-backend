@@ -56,6 +56,26 @@ pub mod catalog {
         "manage",
         "Create roles and assign permissions",
     );
+    pub const COMPANY_CERTIFICATIONS_READ: PermissionDefinition = PermissionDefinition::new(
+        "company.certifications",
+        "read",
+        "Read company certifications",
+    );
+    pub const COMPANY_CERTIFICATIONS_MANAGE: PermissionDefinition = PermissionDefinition::new(
+        "company.certifications",
+        "manage",
+        "Manage company certifications",
+    );
+    pub const COMPANY_SPECIALIZATIONS_READ: PermissionDefinition = PermissionDefinition::new(
+        "company.specializations",
+        "read",
+        "Read company specializations",
+    );
+    pub const COMPANY_SPECIALIZATIONS_MANAGE: PermissionDefinition = PermissionDefinition::new(
+        "company.specializations",
+        "manage",
+        "Manage company specializations",
+    );
     pub const BILLING_READ: PermissionDefinition =
         PermissionDefinition::new("billing", "read", "Read billing data");
     pub const BILLING_MANAGE: PermissionDefinition =
@@ -102,13 +122,17 @@ pub mod catalog {
     pub const RESOURCES_MANAGE: PermissionDefinition =
         PermissionDefinition::new("resources", "manage", "Manage operational resources");
 
-    pub const DEFAULT_PERMISSIONS: [PermissionDefinition; 27] = [
+    pub const DEFAULT_PERMISSIONS: [PermissionDefinition; 31] = [
         COMPANY_READ,
         COMPANY_MODIFY,
         COMPANY_MEMBERS_READ,
         COMPANY_MEMBERS_MANAGE,
         COMPANY_ROLES_READ,
         COMPANY_ROLES_MANAGE,
+        COMPANY_CERTIFICATIONS_READ,
+        COMPANY_CERTIFICATIONS_MANAGE,
+        COMPANY_SPECIALIZATIONS_READ,
+        COMPANY_SPECIALIZATIONS_MANAGE,
         BILLING_READ,
         BILLING_MANAGE,
         CLIENTS_READ,
