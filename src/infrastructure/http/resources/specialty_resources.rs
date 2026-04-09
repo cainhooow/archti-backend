@@ -1,0 +1,23 @@
+use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
+
+use crate::domain::entities::specialty::Specialty;
+
+#[derive(Serialize, Deserialize)]
+pub struct SpecialtyResource {
+    pub id: Option<String>,
+    #[serde(rename(serialize = "name"))]
+    pub name: String,
+    #[serde(rename(serialize = "createdAt"))]
+    pub created_at: Option<NaiveDateTime>,
+}
+
+impl From<Specialty> for SpecialtyResource {
+    fn from(value: Specialty) -> Self {
+        Self {
+            id: value.id().map(str::to_string),
+            name: value.name().to_string(),
+            created_at: value.created_at(),
+        }
+    }
+}

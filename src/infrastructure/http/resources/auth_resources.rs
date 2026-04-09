@@ -29,7 +29,9 @@ pub struct PasswordResetRequest {
 #[derive(Serialize)]
 pub struct AuthResource {
     pub user: UserResource,
+    #[serde(rename(serialize = "accessToken"))]
     pub access_token: String,
+    #[serde(rename(serialize = "refreshToken"))]
     pub refresh_token: String,
 }
 

@@ -2,10 +2,13 @@ use salvo::http::{HeaderMap, HeaderValue, StatusError, header::CONTENT_TYPE};
 use serde::Serialize;
 
 pub mod auth_resources;
+pub mod certification_resources;
 pub mod company_resources;
 pub mod me_resources;
 pub mod message_resource;
+pub mod specialty_resources;
 pub mod user_resources;
+
 /*
 * DataResponse is a struct that allows you to standardize API
 * responses and avoid manually defining part-of-the-route responses.

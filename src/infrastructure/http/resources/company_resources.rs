@@ -36,16 +36,27 @@ pub struct CompanyRequest {
 #[derive(Serialize, Deserialize)]
 pub struct CompanyResource {
     pub id: Option<String>,
+    #[serde(rename(serialize = "legalName"))]
     pub legal_name: String,
+    #[serde(rename(serialize = "tradeName"))]
     pub trade_name: String,
+    #[serde(rename(serialize = "serviceType"))]
     pub service_type: String,
+    #[serde(rename(serialize = "document"))]
     pub document: String,
+    #[serde(rename(serialize = "contactName"))]
     pub contact_name: String,
+    #[serde(rename(serialize = "primaryPhone"))]
     pub primary_phone: String,
+    #[serde(rename(serialize = "secondaryPhone"))]
     pub secondary_phone: Option<String>,
+    #[serde(rename(serialize = "operationalBase"))]
     pub operational_base: String,
+    #[serde(rename(serialize = "notes"))]
     pub notes: Option<String>,
+    #[serde(rename(serialize = "createdAt"))]
     pub created_at: Option<NaiveDateTime>,
+    #[serde(rename(serialize = "updatedAt"))]
     pub updated_at: Option<NaiveDateTime>,
 }
 
