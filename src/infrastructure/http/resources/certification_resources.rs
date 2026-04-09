@@ -1,4 +1,5 @@
 use chrono::{NaiveDate, NaiveDateTime};
+use garde::Validate;
 use serde::{Deserialize, Serialize};
 
 use crate::domain::entities::certification::Certification;
@@ -13,6 +14,15 @@ pub struct CertificationResource {
     pub status_label: Option<String>,
     #[serde(rename(serialize = "createdAt"))]
     pub created_at: Option<NaiveDateTime>,
+}
+
+#[derive(Deserialize, Validate)]
+pub struct CertificationRequest {
+    #[garde(length(min = 1))]
+    pub name: String,
+    #[serde(rename(serialize = "validUntil"))]
+    #[garde(required)]
+    pub valid_until: Option<NaiveDate>,
 }
 
 impl From<Certification> for CertificationResource {
