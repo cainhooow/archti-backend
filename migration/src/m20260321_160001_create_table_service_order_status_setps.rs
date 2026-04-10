@@ -21,10 +21,10 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ServiceOrderStatusStep::Table)
-                    .col(uuid(ServiceOrderStatusStep::Id).primary_key())
+                    .col(big_integer(ServiceOrderStatusStep::Id).primary_key())
                     .col(
                         ColumnDef::new(ServiceOrderStatusStep::CompanyId)
-                            .uuid()
+                            .big_integer()
                             .unique_key()
                             .not_null(),
                     )

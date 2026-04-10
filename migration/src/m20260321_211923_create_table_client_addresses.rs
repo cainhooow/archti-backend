@@ -18,8 +18,12 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ClientAddress::Table)
-                    .col(uuid(ClientAddress::Id).primary_key())
-                    .col(ColumnDef::new(ClientAddress::ClientId).uuid().not_null())
+                    .col(big_integer(ClientAddress::Id).primary_key())
+                    .col(
+                        ColumnDef::new(ClientAddress::ClientId)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(ClientAddress::Label)
                             .string_len(120)

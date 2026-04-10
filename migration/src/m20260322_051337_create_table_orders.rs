@@ -33,16 +33,16 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Order::Table)
-                    .col(uuid(Order::Id).primary_key())
-                    .col(ColumnDef::new(Order::CompanyId).uuid().not_null())
+                    .col(big_integer(Order::Id).primary_key())
+                    .col(ColumnDef::new(Order::CompanyId).big_integer().not_null())
                     .col(
                         ColumnDef::new(Order::OrderNumber)
-                            .uuid()
+                            .big_integer()
                             .unique_key()
                             .not_null(),
                     )
-                    .col(ColumnDef::new(Order::QuoteId).uuid().null())
-                    .col(ColumnDef::new(Order::ClientId).uuid().null())
+                    .col(ColumnDef::new(Order::QuoteId).big_integer().null())
+                    .col(ColumnDef::new(Order::ClientId).big_integer().null())
                     .col(
                         ColumnDef::new(Order::CustomerNameSnapshot)
                             .string_len(160)

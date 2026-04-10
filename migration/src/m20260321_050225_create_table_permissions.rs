@@ -12,7 +12,7 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Permission::Table)
-                    .col(uuid(Permission::Id).primary_key())
+                    .col(big_integer(Permission::Id).primary_key())
                     .col(string_len(Permission::Code, 100).unique_key().not_null())
                     .col(string_len(Permission::Module, 60).not_null())
                     .col(string_len(Permission::Action, 60).not_null())

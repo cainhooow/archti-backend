@@ -33,15 +33,15 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(CompanySubscriptionAddon::Table)
-                    .col(uuid(CompanySubscriptionAddon::Id).primary_key())
+                    .col(big_integer(CompanySubscriptionAddon::Id).primary_key())
                     .col(
                         ColumnDef::new(CompanySubscriptionAddon::CompanySubscriptionId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(CompanySubscriptionAddon::FeatureId)
-                            .uuid()
+                            .big_integer()
                             .null(),
                     )
                     .col(

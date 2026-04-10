@@ -21,8 +21,12 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ClientEquipment::Table)
-                    .col(uuid(ClientEquipment::Id).primary_key())
-                    .col(ColumnDef::new(ClientEquipment::ClientId).uuid().not_null())
+                    .col(big_integer(ClientEquipment::Id).primary_key())
+                    .col(
+                        ColumnDef::new(ClientEquipment::ClientId)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(ClientEquipment::Name)
                             .string_len(160)

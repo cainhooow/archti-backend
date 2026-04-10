@@ -18,10 +18,10 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ServiceExpensePreset::Table)
-                    .col(uuid(ServiceExpensePreset::Id).primary_key())
+                    .col(big_integer(ServiceExpensePreset::Id).primary_key())
                     .col(
                         ColumnDef::new(ServiceExpensePreset::CompanyId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(

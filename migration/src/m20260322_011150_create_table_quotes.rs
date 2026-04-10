@@ -26,15 +26,15 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Quote::Table)
-                    .col(uuid(Quote::Id).primary_key())
-                    .col(ColumnDef::new(Quote::CompanyId).uuid().not_null())
+                    .col(big_integer(Quote::Id).primary_key())
+                    .col(ColumnDef::new(Quote::CompanyId).big_integer().not_null())
                     .col(
                         ColumnDef::new(Quote::QuoteNumber)
                             .string_len(40)
                             .unique_key()
                             .not_null(),
                     )
-                    .col(ColumnDef::new(Quote::ClientId).uuid().null())
+                    .col(ColumnDef::new(Quote::ClientId).big_integer().null())
                     .col(
                         ColumnDef::new(Quote::CustomerNameSnapshot)
                             .string_len(160)

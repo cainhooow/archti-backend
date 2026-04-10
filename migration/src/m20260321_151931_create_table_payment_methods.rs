@@ -18,8 +18,12 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(PaymentMethod::Table)
-                    .col(uuid(PaymentMethod::Id).primary_key())
-                    .col(ColumnDef::new(PaymentMethod::CompanyId).uuid().not_null())
+                    .col(big_integer(PaymentMethod::Id).primary_key())
+                    .col(
+                        ColumnDef::new(PaymentMethod::CompanyId)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(PaymentMethod::Title)
                             .string_len(120)

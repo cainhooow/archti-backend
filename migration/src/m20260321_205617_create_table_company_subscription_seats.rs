@@ -33,16 +33,16 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(CompanySubscriptionSeat::Table)
-                    .col(uuid(CompanySubscriptionSeat::Id).primary_key())
+                    .col(big_integer(CompanySubscriptionSeat::Id).primary_key())
                     .col(
                         ColumnDef::new(CompanySubscriptionSeat::CompanySubscriptionId)
-                            .uuid()
+                            .big_integer()
                             .unique_key()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(CompanySubscriptionSeat::MembershipId)
-                            .uuid()
+                            .big_integer()
                             .unique_key()
                             .not_null(),
                     )

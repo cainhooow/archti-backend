@@ -27,9 +27,17 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(OrderPayment::Table)
-                    .col(uuid(OrderPayment::Id).primary_key())
-                    .col(ColumnDef::new(OrderPayment::OrderId).uuid().not_null())
-                    .col(ColumnDef::new(OrderPayment::PaymentMethodId).uuid().null())
+                    .col(big_integer(OrderPayment::Id).primary_key())
+                    .col(
+                        ColumnDef::new(OrderPayment::OrderId)
+                            .big_integer()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(OrderPayment::PaymentMethodId)
+                            .big_integer()
+                            .null(),
+                    )
                     .col(
                         ColumnDef::new(OrderPayment::MethodSnapshot)
                             .string_len(120)

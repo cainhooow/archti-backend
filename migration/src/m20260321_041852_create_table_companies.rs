@@ -10,7 +10,7 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Company::Table)
-                    .col(uuid(Company::Id).primary_key())
+                    .col(big_integer(Company::Id).primary_key())
                     .col(string_len(Company::LegalName, 160).not_null())
                     .col(string_len(Company::TradeName, 160).not_null())
                     .col(string_len(Company::ServiceType, 120).not_null())

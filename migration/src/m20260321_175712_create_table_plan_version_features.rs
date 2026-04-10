@@ -27,10 +27,10 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(PlanVersionFeature::Table)
-                    .col(uuid(PlanVersionFeature::PlanVersionId).not_null())
+                    .col(big_integer(PlanVersionFeature::PlanVersionId).not_null())
                     .col(
                         ColumnDef::new(PlanVersionFeature::FeatureId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .primary_key(

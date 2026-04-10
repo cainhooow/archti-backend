@@ -11,7 +11,7 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(User::Table)
-                    .col(uuid(User::Id).primary_key())
+                    .col(big_integer(User::Id).primary_key())
                     .col(string_len(User::Email, 160).not_null())
                     .col(string_len(User::PasswordHash, 255).not_null())
                     .col(string_len(User::FullName, 160).not_null())

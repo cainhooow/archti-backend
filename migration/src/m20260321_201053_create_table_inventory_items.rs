@@ -27,9 +27,17 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(IventoryItem::Table)
-                    .col(uuid(IventoryItem::Id).primary_key())
-                    .col(ColumnDef::new(IventoryItem::CompanyId).uuid().not_null())
-                    .col(ColumnDef::new(IventoryItem::StockProductId).uuid().null())
+                    .col(big_integer(IventoryItem::Id).primary_key())
+                    .col(
+                        ColumnDef::new(IventoryItem::CompanyId)
+                            .big_integer()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(IventoryItem::StockProductId)
+                            .big_integer()
+                            .null(),
+                    )
                     .col(
                         ColumnDef::new(IventoryItem::Code)
                             .string_len(60)

@@ -18,8 +18,12 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(StockProduct::Table)
-                    .col(uuid(StockProduct::Id).primary_key())
-                    .col(ColumnDef::new(StockProduct::CompanyId).uuid().not_null())
+                    .col(big_integer(StockProduct::Id).primary_key())
+                    .col(
+                        ColumnDef::new(StockProduct::CompanyId)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(StockProduct::Sku)
                             .string_len(60)

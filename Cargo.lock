@@ -179,6 +179,7 @@ dependencies = [
  "crypto",
  "css-inline",
  "dotenvy",
+ "ferroid",
  "garde",
  "handlebars",
  "jsonwebtoken",
@@ -1614,6 +1615,18 @@ name = "fastrand"
 version = "2.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a043dc74da1e37d6afe657061213aa6f425f855399a11d3463c6ecccc4dfda1f"
+
+[[package]]
+name = "ferroid"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee93edf3c501f0035bbeffeccfed0b79e14c311f12195ec0e661e114a0f60da4"
+dependencies = [
+ "portable-atomic",
+ "serde",
+ "tracing",
+ "web-time",
+]
 
 [[package]]
 name = "ff"

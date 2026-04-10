@@ -18,10 +18,10 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ResourceMachine::Table)
-                    .col(uuid(ResourceMachine::Id).primary_key())
+                    .col(big_integer(ResourceMachine::Id).primary_key())
                     .col(
                         ColumnDef::new(ResourceMachine::ResourceId)
-                            .uuid()
+                            .big_integer()
                             .unique_key()
                             .not_null(),
                     )

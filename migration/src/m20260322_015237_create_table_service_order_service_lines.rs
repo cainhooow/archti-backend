@@ -33,15 +33,15 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ServiceOrderServiceLine::Table)
-                    .col(uuid(ServiceOrderServiceLine::Id).primary_key())
+                    .col(big_integer(ServiceOrderServiceLine::Id).primary_key())
                     .col(
                         ColumnDef::new(ServiceOrderServiceLine::ServiceOrderId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(ServiceOrderServiceLine::ServiceCatalogItemId)
-                            .uuid()
+                            .big_integer()
                             .null(),
                     )
                     .col(

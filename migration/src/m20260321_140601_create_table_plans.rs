@@ -11,7 +11,7 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Plan::Table)
-                    .col(uuid(Plan::Id).primary_key())
+                    .col(big_integer(Plan::Id).primary_key())
                     .col(string_len(Plan::Code, 60).unique_key().not_null())
                     .col(string_len(Plan::Name, 120).not_null())
                     .col(text(Plan::Description).null())

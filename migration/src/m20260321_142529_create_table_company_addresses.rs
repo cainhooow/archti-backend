@@ -18,8 +18,8 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(CompanyAddress::Table)
-                    .col(uuid(CompanyAddress::Id).primary_key())
-                    .col(uuid(CompanyAddress::CompanyId).not_null())
+                    .col(big_integer(CompanyAddress::Id).primary_key())
+                    .col(big_integer(CompanyAddress::CompanyId).not_null())
                     .col(string_len(CompanyAddress::StreetLine, 180).not_null())
                     .col(string_len(CompanyAddress::Street, 120).not_null())
                     .col(string_len(CompanyAddress::District, 120).not_null())

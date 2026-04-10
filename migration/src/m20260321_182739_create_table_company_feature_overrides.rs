@@ -43,22 +43,22 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(CompanyFeatureOverride::Table)
-                    .col(uuid(CompanyFeatureOverride::Id).primary_key())
+                    .col(big_integer(CompanyFeatureOverride::Id).primary_key())
                     .col(
                         ColumnDef::new(CompanyFeatureOverride::CompanyId)
-                            .uuid()
+                            .big_integer()
                             .unique_key()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(CompanyFeatureOverride::FeatureId)
-                            .uuid()
+                            .big_integer()
                             .unique_key()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(CompanyFeatureOverride::CreatedByMembershipId)
-                            .uuid()
+                            .big_integer()
                             .null(),
                     )
                     .col(

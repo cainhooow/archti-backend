@@ -18,10 +18,10 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(OrderTimelineEvent::Table)
-                    .col(uuid(OrderTimelineEvent::Id).primary_key())
+                    .col(big_integer(OrderTimelineEvent::Id).primary_key())
                     .col(
                         ColumnDef::new(OrderTimelineEvent::OrderId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(

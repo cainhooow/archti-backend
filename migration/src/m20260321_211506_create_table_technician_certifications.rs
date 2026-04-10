@@ -33,8 +33,8 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(TechnicianCertification::Table)
-                    .col(uuid(TechnicianCertification::TechnicianId).not_null())
-                    .col(uuid(TechnicianCertification::CertificationId).not_null())
+                    .col(big_integer(TechnicianCertification::TechnicianId).not_null())
+                    .col(big_integer(TechnicianCertification::CertificationId).not_null())
                     .primary_key(
                         Index::create()
                             .name("pk-technician_certifications")

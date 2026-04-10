@@ -41,19 +41,27 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ServiceOrder::Table)
-                    .col(uuid(ServiceOrder::Id).primary_key())
-                    .col(ColumnDef::new(ServiceOrder::CompanyId).uuid().not_null())
+                    .col(big_integer(ServiceOrder::Id).primary_key())
+                    .col(
+                        ColumnDef::new(ServiceOrder::CompanyId)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(ServiceOrder::ServiceOrderNumber)
                             .string_len(40)
                             .unique_key()
                             .not_null(),
                     )
-                    .col(ColumnDef::new(ServiceOrder::ClientId).uuid().null())
-                    .col(ColumnDef::new(ServiceOrder::TechnicianId).uuid().null())
+                    .col(ColumnDef::new(ServiceOrder::ClientId).big_integer().null())
+                    .col(
+                        ColumnDef::new(ServiceOrder::TechnicianId)
+                            .big_integer()
+                            .null(),
+                    )
                     .col(
                         ColumnDef::new(ServiceOrder::CurrentStatusStepId)
-                            .uuid()
+                            .big_integer()
                             .null(),
                     )
                     .col(

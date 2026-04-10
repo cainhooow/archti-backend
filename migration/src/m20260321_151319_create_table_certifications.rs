@@ -18,8 +18,12 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Certification::Table)
-                    .col(uuid(Certification::Id).primary_key())
-                    .col(ColumnDef::new(Certification::CompanyId).uuid().not_null())
+                    .col(big_integer(Certification::Id).primary_key())
+                    .col(
+                        ColumnDef::new(Certification::CompanyId)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(Certification::Name)
                             .string_len(160)

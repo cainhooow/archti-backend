@@ -27,11 +27,11 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Client::Table)
-                    .col(uuid(Client::Id).primary_key())
-                    .col(ColumnDef::new(Client::CompanyId).uuid().not_null())
+                    .col(big_integer(Client::Id).primary_key())
+                    .col(ColumnDef::new(Client::CompanyId).big_integer().not_null())
                     .col(
                         ColumnDef::new(Client::CompanyMembershipId)
-                            .uuid()
+                            .big_integer()
                             .unique_key()
                             .null(),
                     )

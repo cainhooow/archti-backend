@@ -34,15 +34,23 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Technician::Table)
-                    .col(uuid(Technician::Id).primary_key())
-                    .col(ColumnDef::new(Technician::CompanyId).uuid().not_null())
+                    .col(big_integer(Technician::Id).primary_key())
+                    .col(
+                        ColumnDef::new(Technician::CompanyId)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(Technician::CompanyMembershipId)
-                            .uuid()
+                            .big_integer()
                             .unique_key()
                             .null(),
                     )
-                    .col(ColumnDef::new(Technician::PrimarySpecialtyId).uuid().null())
+                    .col(
+                        ColumnDef::new(Technician::PrimarySpecialtyId)
+                            .big_integer()
+                            .null(),
+                    )
                     .col(ColumnDef::new(Technician::Name).string_len(120).not_null())
                     .col(ColumnDef::new(Technician::Role).string_len(120).not_null())
                     .col(

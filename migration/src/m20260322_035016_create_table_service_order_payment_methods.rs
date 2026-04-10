@@ -33,15 +33,15 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ServiceOrderPaymentMethod::Table)
-                    .col(uuid(ServiceOrderPaymentMethod::Id).primary_key())
+                    .col(big_integer(ServiceOrderPaymentMethod::Id).primary_key())
                     .col(
                         ColumnDef::new(ServiceOrderPaymentMethod::ServiceOrderId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(ServiceOrderPaymentMethod::PaymentMethodId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(

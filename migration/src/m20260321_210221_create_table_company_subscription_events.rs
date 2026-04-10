@@ -52,15 +52,15 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(CompanySubscriptionEvent::Table)
-                    .col(uuid(CompanySubscriptionEvent::Id).primary_key())
+                    .col(big_integer(CompanySubscriptionEvent::Id).primary_key())
                     .col(
                         ColumnDef::new(CompanySubscriptionEvent::CompanySubscriptionId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(CompanySubscriptionEvent::CreatedByMembershipId)
-                            .uuid()
+                            .big_integer()
                             .null(),
                     )
                     .col(
@@ -70,12 +70,12 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(CompanySubscriptionEvent::FromPlanVersionId)
-                            .uuid()
+                            .big_integer()
                             .null(),
                     )
                     .col(
                         ColumnDef::new(CompanySubscriptionEvent::ToPlanVersionId)
-                            .uuid()
+                            .big_integer()
                             .null(),
                     )
                     .col(

@@ -33,15 +33,15 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ServiceOrderTimelineEvent::Table)
-                    .col(uuid(ServiceOrderTimelineEvent::Id).primary_key())
+                    .col(big_integer(ServiceOrderTimelineEvent::Id).primary_key())
                     .col(
                         ColumnDef::new(ServiceOrderTimelineEvent::ServiceOrderId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(ServiceOrderTimelineEvent::StatusStepId)
-                            .uuid()
+                            .big_integer()
                             .null(),
                     )
                     .col(

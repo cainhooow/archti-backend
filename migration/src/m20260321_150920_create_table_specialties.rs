@@ -18,8 +18,12 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Specialtie::Table)
-                    .col(uuid(Specialtie::Id).primary_key())
-                    .col(ColumnDef::new(Specialtie::CompanyId).uuid().not_null())
+                    .col(big_integer(Specialtie::Id).primary_key())
+                    .col(
+                        ColumnDef::new(Specialtie::CompanyId)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(Specialtie::Name).string_len(120).not_null())
                     .col(
                         ColumnDef::new(Specialtie::CreatedAt)

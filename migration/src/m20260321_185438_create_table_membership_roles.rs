@@ -27,8 +27,8 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(MembershipRole::Table)
-                    .col(uuid(MembershipRole::MembershipId).not_null())
-                    .col(uuid(MembershipRole::RoleId).not_null())
+                    .col(big_integer(MembershipRole::MembershipId).not_null())
+                    .col(big_integer(MembershipRole::RoleId).not_null())
                     .primary_key(
                         Index::create()
                             .name("pk-membership_roles")

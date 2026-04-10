@@ -18,8 +18,8 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Role::Table)
-                    .col(uuid(Role::Id).primary_key())
-                    .col(uuid(Role::CompanyId).not_null())
+                    .col(big_integer(Role::Id).primary_key())
+                    .col(big_integer(Role::CompanyId).not_null())
                     .col(string_len(Role::Code, 60).not_null())
                     .col(string_len(Role::Name, 120).not_null())
                     .col(text(Role::Description).null())

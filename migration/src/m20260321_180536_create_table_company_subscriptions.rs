@@ -30,15 +30,15 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(CompanySubscription::Table)
-                    .col(uuid(CompanySubscription::Id).primary_key())
+                    .col(big_integer(CompanySubscription::Id).primary_key())
                     .col(
                         ColumnDef::new(CompanySubscription::CompanyId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(CompanySubscription::PlanVersionId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(

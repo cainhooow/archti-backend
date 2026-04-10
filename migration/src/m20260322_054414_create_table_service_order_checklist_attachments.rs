@@ -21,10 +21,10 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ServiceOrderChecklistAttachment::Table)
-                    .col(uuid(ServiceOrderChecklistAttachment::Id).primary_key())
+                    .col(big_integer(ServiceOrderChecklistAttachment::Id).primary_key())
                     .col(
                         ColumnDef::new(ServiceOrderChecklistAttachment::ChecklistId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(

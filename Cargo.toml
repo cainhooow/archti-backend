@@ -38,3 +38,4 @@ chrono = { version = "0.4.44", features = ["serde"] }
 lettre = { version = "0.11.20", default-features = false, features = [  "tokio1-native-tls", "smtp-transport", "builder", "hostname"] }
 handlebars = { version = "6.4.0", features = ["dir_source", "rust-embed"] }
 css-inline = "0.20.1"
+ferroid = { version = "2.0.0", features = ["serde", "snowflake", "tracing"] }

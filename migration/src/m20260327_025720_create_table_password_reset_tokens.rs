@@ -18,9 +18,9 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(PasswordResetToken::Table)
-                    .col(uuid(PasswordResetToken::Id).primary_key())
+                    .col(big_integer(PasswordResetToken::Id).primary_key())
                     .col(string(PasswordResetToken::Token).not_null())
-                    .col(uuid(PasswordResetToken::UserId).not_null())
+                    .col(big_integer(PasswordResetToken::UserId).not_null())
                     .col(timestamp(PasswordResetToken::ExpiresAt).not_null())
                     .foreign_key(&mut user_fk)
                     .to_owned(),

@@ -27,9 +27,13 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(QuoteItem::Table)
-                    .col(uuid(QuoteItem::Id).primary_key())
-                    .col(ColumnDef::new(QuoteItem::QuoteId).uuid().not_null())
-                    .col(ColumnDef::new(QuoteItem::StockProductId).uuid().null())
+                    .col(big_integer(QuoteItem::Id).primary_key())
+                    .col(ColumnDef::new(QuoteItem::QuoteId).big_integer().not_null())
+                    .col(
+                        ColumnDef::new(QuoteItem::StockProductId)
+                            .big_integer()
+                            .null(),
+                    )
                     .col(ColumnDef::new(QuoteItem::SkuSnapshot).string_len(60).null())
                     .col(
                         ColumnDef::new(QuoteItem::ProductNameSnapshot)

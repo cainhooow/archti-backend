@@ -21,10 +21,10 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(SubscriptionInvoice::Table)
-                    .col(uuid(SubscriptionInvoice::Id).primary_key())
+                    .col(big_integer(SubscriptionInvoice::Id).primary_key())
                     .col(
                         ColumnDef::new(SubscriptionInvoice::CompanySubscriptionId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(

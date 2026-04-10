@@ -18,8 +18,8 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Resource::Table)
-                    .col(uuid(Resource::Id).primary_key())
-                    .col(ColumnDef::new(Resource::CompanyId).uuid().not_null())
+                    .col(big_integer(Resource::Id).primary_key())
+                    .col(ColumnDef::new(Resource::CompanyId).big_integer().not_null())
                     .col(
                         ColumnDef::new(Resource::Code)
                             .string_len(60)

@@ -33,16 +33,16 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ServiceOrderEquipmentSnapshot::Table)
-                    .col(uuid(ServiceOrderEquipmentSnapshot::Id).primary_key())
+                    .col(big_integer(ServiceOrderEquipmentSnapshot::Id).primary_key())
                     .col(
                         ColumnDef::new(ServiceOrderEquipmentSnapshot::ServiceOrderId)
-                            .uuid()
+                            .big_integer()
                             .unique_key()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(ServiceOrderEquipmentSnapshot::ClientEquipmentId)
-                            .uuid()
+                            .big_integer()
                             .null(),
                     )
                     .col(

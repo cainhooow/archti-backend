@@ -24,10 +24,10 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ServiceOrderAccessory::Table)
-                    .col(uuid(ServiceOrderAccessory::Id).primary_key())
+                    .col(big_integer(ServiceOrderAccessory::Id).primary_key())
                     .col(
                         ColumnDef::new(ServiceOrderAccessory::ServiceOrderEquipmentSnapshotId)
-                            .uuid()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(
