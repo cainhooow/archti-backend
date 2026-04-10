@@ -7,7 +7,7 @@ use crate::{
 };
 
 pub struct CreateSpecialtyCommand {
-    pub company_id: String,
+    pub company_id: i64,
     pub name: String,
 }
 

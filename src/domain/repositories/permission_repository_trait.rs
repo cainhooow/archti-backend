@@ -10,7 +10,7 @@ pub trait PermissionCreateRepository: Send + Sync {
 #[async_trait::async_trait]
 pub trait PermissionReadRepository: Send + Sync {
     async fn by_code(&self, code: &str) -> Result<Permission, RepositoryError>;
-    async fn by_id(&self, id: &str) -> Result<Permission, RepositoryError>;
+    async fn by_id(&self, id: &i64) -> Result<Permission, RepositoryError>;
 }
 
 #[async_trait::async_trait]
@@ -32,7 +32,7 @@ where
         (**self).by_code(code).await
     }
 
-    async fn by_id(&self, id: &str) -> Result<Permission, RepositoryError> {
+    async fn by_id(&self, id: &i64) -> Result<Permission, RepositoryError> {
         (**self).by_id(id).await
     }
 }

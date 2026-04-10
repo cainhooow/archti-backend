@@ -21,7 +21,7 @@ pub async fn auth_me_handler(
         .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
     let user_id = depot
-        .get::<String>(DEPOT_KEY_ID)
+        .get::<i64>(DEPOT_KEY_ID)
         .map_err(|_| {
             HttpError::InternalServerError("Failed to obtain user id from depot".to_string())
         })?

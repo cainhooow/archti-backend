@@ -2,7 +2,7 @@ use chrono::NaiveDateTime;
 
 #[derive(Debug, Clone)]
 pub struct Permission {
-    id: Option<String>,
+    id: Option<i64>,
     code: String,
     module: String,
     action: String,
@@ -61,7 +61,7 @@ impl Permission {
     }
 
     pub fn restore(
-        id: String,
+        id: i64,
         code: String,
         module: String,
         action: String,
@@ -78,8 +78,8 @@ impl Permission {
         }
     }
 
-    pub fn id(&self) -> Option<&str> {
-        self.id.as_deref()
+    pub fn id(&self) -> Option<&i64> {
+        self.id.as_ref()
     }
 
     pub fn code(&self) -> &str {

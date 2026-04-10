@@ -10,7 +10,7 @@ use crate::{
 };
 
 pub struct ChangePasswordCommand {
-    pub user_id: String,
+    pub user_id: i64,
     pub old_password: String,
     pub new_password: String,
 }

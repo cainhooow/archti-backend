@@ -1,15 +1,13 @@
 use crate::domain::entities::user::User;
 use crate::domain::exceptions::RepositoryError;
-use crate::infrastructure::models::user;
-use sea_orm::ActiveValue::Set;
-use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
-use std::str::FromStr;
-use std::sync::Arc;
-use uuid::Uuid;
-
 use crate::domain::repositories::user_repository_trait::{
     CreateUserRepository, UserReadRepository, UserUpdateRepository,
 };
+use crate::infrastructure::models::user;
+use crate::infrastructure::services::snowflake_id::snowflake;
+use sea_orm::ActiveValue::Set;
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use std::sync::Arc;
 
 pub struct SeaOrmUserRepository {
     conn: Arc<DatabaseConnection>,
@@ -37,7 +35,7 @@ impl CreateUserRepository for SeaOrmUserRepository {
 
     async fn create(&self, user: &User) -> Result<User, RepositoryError> {
         let model = user::ActiveModel {
-            id: Set(Uuid::new_v4()),
+            id: Set(snowflake()),
             email: Set(user.email().to_string()),
             full_name: Set(user.full_name().to_string()),
             phone: Set(user.phone().map(|p| p.to_string())),
@@ -58,7 +56,7 @@ impl CreateUserRepository for SeaOrmUserRepository {
 impl UserUpdateRepository for SeaOrmUserRepository {
     async fn update(&self, user: &User) -> Result<User, RepositoryError> {
         let model = user::ActiveModel {
-            id: Set(Uuid::from_str(user.id().unwrap()).unwrap()),
+            id: Set(*user.id().unwrap()),
             email: Set(user.email().to_string()),
             full_name: Set(user.full_name().to_string()),
             phone: Set(user.phone().map(str::to_string)),
@@ -87,11 +85,8 @@ impl UserReadRepository for SeaOrmUserRepository {
         }
     }
 
-    async fn by_id(&self, id: &str) -> Result<User, RepositoryError> {
-        match user::Entity::find_by_id(Uuid::from_str(id).map_err(|_| RepositoryError::NotFound)?)
-            .one(&*self.conn)
-            .await
-        {
+    async fn by_id(&self, id: &i64) -> Result<User, RepositoryError> {
+        match user::Entity::find_by_id(*id).one(&*self.conn).await {
             Ok(Some(data)) => Ok(User::from(data)),
             Ok(None) => Err(RepositoryError::NotFound),
             Err(e) => Err(RepositoryError::Generic(e.to_string())),

@@ -28,13 +28,9 @@ pub async fn create_company_handler(
         .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
     let user_id = depot
-        .get::<String>(DEPOT_KEY_ID)
+        .get::<i64>(DEPOT_KEY_ID)
         .map_err(|_| HttpError::InternalServerError("Failed to obtain user id".to_string()))?;
-    let user = state
-        .app
-        .identity
-        .current_user(String::from(user_id))
-        .await?;
+    let user = state.app.identity.current_user(*user_id).await?;
 
     match req.parse_body::<CompanyRequest>().await {
         Ok(validator) => {
@@ -53,7 +49,7 @@ pub async fn create_company_handler(
                     secondary_phone: validator.secondary_phone,
                     operational_base: validator.operational_base,
                     notes: validator.notes,
-                    owner_id: user.id().map(str::to_string).unwrap(),
+                    owner_id: *user.id().unwrap(),
                     owner_display_name: user.full_name().to_string(),
                 })
                 .await?;

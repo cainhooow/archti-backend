@@ -10,7 +10,7 @@ pub enum UserStatus {
 
 #[derive(Debug, Clone)]
 pub struct User {
-    id: Option<String>,
+    id: Option<i64>,
     email: String,
     password_hash: String,
     full_name: String,
@@ -75,7 +75,7 @@ impl User {
     }
 
     pub fn restore(
-        id: String,
+        id: i64,
         email: String,
         password_hash: String,
         full_name: String,
@@ -164,8 +164,8 @@ impl User {
         Ok(())
     }
 
-    pub fn id(&self) -> Option<&str> {
-        self.id.as_deref()
+    pub fn id(&self) -> Option<&i64> {
+        self.id.as_ref()
     }
 
     pub fn email(&self) -> &str {

@@ -5,7 +5,7 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "company")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id: i64,
     pub legal_name: String,
     pub trade_name: String,
     pub service_type: String,

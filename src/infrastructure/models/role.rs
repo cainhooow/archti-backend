@@ -5,8 +5,8 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "role")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
-    pub company_id: Uuid,
+    pub id: i64,
+    pub company_id: i64,
     pub code: String,
     pub name: String,
     #[sea_orm(column_type = "Text", nullable)]

@@ -9,9 +9,9 @@ impl TryFrom<CompanyMembershipModel> for DomainCompanyMembership {
 
     fn try_from(model: CompanyMembershipModel) -> Result<Self, Self::Error> {
         Ok(CompanyMembership::restore(
-            model.id.to_string(),
-            model.company_id.to_string(),
-            model.user_id.to_string(),
+            model.id,
+            model.company_id,
+            model.user_id,
             MembershipType::try_from(model.membership_type.as_str()).unwrap(),
             MembershipStatus::try_from(model.status_key.as_str()).unwrap(),
             model.display_name,

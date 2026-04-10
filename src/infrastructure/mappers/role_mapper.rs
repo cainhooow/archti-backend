@@ -4,8 +4,8 @@ use crate::infrastructure::models::role::Model as RoleModel;
 impl From<RoleModel> for DomainRole {
     fn from(model: RoleModel) -> Self {
         DomainRole::restore(
-            model.id.to_string(),
-            model.company_id.to_string(),
+            model.id,
+            model.company_id,
             model.code,
             model.name,
             model.description,

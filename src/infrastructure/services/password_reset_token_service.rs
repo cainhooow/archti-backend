@@ -15,7 +15,7 @@ pub const PASSWORD_RESET_TOKEN_TYPE: &str = "pswdrst";
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PasswordResetClaims {
-    sub: String,
+    sub: i64,
     exp: i64,
     iat: i64,
     typ: String,
@@ -63,12 +63,12 @@ impl JwtPasswordResetTokenService {
 }
 
 impl PasswordResetTokenService for JwtPasswordResetTokenService {
-    fn generate_reset_token(&self, user_id: &str) -> AppResult<PasswordResetTokenOutput> {
+    fn generate_reset_token(&self, user_id: &i64) -> AppResult<PasswordResetTokenOutput> {
         let exp = (OffsetDateTime::now_utc() + Duration::minutes(30)).unix_timestamp();
         let now = OffsetDateTime::now_utc().unix_timestamp();
 
         let claims = PasswordResetClaims {
-            sub: user_id.to_string(),
+            sub: *user_id,
             exp,
             iat: now,
             typ: PASSWORD_RESET_TOKEN_TYPE.to_string(),
@@ -82,7 +82,7 @@ impl PasswordResetTokenService for JwtPasswordResetTokenService {
         })
     }
 
-    fn verify_token(&self, token: &str) -> AppResult<String> {
+    fn verify_token(&self, token: &str) -> AppResult<i64> {
         let claims = self.decode(token)?;
 
         if claims.typ != PASSWORD_RESET_TOKEN_TYPE {
@@ -92,7 +92,7 @@ impl PasswordResetTokenService for JwtPasswordResetTokenService {
         Ok(claims.sub)
     }
 
-    fn validate_token(&self, token: &str, last_pass_change: NaiveDateTime) -> AppResult<String> {
+    fn validate_token(&self, token: &str, last_pass_change: NaiveDateTime) -> AppResult<i64> {
         let claims = self.decode(token)?;
 
         if claims.typ != PASSWORD_RESET_TOKEN_TYPE {

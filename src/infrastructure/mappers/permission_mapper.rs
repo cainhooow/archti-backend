@@ -4,7 +4,7 @@ use crate::infrastructure::models::permission::Model as PermissionModel;
 impl From<PermissionModel> for DomainPermission {
     fn from(model: PermissionModel) -> Self {
         DomainPermission::restore(
-            model.id.to_string(),
+            model.id,
             model.code,
             model.module,
             model.action,

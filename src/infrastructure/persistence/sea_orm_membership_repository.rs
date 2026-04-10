@@ -1,8 +1,6 @@
 use sea_orm::ActiveValue::Set;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
-use std::str::FromStr;
 use std::sync::Arc;
-use uuid::Uuid;
 
 use crate::domain::repositories::membership_repository_trait::{
     MembershipReadRepository, MembershipRoleRepository,
@@ -15,6 +13,7 @@ use crate::domain::{
 use crate::infrastructure::models::{
     company_membership, membership_role, permission, role, role_permission,
 };
+use crate::infrastructure::services::snowflake_id::snowflake;
 
 pub struct SeaOrmMembershipRepository {
     conn: Arc<DatabaseConnection>,
@@ -32,15 +31,10 @@ impl CreateMembershipRepository for SeaOrmMembershipRepository {
         &self,
         membership: &CompanyMembership,
     ) -> Result<CompanyMembership, RepositoryError> {
-        let company_id = Uuid::from_str(membership.company_id())
-            .map_err(|err| RepositoryError::Generic(err.to_string()))?;
-        let user_id = Uuid::from_str(membership.user_id())
-            .map_err(|err| RepositoryError::Generic(err.to_string()))?;
-
         let model = company_membership::ActiveModel {
-            id: Set(Uuid::new_v4()),
-            company_id: Set(company_id),
-            user_id: Set(user_id),
+            id: Set(snowflake()),
+            company_id: Set(membership.company_id().clone()),
+            user_id: Set(membership.user_id().clone()),
             membership_type: Set(membership.membership_type().as_str().to_string()),
             status_key: Set(membership.status().as_str().to_string()),
             display_name: Set(membership.display_name()),
@@ -59,11 +53,8 @@ impl CreateMembershipRepository for SeaOrmMembershipRepository {
 
 #[async_trait::async_trait]
 impl MembershipReadRepository for SeaOrmMembershipRepository {
-    async fn by_id(&self, membership_id: &str) -> Result<CompanyMembership, RepositoryError> {
-        let membership_id = Uuid::from_str(membership_id)
-            .map_err(|err| RepositoryError::Generic(err.to_string()))?;
-
-        match company_membership::Entity::find_by_id(membership_id)
+    async fn by_id(&self, membership_id: &i64) -> Result<CompanyMembership, RepositoryError> {
+        match company_membership::Entity::find_by_id(*membership_id)
             .one(&*self.conn)
             .await
         {
@@ -75,17 +66,12 @@ impl MembershipReadRepository for SeaOrmMembershipRepository {
 
     async fn by_company_and_user(
         &self,
-        company_id: &str,
-        user_id: &str,
+        company_id: &i64,
+        user_id: &i64,
     ) -> Result<CompanyMembership, RepositoryError> {
-        let company_id =
-            Uuid::from_str(company_id).map_err(|err| RepositoryError::Generic(err.to_string()))?;
-        let user_id =
-            Uuid::from_str(user_id).map_err(|err| RepositoryError::Generic(err.to_string()))?;
-
         match company_membership::Entity::find()
-            .filter(company_membership::Column::CompanyId.eq(company_id))
-            .filter(company_membership::Column::UserId.eq(user_id))
+            .filter(company_membership::Column::CompanyId.eq(*company_id))
+            .filter(company_membership::Column::UserId.eq(*user_id))
             .one(&*self.conn)
             .await
         {
@@ -98,27 +84,23 @@ impl MembershipReadRepository for SeaOrmMembershipRepository {
 
 #[async_trait::async_trait]
 impl MembershipRoleRepository for SeaOrmMembershipRepository {
-    async fn assign_role(&self, membership_id: &str, role_id: &str) -> Result<(), RepositoryError> {
+    async fn assign_role(&self, membership_id: &i64, role_id: &i64) -> Result<(), RepositoryError> {
         let membership = self.by_id(membership_id).await?;
-        let membership_uuid = Uuid::from_str(membership.id().ok_or(RepositoryError::NotFound)?)
-            .map_err(|err| RepositoryError::Generic(err.to_string()))?;
-        let role_uuid =
-            Uuid::from_str(role_id).map_err(|err| RepositoryError::Generic(err.to_string()))?;
 
-        let role_model = match role::Entity::find_by_id(role_uuid).one(&*self.conn).await {
+        let role_model = match role::Entity::find_by_id(*role_id).one(&*self.conn).await {
             Ok(Some(model)) => model,
             Ok(None) => return Err(RepositoryError::NotFound),
             Err(err) => return Err(RepositoryError::Generic(err.to_string())),
         };
 
         // Never allow cross-company role assignment, even if a valid role id is provided.
-        if role_model.company_id.to_string() != membership.company_id() {
+        if role_model.company_id != *membership.company_id() {
             return Err(RepositoryError::Generic(
                 "Role does not belong to the same company as the membership".to_string(),
             ));
         }
 
-        let existing = membership_role::Entity::find_by_id((membership_uuid, role_uuid))
+        let existing = membership_role::Entity::find_by_id((*membership_id, *role_id))
             .one(&*self.conn)
             .await
             .map_err(|err| RepositoryError::Generic(err.to_string()))?;
@@ -128,8 +110,8 @@ impl MembershipRoleRepository for SeaOrmMembershipRepository {
         }
 
         let model = membership_role::ActiveModel {
-            membership_id: Set(membership_uuid),
-            role_id: Set(role_uuid),
+            membership_id: Set(*membership_id),
+            role_id: Set(*role_id),
             ..Default::default()
         };
 
@@ -141,8 +123,8 @@ impl MembershipRoleRepository for SeaOrmMembershipRepository {
 
     async fn has_permission(
         &self,
-        company_id: &str,
-        user_id: &str,
+        company_id: &i64,
+        user_id: &i64,
         permission_code: &str,
     ) -> Result<bool, RepositoryError> {
         let membership = match self.by_company_and_user(company_id, user_id).await {
@@ -155,11 +137,10 @@ impl MembershipRoleRepository for SeaOrmMembershipRepository {
             return Ok(false);
         }
 
-        let membership_id = Uuid::from_str(membership.id().ok_or(RepositoryError::NotFound)?)
-            .map_err(|err| RepositoryError::Generic(err.to_string()))?;
+        let membership_id = membership.id().ok_or(RepositoryError::NotFound)?;
 
         let membership_roles = membership_role::Entity::find()
-            .filter(membership_role::Column::MembershipId.eq(membership_id))
+            .filter(membership_role::Column::MembershipId.eq(membership_id.clone()))
             .all(&*self.conn)
             .await
             .map_err(|err| RepositoryError::Generic(err.to_string()))?;
@@ -168,17 +149,14 @@ impl MembershipRoleRepository for SeaOrmMembershipRepository {
             return Ok(false);
         }
 
-        let role_ids: Vec<Uuid> = membership_roles
+        let role_ids: Vec<i64> = membership_roles
             .into_iter()
             .map(|model| model.role_id)
             .collect();
 
         let scoped_roles = role::Entity::find()
             .filter(role::Column::Id.is_in(role_ids.clone()))
-            .filter(
-                role::Column::CompanyId.eq(Uuid::from_str(company_id)
-                    .map_err(|err| RepositoryError::Generic(err.to_string()))?),
-            )
+            .filter(role::Column::CompanyId.eq(*company_id))
             .all(&*self.conn)
             .await
             .map_err(|err| RepositoryError::Generic(err.to_string()))?;
@@ -187,7 +165,7 @@ impl MembershipRoleRepository for SeaOrmMembershipRepository {
             return Ok(false);
         }
 
-        let scoped_role_ids: Vec<Uuid> = scoped_roles.into_iter().map(|model| model.id).collect();
+        let scoped_role_ids: Vec<i64> = scoped_roles.into_iter().map(|model| model.id).collect();
 
         let role_permissions = role_permission::Entity::find()
             .filter(role_permission::Column::RoleId.is_in(scoped_role_ids))
@@ -199,7 +177,7 @@ impl MembershipRoleRepository for SeaOrmMembershipRepository {
             return Ok(false);
         }
 
-        let permission_ids: Vec<Uuid> = role_permissions
+        let permission_ids: Vec<i64> = role_permissions
             .into_iter()
             .map(|model| model.permission_id)
             .collect();

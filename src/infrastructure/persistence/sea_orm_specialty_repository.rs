@@ -3,12 +3,11 @@ use crate::{
         entities::specialty::Specialty, exceptions::RepositoryError,
         repositories::specialty_repository_trait::SpecialtyCreateRepository,
     },
-    infrastructure::models::specialty,
+    infrastructure::{models::specialty, services::snowflake_id::snowflake},
 };
 use sea_orm::ActiveValue::Set;
 use sea_orm::{ActiveModelTrait, DatabaseConnection};
-use std::{str::FromStr, sync::Arc};
-use uuid::Uuid;
+use std::sync::Arc;
 
 pub struct SeaOrmSpecialtyRepository {
     conn: Arc<DatabaseConnection>,
@@ -23,12 +22,11 @@ impl SeaOrmSpecialtyRepository {
 #[async_trait::async_trait]
 impl SpecialtyCreateRepository for SeaOrmSpecialtyRepository {
     async fn create_specialty(&self, specialty: &Specialty) -> Result<Specialty, RepositoryError> {
-        let company_id = Uuid::from_str(specialty.company_id())
-            .map_err(|err| RepositoryError::Generic(err.to_string()))?;
+        let company_id = specialty.company_id();
 
         let model = specialty::ActiveModel {
-            id: Set(Uuid::new_v4()),
-            company_id: Set(company_id),
+            id: Set(snowflake()),
+            company_id: Set(*company_id),
             name: Set(specialty.name().to_string()),
             ..Default::default()
         };

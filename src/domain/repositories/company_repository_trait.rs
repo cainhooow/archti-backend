@@ -18,7 +18,7 @@ pub trait CompanyUpdateRepository: Send + Sync {
 #[async_trait::async_trait]
 pub trait CompanyReadRepository: Send + Sync {
     async fn all(&self) -> Result<Vec<Company>, RepositoryError>;
-    async fn by_id(&self, id: &str) -> Result<Company, RepositoryError>;
+    async fn by_id(&self, id: &i64) -> Result<Company, RepositoryError>;
     async fn by_document(&self, document: &Document) -> Result<Company, RepositoryError>;
 }
 
@@ -55,7 +55,7 @@ where
         (**self).all().await
     }
 
-    async fn by_id(&self, id: &str) -> Result<Company, RepositoryError> {
+    async fn by_id(&self, id: &i64) -> Result<Company, RepositoryError> {
         (**self).by_id(id).await
     }
 

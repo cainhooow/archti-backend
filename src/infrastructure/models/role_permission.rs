@@ -5,9 +5,9 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "role_permission")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub role_id: Uuid,
+    pub role_id: i64,
     #[sea_orm(primary_key, auto_increment = false)]
-    pub permission_id: Uuid,
+    pub permission_id: i64,
     pub created_at: DateTime,
 
     #[sea_orm(belongs_to, from = "role_id", to = "id")]

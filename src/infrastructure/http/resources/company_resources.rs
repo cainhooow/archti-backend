@@ -63,7 +63,7 @@ pub struct CompanyResource {
 impl From<Company> for CompanyResource {
     fn from(value: Company) -> Self {
         Self {
-            id: value.id().map(str::to_string),
+            id: value.id().map(i64::to_string),
             legal_name: value.legal_name().to_string(),
             trade_name: value.trade_name().to_string(),
             service_type: value.service_type().to_string(),
@@ -82,7 +82,7 @@ impl From<Company> for CompanyResource {
 impl From<&Company> for CompanyResource {
     fn from(value: &Company) -> Self {
         Self {
-            id: value.id().map(str::to_string),
+            id: value.id().map(i64::to_string),
             legal_name: value.legal_name().to_string(),
             trade_name: value.trade_name().to_string(),
             service_type: value.service_type().to_string(),

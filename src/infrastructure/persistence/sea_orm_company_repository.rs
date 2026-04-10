@@ -1,7 +1,6 @@
 use sea_orm::{ActiveModelTrait, EntityTrait};
 use sea_orm::{ActiveValue::Set, DatabaseConnection};
 use std::sync::Arc;
-use uuid::Uuid;
 
 use crate::domain::repositories::company_repository_trait::CompanyReadRepository;
 use crate::domain::value_objects::document_vo::Document;
@@ -11,6 +10,7 @@ use crate::domain::{
 };
 
 use crate::infrastructure::models::company;
+use crate::infrastructure::services::snowflake_id::snowflake;
 
 pub struct SeaOrmCompanyRepository {
     conn: Arc<DatabaseConnection>,
@@ -37,7 +37,7 @@ impl CreateCompanyRepository for SeaOrmCompanyRepository {
 
     async fn create(&self, company: &Company) -> Result<Company, RepositoryError> {
         let model = company::ActiveModel {
-            id: Set(Uuid::new_v4()),
+            id: Set(snowflake()),
             legal_name: Set(company.legal_name().to_string()),
             trade_name: Set(company.trade_name().to_string()),
             service_type: Set(company.service_type().to_string()),
@@ -69,8 +69,8 @@ impl CompanyReadRepository for SeaOrmCompanyRepository {
         }
     }
 
-    async fn by_id(&self, id: &str) -> Result<Company, RepositoryError> {
-        let id = Uuid::parse_str(id).map_err(|e| RepositoryError::Generic(e.to_string()))?;
+    async fn by_id(&self, id: &i64) -> Result<Company, RepositoryError> {
+        let id = *id;
         match company::Entity::find_by_id(id).one(&*self.conn).await {
             Ok(Some(data)) => Ok(data.try_into().map_err(RepositoryError::Generic)?),
             Ok(None) => Err(RepositoryError::NotFound),

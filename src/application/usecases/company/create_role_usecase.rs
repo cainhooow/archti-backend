@@ -8,7 +8,7 @@ use crate::{
 };
 
 pub struct CreateCompanyRoleCommand {
-    pub company_id: String,
+    pub company_id: i64,
     pub name: String,
     pub code: String,
     pub description: Option<String>,

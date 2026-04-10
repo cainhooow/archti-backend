@@ -1,15 +1,17 @@
-use crate::domain::{
-    entities::role::Role,
-    exceptions::RepositoryError,
-    repositories::role_repository_trait::{
-        RoleCreateRepository, RolePermissionRepository, RoleReadRepository,
-    },
-};
 use crate::infrastructure::models::{permission, role, role_permission};
+use crate::{
+    domain::{
+        entities::role::Role,
+        exceptions::RepositoryError,
+        repositories::role_repository_trait::{
+            RoleCreateRepository, RolePermissionRepository, RoleReadRepository,
+        },
+    },
+    infrastructure::services::snowflake_id::snowflake,
+};
 use sea_orm::Set;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use std::sync::Arc;
-use uuid::Uuid;
 
 pub struct SeaOrmRoleRepository {
     conn: Arc<DatabaseConnection>,
@@ -24,12 +26,11 @@ impl SeaOrmRoleRepository {
 #[async_trait::async_trait]
 impl RoleCreateRepository for SeaOrmRoleRepository {
     async fn create(&self, role: &Role) -> Result<Role, RepositoryError> {
-        let company_id = Uuid::parse_str(role.company_id())
-            .map_err(|err| RepositoryError::Generic(err.to_string()))?;
+        let company_id = role.company_id();
 
         let model = role::ActiveModel {
-            id: Set(Uuid::new_v4()),
-            company_id: Set(company_id),
+            id: Set(snowflake()),
+            company_id: Set(*company_id),
             code: Set(role.code().to_string()),
             name: Set(role.name().to_string()),
             description: Set(role.description().map(str::to_string)),
@@ -46,10 +47,8 @@ impl RoleCreateRepository for SeaOrmRoleRepository {
 
 #[async_trait::async_trait]
 impl RoleReadRepository for SeaOrmRoleRepository {
-    async fn by_id(&self, id: &str) -> Result<Role, RepositoryError> {
-        let id = Uuid::parse_str(id).map_err(|err| RepositoryError::Generic(err.to_string()))?;
-
-        match role::Entity::find_by_id(id).one(&*self.conn).await {
+    async fn by_id(&self, id: &i64) -> Result<Role, RepositoryError> {
+        match role::Entity::find_by_id(*id).one(&*self.conn).await {
             Ok(Some(data)) => Ok(Role::from(data)),
             Ok(None) => Err(RepositoryError::NotFound),
             Err(err) => Err(RepositoryError::Generic(err.to_string())),
@@ -58,14 +57,11 @@ impl RoleReadRepository for SeaOrmRoleRepository {
 
     async fn by_company_and_code(
         &self,
-        company_id: &str,
+        company_id: &i64,
         code: &str,
     ) -> Result<Role, RepositoryError> {
-        let company_id =
-            Uuid::parse_str(company_id).map_err(|err| RepositoryError::Generic(err.to_string()))?;
-
         match role::Entity::find()
-            .filter(role::Column::CompanyId.eq(company_id))
+            .filter(role::Column::CompanyId.eq(*company_id))
             .filter(role::Column::Code.eq(code))
             .one(&*self.conn)
             .await
@@ -81,12 +77,10 @@ impl RoleReadRepository for SeaOrmRoleRepository {
 impl RolePermissionRepository for SeaOrmRoleRepository {
     async fn assign_permission(
         &self,
-        role_id: &str,
+        role_id: &i64,
         permission_code: &str,
     ) -> Result<(), RepositoryError> {
         let role = self.by_id(role_id).await?;
-        let role_id = Uuid::parse_str(role.id().ok_or(RepositoryError::NotFound)?)
-            .map_err(|err| RepositoryError::Generic(err.to_string()))?;
 
         let permission_model = match permission::Entity::find()
             .filter(permission::Column::Code.eq(permission_code))
@@ -98,7 +92,7 @@ impl RolePermissionRepository for SeaOrmRoleRepository {
             Err(err) => return Err(RepositoryError::Generic(err.to_string())),
         };
 
-        let existing = role_permission::Entity::find_by_id((role_id, permission_model.id))
+        let existing = role_permission::Entity::find_by_id((*role_id, permission_model.id))
             .one(&*self.conn)
             .await
             .map_err(|err| RepositoryError::Generic(err.to_string()))?;
@@ -108,7 +102,7 @@ impl RolePermissionRepository for SeaOrmRoleRepository {
         }
 
         let model = role_permission::ActiveModel {
-            role_id: Set(role_id),
+            role_id: Set(*role.id().unwrap()),
             permission_id: Set(permission_model.id),
             ..Default::default()
         };

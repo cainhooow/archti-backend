@@ -131,7 +131,7 @@ where
         .await
     }
 
-    pub async fn current_user(&self, user_id: String) -> AppResult<User> {
+    pub async fn current_user(&self, user_id: i64) -> AppResult<User> {
         let user = self.user_repository.by_id(&user_id).await?;
         Ok(user)
     }

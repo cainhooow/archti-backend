@@ -14,7 +14,7 @@ where
 }
 
 pub struct ChangeServiceTypeCommand {
-    pub company_id: String,
+    pub company_id: i64,
     pub service_type: String,
 }
 

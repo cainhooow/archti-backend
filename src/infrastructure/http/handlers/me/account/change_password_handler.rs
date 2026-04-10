@@ -28,7 +28,7 @@ pub async fn change_password_handler(
         .map_err(|_| HttpError::InternalServerError("Failed to obtain app state".to_string()))?;
 
     let user_id = depot
-        .get::<String>(DEPOT_KEY_ID)
+        .get::<i64>(DEPOT_KEY_ID)
         .map_err(|_| HttpError::InternalServerError("Failed to get user depot key".to_string()))?
         .to_owned();
 

@@ -28,7 +28,7 @@ pub struct CertificationRequest {
 impl From<Certification> for CertificationResource {
     fn from(value: Certification) -> Self {
         Self {
-            id: value.id().map(str::to_string),
+            id: value.id().map(i64::to_string),
             name: value.name().to_string(),
             valid_until: value.valid_until(),
             status_label: value.status_label().map(str::to_string),

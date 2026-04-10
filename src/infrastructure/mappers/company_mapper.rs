@@ -6,7 +6,7 @@ impl TryFrom<CompanyModel> for DomainCompany {
 
     fn try_from(model: CompanyModel) -> Result<Self, Self::Error> {
         DomainCompany::restore(
-            model.id.to_string(),
+            model.id,
             model.legal_name,
             model.trade_name,
             model.service_type,

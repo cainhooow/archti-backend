@@ -1,9 +1,6 @@
-use std::str::FromStr;
-use std::sync::Arc;
-
 use sea_orm::ActiveValue::Set;
 use sea_orm::{ActiveModelTrait, DatabaseConnection};
-use uuid::Uuid;
+use std::sync::Arc;
 
 use crate::domain::{
     entities::certification::Certification, exceptions::RepositoryError,
@@ -11,6 +8,7 @@ use crate::domain::{
 };
 
 use crate::infrastructure::models::certification;
+use crate::infrastructure::services::snowflake_id::snowflake;
 
 pub struct SeaOrmCertificationRepository {
     conn: Arc<DatabaseConnection>,
@@ -28,12 +26,9 @@ impl CertificationCreateRepository for SeaOrmCertificationRepository {
         &self,
         certification: &Certification,
     ) -> Result<Certification, RepositoryError> {
-        let company_id = Uuid::from_str(certification.company_id())
-            .map_err(|err| RepositoryError::Generic(err.to_string()))?;
-
         let model = certification::ActiveModel {
-            id: Set(Uuid::new_v4()),
-            company_id: Set(company_id),
+            id: Set(snowflake()),
+            company_id: Set(*certification.company_id()),
             name: Set(certification.name().to_string()),
             valid_until: Set(certification.valid_until()),
             status_label: Set(certification.status_label().map(str::to_string)),

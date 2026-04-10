@@ -5,12 +5,12 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "order")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
-    pub company_id: Uuid,
+    pub id: i64,
+    pub company_id: i64,
     #[sea_orm(unique)]
-    pub order_number: Uuid,
-    pub quote_id: Option<Uuid>,
-    pub client_id: Option<Uuid>,
+    pub order_number: i64,
+    pub quote_id: Option<i64>,
+    pub client_id: Option<i64>,
     pub customer_name_snapshot: String,
     pub customer_profile_snapshot: Option<String>,
     pub customer_email_snapshot: Option<String>,

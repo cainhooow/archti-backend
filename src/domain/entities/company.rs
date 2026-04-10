@@ -4,7 +4,7 @@ use crate::domain::value_objects::document_vo::Document;
 
 #[derive(Debug, Clone)]
 pub struct Company {
-    id: Option<String>,
+    id: Option<i64>,
     legal_name: String,
     trade_name: String,
     service_type: String,
@@ -87,7 +87,7 @@ impl Company {
     }
 
     pub fn restore(
-        id: String,
+        id: i64,
         legal_name: String,
         trade_name: String,
         service_type: String,
@@ -201,8 +201,8 @@ impl Company {
         format!("{} - {}", self.legal_name, self.trade_name)
     }
 
-    pub fn id(&self) -> Option<&str> {
-        self.id.as_deref()
+    pub fn id(&self) -> Option<&i64> {
+        self.id.as_ref()
     }
 
     pub fn legal_name(&self) -> &str {

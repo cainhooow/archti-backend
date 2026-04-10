@@ -9,7 +9,7 @@ use crate::{
 };
 
 pub struct CreateCertificationCommand {
-    pub company_id: String,
+    pub company_id: i64,
     pub name: String,
     pub valid_until: Option<NaiveDate>,
 }

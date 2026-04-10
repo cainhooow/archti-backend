@@ -12,7 +12,7 @@ use crate::application::{
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct JwtClaims {
-    pub sub: String,
+    pub sub: i64,
     pub exp: i64,
     pub typ: String,
     pub iat: i64,
@@ -63,12 +63,12 @@ impl JwtAuthService {
 }
 
 impl TokenService for JwtAuthService {
-    fn generate_access_token(&self, user_id: &str) -> AppResult<TokenOutput> {
+    fn generate_access_token(&self, user_id: &i64) -> AppResult<TokenOutput> {
         let exp = (OffsetDateTime::now_utc() + Duration::minutes(15)).unix_timestamp();
         let now = OffsetDateTime::now_utc().unix_timestamp();
 
         let claims = JwtClaims {
-            sub: user_id.to_string(),
+            sub: *user_id,
             exp,
             typ: ACCESS_TOKEN_NAME.to_string(),
             iat: now,
@@ -84,12 +84,12 @@ impl TokenService for JwtAuthService {
         })
     }
 
-    fn generate_refresh_token(&self, user_id: &str) -> AppResult<TokenOutput> {
+    fn generate_refresh_token(&self, user_id: &i64) -> AppResult<TokenOutput> {
         let exp = (OffsetDateTime::now_utc() + Duration::days(7)).unix_timestamp();
         let now = OffsetDateTime::now_utc().unix_timestamp();
 
         let claims = JwtClaims {
-            sub: user_id.to_string(),
+            sub: *user_id,
             exp,
             typ: REFRESH_TOKEN_NAME.to_string(),
             iat: now,
@@ -105,7 +105,7 @@ impl TokenService for JwtAuthService {
         })
     }
 
-    fn verify_token(&self, token: &str) -> AppResult<String> {
+    fn verify_token(&self, token: &str) -> AppResult<i64> {
         let claims = self
             .decode_token(token)
             .map_err(Self::map_token_decode_error)?;
@@ -117,7 +117,7 @@ impl TokenService for JwtAuthService {
         Ok(claims.sub)
     }
 
-    fn get_refresh_sub(&self, token: &str) -> AppResult<String> {
+    fn get_refresh_sub(&self, token: &str) -> AppResult<i64> {
         let claims = self
             .decode_token(token)
             .map_err(Self::map_token_decode_error)?;

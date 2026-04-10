@@ -8,7 +8,7 @@ pub trait SpecialtyCreateRepository {
 #[async_trait::async_trait]
 pub trait SpecialtyReadRepository {
     async fn all(&self) -> Result<Vec<Specialty>, RepositoryError>;
-    async fn by_id(&self, specialty_id: &str) -> Result<Specialty, RepositoryError>;
+    async fn by_id(&self, specialty_id: &i64) -> Result<Specialty, RepositoryError>;
 }
 
 #[async_trait::async_trait]

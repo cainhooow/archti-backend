@@ -2,8 +2,8 @@ use crate::domain::exceptions::DomainError;
 use chrono::{NaiveDate, NaiveDateTime};
 
 pub struct Certification {
-    id: Option<String>,
-    company_id: String,
+    id: Option<i64>,
+    company_id: i64,
     name: String,
     valid_until: Option<NaiveDate>,
     status_label: Option<String>,
@@ -12,16 +12,12 @@ pub struct Certification {
 
 impl Certification {
     pub fn create(
-        company_id: String,
+        company_id: i64,
         name: String,
         valid_until: Option<NaiveDate>,
         status_label: Option<String>,
     ) -> Result<Self, DomainError> {
         if name.is_empty() {
-            return Err(DomainError::InvalidInput);
-        }
-
-        if company_id.is_empty() {
             return Err(DomainError::InvalidInput);
         }
 
@@ -40,8 +36,8 @@ impl Certification {
     }
 
     pub fn restore(
-        id: String,
-        company_id: String,
+        id: i64,
+        company_id: i64,
         name: String,
         valid_until: Option<NaiveDate>,
         status_label: Option<String>,
@@ -57,11 +53,11 @@ impl Certification {
         }
     }
 
-    pub fn id(&self) -> Option<&str> {
-        self.id.as_deref()
+    pub fn id(&self) -> Option<&i64> {
+        self.id.as_ref()
     }
 
-    pub fn company_id(&self) -> &str {
+    pub fn company_id(&self) -> &i64 {
         &self.company_id
     }
 

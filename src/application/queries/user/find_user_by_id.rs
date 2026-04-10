@@ -4,7 +4,7 @@ use crate::domain::{
 };
 
 pub struct FindUserById {
-    pub id: String,
+    pub id: i64,
 }
 
 pub struct FindUserByIdQuery<R: UserReadRepository> {

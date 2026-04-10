@@ -1,7 +1,7 @@
 /*
-* Base Company registration with 
-* Create company 
-* -> Base roles generated 
+* Base Company registration with
+* Create company
+* -> Base roles generated
 * -> Default permissions for owner
 * -> Roles and permissions assigned to owner
 */
@@ -37,44 +37,33 @@ use crate::{
 /**
  * Repository trait for company entities.
 */
-pub trait CompanyRepository: 
-    CreateCompanyRepository 
-    + CompanyReadRepository {}
+pub trait CompanyRepository: CreateCompanyRepository + CompanyReadRepository {}
 /**
  * Repository trait for membership entities.
  */
-pub trait MembershipRepository: 
-    CreateMembershipRepository 
-    + MembershipRoleRepository {}
+pub trait MembershipRepository: CreateMembershipRepository + MembershipRoleRepository {}
 /**
  * Repository trait for role entities.
  */
-pub trait RoleRepository: 
-    RoleCreateRepository 
-    + RoleReadRepository 
-    + RolePermissionRepository {}
+pub trait RoleRepository:
+    RoleCreateRepository + RoleReadRepository + RolePermissionRepository
+{
+}
 /**
  * Repository trait for permission entities.
  */
-pub trait PermissionRepository: 
-    PermissionCreateRepository 
-    + PermissionReadRepository {}
+pub trait PermissionRepository: PermissionCreateRepository + PermissionReadRepository {}
 
-impl<T> MembershipRepository for T 
-    where T: CreateMembershipRepository + MembershipRoleRepository {}
+impl<T> MembershipRepository for T where T: CreateMembershipRepository + MembershipRoleRepository {}
 
-impl<T> RoleRepository for T 
-    where T: RoleCreateRepository 
-        + RoleReadRepository 
-        + RolePermissionRepository {}
+impl<T> RoleRepository for T where
+    T: RoleCreateRepository + RoleReadRepository + RolePermissionRepository
+{
+}
 
-impl<T> PermissionRepository for T 
-    where T: PermissionCreateRepository 
-        + PermissionReadRepository {}
-        
-impl<T> CompanyRepository for T 
-    where T: CreateCompanyRepository 
-        + CompanyReadRepository {}
+impl<T> PermissionRepository for T where T: PermissionCreateRepository + PermissionReadRepository {}
+
+impl<T> CompanyRepository for T where T: CreateCompanyRepository + CompanyReadRepository {}
 
 pub struct CompanyApplication<R, S, T, U>
 where
@@ -99,7 +88,7 @@ pub struct RegisterCompanyCommand {
     pub secondary_phone: Option<String>,
     pub operational_base: String,
     pub notes: Option<String>,
-    pub owner_id: String,
+    pub owner_id: i64,
     pub owner_display_name: String,
 }
 
@@ -154,14 +143,13 @@ where
                 notes: command.notes,
             })
             .await?;
-        
+
         let company_id = company
             .id()
-            .ok_or_else(|| AppError::Unexpected("Company created without id".to_string()))?
-            .to_string();
-        
+            .ok_or_else(|| AppError::Unexpected("Company created without id".to_string()))?;
+
         let membership = CompanyMembership::register(
-            company_id.clone(),
+            *company_id,
             command.owner_id,
             MembershipType::Colaborator,
             MembershipStatus::Active,
@@ -178,7 +166,7 @@ where
         // Owner role created here
         let owner_role = CreateCompanyRoleUseCase::new(self.role_repository.clone())
             .execute(CreateCompanyRoleCommand {
-                company_id: company_id.clone(),
+                company_id: *company_id,
                 name: COMPANY_OWNER_NAME.to_string(),
                 code: COMPANY_OWNER_CODE.to_string(),
                 description: Some(COMPANY_OWNER_DESCRIPTION.to_string()),
@@ -188,12 +176,10 @@ where
 
         let owner_role_id = owner_role
             .id()
-            .ok_or_else(|| AppError::Unexpected("Owner role created without id".to_string()))?
-            .to_string();
+            .ok_or_else(|| AppError::Unexpected("Owner role created without id".to_string()))?;
         let owner_membership_id = owner_membership
             .id()
-            .ok_or_else(|| AppError::Unexpected("Membership created without id".to_string()))?
-            .to_string();
+            .ok_or_else(|| AppError::Unexpected("Membership created without id".to_string()))?;
 
         // The company creator must receive the full default catalog for the tenant owner role.
         for permission in DEFAULT_PERMISSIONS {
@@ -201,7 +187,7 @@ where
                 .assign_permission(&owner_role_id, &permission.code())
                 .await?;
         }
-        
+
         // Owner role permissions assigned here
         self.membership_repository
             .assign_role(&owner_membership_id, &owner_role_id)

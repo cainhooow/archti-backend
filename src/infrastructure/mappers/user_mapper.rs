@@ -4,7 +4,7 @@ use crate::infrastructure::models::user::Model as UserModel;
 impl From<UserModel> for DomainUser {
     fn from(value: UserModel) -> Self {
         DomainUser::restore(
-            value.id.to_string(),
+            value.id,
             value.email,
             value.password_hash,
             value.full_name,

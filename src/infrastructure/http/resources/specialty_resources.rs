@@ -22,7 +22,7 @@ pub struct SpecialtyRequest {
 impl From<Specialty> for SpecialtyResource {
     fn from(value: Specialty) -> Self {
         Self {
-            id: value.id().map(str::to_string),
+            id: value.id().map(i64::to_string),
             name: value.name().to_string(),
             created_at: value.created_at(),
         }

@@ -3,18 +3,14 @@ use chrono::NaiveDateTime;
 use crate::domain::exceptions::DomainError;
 
 pub struct Specialty {
-    id: Option<String>,
-    company_id: String,
+    id: Option<i64>,
+    company_id: i64,
     name: String,
     created_at: Option<NaiveDateTime>,
 }
 
 impl Specialty {
-    pub fn create(company_id: String, name: String) -> Result<Self, DomainError> {
-        if company_id.is_empty() {
-            return Err(DomainError::InvalidInput);
-        }
-
+    pub fn create(company_id: i64, name: String) -> Result<Self, DomainError> {
         if name.is_empty() {
             return Err(DomainError::InvalidInput);
         }
@@ -28,8 +24,8 @@ impl Specialty {
     }
 
     pub fn restore(
-        id: String,
-        company_id: String,
+        id: i64,
+        company_id: i64,
         name: String,
         created_at: Option<NaiveDateTime>,
     ) -> Self {
@@ -41,11 +37,11 @@ impl Specialty {
         }
     }
 
-    pub fn id(&self) -> Option<&str> {
-        self.id.as_deref()
+    pub fn id(&self) -> Option<&i64> {
+        self.id.as_ref()
     }
 
-    pub fn company_id(&self) -> &str {
+    pub fn company_id(&self) -> &i64 {
         &self.company_id
     }
 

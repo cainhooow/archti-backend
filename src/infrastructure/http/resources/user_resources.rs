@@ -38,7 +38,7 @@ pub struct UserResource {
 impl From<User> for UserResource {
     fn from(value: User) -> Self {
         Self {
-            id: value.id().map(str::to_string),
+            id: value.id().map(i64::to_string),
             email: value.email().to_string(),
             full_name: value.full_name().to_string(),
             phone: value.phone().map(str::to_string),
@@ -54,7 +54,7 @@ impl From<User> for UserResource {
 impl From<&User> for UserResource {
     fn from(value: &User) -> Self {
         Self {
-            id: value.id().map(str::to_string),
+            id: value.id().map(i64::to_string),
             email: value.email().to_string(),
             full_name: value.full_name().to_string(),
             phone: value.phone().map(str::to_string),

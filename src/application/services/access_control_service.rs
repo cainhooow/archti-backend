@@ -7,8 +7,8 @@ use crate::{
 };
 
 pub struct AuthorizeCompanyAccessCommand {
-    pub user_id: String,
-    pub company_id: String,
+    pub user_id: i64,
+    pub company_id: i64,
     pub permission_code: String,
 }
 
@@ -82,7 +82,7 @@ mod tests {
 
     #[derive(Clone)]
     struct FakeUserRepository {
-        users: Arc<HashMap<String, User>>,
+        users: Arc<HashMap<i64, User>>,
     }
 
     #[async_trait::async_trait]
@@ -95,7 +95,7 @@ mod tests {
                 .ok_or(RepositoryError::NotFound)
         }
 
-        async fn by_id(&self, id: &str) -> Result<User, RepositoryError> {
+        async fn by_id(&self, id: &i64) -> Result<User, RepositoryError> {
             self.users.get(id).cloned().ok_or(RepositoryError::NotFound)
         }
 
@@ -117,25 +117,25 @@ mod tests {
     impl MembershipRoleRepository for FakeMembershipRepository {
         async fn assign_role(
             &self,
-            _membership_id: &str,
-            _role_id: &str,
+            _membership_id: &i64,
+            _role_id: &i64,
         ) -> Result<(), RepositoryError> {
             Ok(())
         }
 
         async fn has_permission(
             &self,
-            _company_id: &str,
-            _user_id: &str,
+            _company_id: &i64,
+            _user_id: &i64,
             _permission_code: &str,
         ) -> Result<bool, RepositoryError> {
             Ok(self.allowed)
         }
     }
 
-    fn build_user(id: &str, status: UserStatus, is_super_admin: bool) -> User {
+    fn build_user(id: &i64, status: UserStatus, is_super_admin: bool) -> User {
         User::restore(
-            id.to_string(),
+            *id,
             format!("{id}@example.com"),
             "hashed".to_string(),
             "Example User".to_string(),
@@ -152,8 +152,8 @@ mod tests {
     #[tokio::test]
     async fn allows_super_admin_without_membership_check() {
         let users = HashMap::from([(
-            "user-1".to_string(),
-            build_user("user-1", UserStatus::Active, true),
+            i64::from(1000),
+            build_user(&i64::from(1000), UserStatus::Active, true),
         )]);
         let service = AccessControlService::new(
             FakeUserRepository {
@@ -164,8 +164,8 @@ mod tests {
 
         let result = service
             .authorize_company_access(AuthorizeCompanyAccessCommand {
-                user_id: "user-1".to_string(),
-                company_id: "company-1".to_string(),
+                user_id: i64::from(1000),
+                company_id: i64::from(1001),
                 permission_code: "company.modify".to_string(),
             })
             .await;
@@ -176,8 +176,8 @@ mod tests {
     #[tokio::test]
     async fn rejects_inactive_user_even_if_membership_would_allow() {
         let users = HashMap::from([(
-            "user-1".to_string(),
-            build_user("user-1", UserStatus::Suspended, false),
+            i64::from(1000),
+            build_user(&i64::from(1000), UserStatus::Suspended, false),
         )]);
         let service = AccessControlService::new(
             FakeUserRepository {
@@ -188,8 +188,8 @@ mod tests {
 
         let result = service
             .authorize_company_access(AuthorizeCompanyAccessCommand {
-                user_id: "user-1".to_string(),
-                company_id: "company-1".to_string(),
+                user_id: i64::from(1000),
+                company_id: i64::from(1001),
                 permission_code: "company.modify".to_string(),
             })
             .await;
@@ -200,8 +200,8 @@ mod tests {
     #[tokio::test]
     async fn rejects_user_without_permission() {
         let users = HashMap::from([(
-            "user-1".to_string(),
-            build_user("user-1", UserStatus::Active, false),
+            i64::from(1000),
+            build_user(&i64::from(1000), UserStatus::Active, false),
         )]);
         let service = AccessControlService::new(
             FakeUserRepository {
@@ -212,8 +212,8 @@ mod tests {
 
         let result = service
             .authorize_company_access(AuthorizeCompanyAccessCommand {
-                user_id: "user-1".to_string(),
-                company_id: "company-1".to_string(),
+                user_id: i64::from(1000),
+                company_id: i64::from(1001),
                 permission_code: "company.modify".to_string(),
             })
             .await;

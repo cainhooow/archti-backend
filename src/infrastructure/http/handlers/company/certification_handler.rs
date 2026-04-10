@@ -38,10 +38,9 @@ pub async fn create_certification_handler(
 
     let repository = SeaOrmCertificationRepository::new(state.app.db.clone());
 
-    let company_id: &str = depot
-        .get::<String>("id")
-        .map_err(|_| HttpError::InternalServerError("Failed to obtain company id".to_string()))?
-        .as_ref();
+    let company_id = depot
+        .get::<i64>("id")
+        .map_err(|_| HttpError::InternalServerError("Failed to obtain company id".to_string()))?;
 
     match req.parse_body::<CertificationRequest>().await {
         Ok(validator) => {
@@ -49,7 +48,7 @@ pub async fn create_certification_handler(
 
             let certification = CreateCertificationUseCase::new(repository)
                 .execute(CreateCertificationCommand {
-                    company_id: company_id.to_string(),
+                    company_id: *company_id,
                     name: validator.name,
                     valid_until: validator.valid_until,
                 })

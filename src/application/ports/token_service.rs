@@ -8,27 +8,27 @@ pub struct TokenOutput {
 }
 
 pub trait TokenService: Send + Sync + Debug {
-    fn generate_access_token(&self, user_id: &str) -> AppResult<TokenOutput>;
-    fn generate_refresh_token(&self, user_id: &str) -> AppResult<TokenOutput>;
-    fn verify_token(&self, token: &str) -> AppResult<String>;
-    fn get_refresh_sub(&self, token: &str) -> AppResult<String>;
+    fn generate_access_token(&self, user_id: &i64) -> AppResult<TokenOutput>;
+    fn generate_refresh_token(&self, user_id: &i64) -> AppResult<TokenOutput>;
+    fn verify_token(&self, token: &str) -> AppResult<i64>;
+    fn get_refresh_sub(&self, token: &str) -> AppResult<i64>;
     fn renew_token(&self, token: &str) -> AppResult<TokenOutput>;
 }
 
 impl TokenService for Arc<dyn TokenService> {
-    fn generate_access_token(&self, user_id: &str) -> AppResult<TokenOutput> {
+    fn generate_access_token(&self, user_id: &i64) -> AppResult<TokenOutput> {
         (**self).generate_access_token(user_id)
     }
 
-    fn generate_refresh_token(&self, user_id: &str) -> AppResult<TokenOutput> {
+    fn generate_refresh_token(&self, user_id: &i64) -> AppResult<TokenOutput> {
         (**self).generate_refresh_token(user_id)
     }
 
-    fn verify_token(&self, token: &str) -> AppResult<String> {
+    fn verify_token(&self, token: &str) -> AppResult<i64> {
         (**self).verify_token(token)
     }
 
-    fn get_refresh_sub(&self, token: &str) -> AppResult<String> {
+    fn get_refresh_sub(&self, token: &str) -> AppResult<i64> {
         (**self).get_refresh_sub(token)
     }
 

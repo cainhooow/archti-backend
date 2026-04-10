@@ -7,8 +7,8 @@ pub const COMPANY_OWNER_DESCRIPTION: &str =
 
 #[derive(Debug, Clone)]
 pub struct Role {
-    pub id: Option<String>,
-    pub company_id: String,
+    pub id: Option<i64>,
+    pub company_id: i64,
     pub code: String,
     pub name: String,
     pub description: Option<String>,
@@ -18,21 +18,16 @@ pub struct Role {
 
 impl Role {
     pub fn create(
-        company_id: String,
+        company_id: i64,
         code: String,
         name: String,
         description: Option<String>,
         is_system_role: bool,
         created_at: NaiveDateTime,
     ) -> Result<Self, String> {
-        let company_id = company_id.trim().to_string();
         let code = code.trim().to_string();
         let name = name.trim().to_string();
         let description = description.map(|value| value.trim().to_string());
-
-        if company_id.is_empty() {
-            return Err("Company ID cannot be empty".to_string());
-        }
 
         if code.is_empty() {
             return Err("Code cannot be empty".to_string());
@@ -63,8 +58,8 @@ impl Role {
     }
 
     pub fn restore(
-        id: String,
-        company_id: String,
+        id: i64,
+        company_id: i64,
         code: String,
         name: String,
         description: Option<String>,
@@ -82,11 +77,11 @@ impl Role {
         }
     }
 
-    pub fn id(&self) -> Option<&str> {
-        self.id.as_deref()
+    pub fn id(&self) -> Option<&i64> {
+        self.id.as_ref()
     }
 
-    pub fn company_id(&self) -> &str {
+    pub fn company_id(&self) -> &i64 {
         &self.company_id
     }
 
@@ -129,7 +124,7 @@ mod tests {
     #[test]
     fn rejects_role_code_with_uppercase_letters() {
         let error = Role::create(
-            "company-id".to_string(),
+            1000030,
             "Company.Owner".to_string(),
             "Owner".to_string(),
             None,

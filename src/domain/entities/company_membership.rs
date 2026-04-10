@@ -13,9 +13,9 @@ pub enum MembershipType {
 }
 
 pub struct CompanyMembership {
-    id: Option<String>,
-    company_id: String,
-    user_id: String,
+    id: Option<i64>,
+    company_id: i64,
+    user_id: i64,
     membership_type: MembershipType,
     status_key: MembershipStatus,
     display_name: Option<String>,
@@ -70,19 +70,12 @@ impl TryFrom<&str> for MembershipType {
 
 impl CompanyMembership {
     pub fn register(
-        company_id: String,
-        user_id: String,
+        company_id: i64,
+        user_id: i64,
         membership_type: MembershipType,
         status_key: MembershipStatus,
         display_name: String,
     ) -> Result<Self, String> {
-        if company_id.is_empty() {
-            return Err("company_id cannot be empty".to_string());
-        }
-        if user_id.is_empty() {
-            return Err("user_id cannot be empty".to_string());
-        }
-
         if display_name.is_empty() {
             return Err("display_name cannot be empty".to_string());
         }
@@ -103,9 +96,9 @@ impl CompanyMembership {
     }
 
     pub fn restore(
-        id: String,
-        company_id: String,
-        user_id: String,
+        id: i64,
+        company_id: i64,
+        user_id: i64,
         membership_type: MembershipType,
         status_key: MembershipStatus,
         display_name: Option<String>,
@@ -130,15 +123,15 @@ impl CompanyMembership {
         }
     }
 
-    pub fn id(&self) -> Option<&str> {
-        self.id.as_deref()
+    pub fn id(&self) -> Option<&i64> {
+        self.id.as_ref()
     }
 
-    pub fn company_id(&self) -> &str {
+    pub fn company_id(&self) -> &i64 {
         &self.company_id
     }
 
-    pub fn user_id(&self) -> &str {
+    pub fn user_id(&self) -> &i64 {
         &self.user_id
     }
 

@@ -32,10 +32,9 @@ pub async fn create_specialty_handler(
         .map_err(|_| HttpError::InternalServerError("Failed to obtain app state.".to_string()))?;
 
     let repository = SeaOrmSpecialtyRepository::new(state.app.db.clone());
-    let company_id: &str = depot
-        .get::<String>("company_id")
-        .map_err(|_| HttpError::InternalServerError("Failed to obtain company id".to_string()))?
-        .as_ref();
+    let company_id = depot
+        .get::<i64>("id")
+        .map_err(|_| HttpError::InternalServerError("Failed to obtain company id".to_string()))?;
 
     match req.parse_body::<SpecialtyRequest>().await {
         Ok(validator) => {
@@ -43,7 +42,7 @@ pub async fn create_specialty_handler(
 
             let specialty = CreateSpecialtyUseCase::new(repository)
                 .execute(CreateSpecialtyCommand {
-                    company_id: company_id.to_string(),
+                    company_id: *company_id,
                     name: validator.name,
                 })
                 .await?;

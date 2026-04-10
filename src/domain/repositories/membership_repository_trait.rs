@@ -46,11 +46,11 @@ where
 
 #[async_trait::async_trait]
 pub trait MembershipReadRepository: Send + Sync {
-    async fn by_id(&self, membership_id: &str) -> Result<CompanyMembership, RepositoryError>;
+    async fn by_id(&self, membership_id: &i64) -> Result<CompanyMembership, RepositoryError>;
     async fn by_company_and_user(
         &self,
-        company_id: &str,
-        user_id: &str,
+        company_id: &i64,
+        user_id: &i64,
     ) -> Result<CompanyMembership, RepositoryError>;
 }
 
@@ -59,14 +59,14 @@ impl<T> MembershipReadRepository for Arc<T>
 where
     T: MembershipReadRepository + ?Sized,
 {
-    async fn by_id(&self, membership_id: &str) -> Result<CompanyMembership, RepositoryError> {
+    async fn by_id(&self, membership_id: &i64) -> Result<CompanyMembership, RepositoryError> {
         (**self).by_id(membership_id).await
     }
 
     async fn by_company_and_user(
         &self,
-        company_id: &str,
-        user_id: &str,
+        company_id: &i64,
+        user_id: &i64,
     ) -> Result<CompanyMembership, RepositoryError> {
         (**self).by_company_and_user(company_id, user_id).await
     }
@@ -74,11 +74,11 @@ where
 
 #[async_trait::async_trait]
 pub trait MembershipRoleRepository: Send + Sync {
-    async fn assign_role(&self, membership_id: &str, role_id: &str) -> Result<(), RepositoryError>;
+    async fn assign_role(&self, membership_id: &i64, role_id: &i64) -> Result<(), RepositoryError>;
     async fn has_permission(
         &self,
-        company_id: &str,
-        user_id: &str,
+        company_id: &i64,
+        user_id: &i64,
         permission_code: &str,
     ) -> Result<bool, RepositoryError>;
 }
@@ -88,14 +88,14 @@ impl<T> MembershipRoleRepository for Arc<T>
 where
     T: MembershipRoleRepository + ?Sized,
 {
-    async fn assign_role(&self, membership_id: &str, role_id: &str) -> Result<(), RepositoryError> {
+    async fn assign_role(&self, membership_id: &i64, role_id: &i64) -> Result<(), RepositoryError> {
         (**self).assign_role(membership_id, role_id).await
     }
 
     async fn has_permission(
         &self,
-        company_id: &str,
-        user_id: &str,
+        company_id: &i64,
+        user_id: &i64,
         permission_code: &str,
     ) -> Result<bool, RepositoryError> {
         (**self)

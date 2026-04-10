@@ -2,7 +2,6 @@ use std::sync::Arc;
 
 use sea_orm::ActiveValue::Set;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
-use uuid::Uuid;
 
 use crate::domain::{
     entities::permission::Permission,
@@ -13,6 +12,7 @@ use crate::domain::{
 };
 
 use crate::infrastructure::models::permission;
+use crate::infrastructure::services::snowflake_id::snowflake;
 
 pub struct SeaOrmPermissionRepository {
     conn: Arc<DatabaseConnection>,
@@ -28,7 +28,7 @@ impl SeaOrmPermissionRepository {
 impl PermissionCreateRepository for SeaOrmPermissionRepository {
     async fn create(&self, permission: &Permission) -> Result<Permission, RepositoryError> {
         let model = permission::ActiveModel {
-            id: Set(Uuid::new_v4()),
+            id: Set(snowflake()),
             code: Set(permission.code().to_string()),
             module: Set(permission.module().to_string()),
             action: Set(permission.action().to_string()),
@@ -57,10 +57,8 @@ impl PermissionReadRepository for SeaOrmPermissionRepository {
         }
     }
 
-    async fn by_id(&self, id: &str) -> Result<Permission, RepositoryError> {
-        let id = Uuid::parse_str(id).map_err(|err| RepositoryError::Generic(err.to_string()))?;
-
-        match permission::Entity::find_by_id(id).one(&*self.conn).await {
+    async fn by_id(&self, id: &i64) -> Result<Permission, RepositoryError> {
+        match permission::Entity::find_by_id(*id).one(&*self.conn).await {
             Ok(Some(model)) => Ok(model.into()),
             Ok(None) => Err(RepositoryError::NotFound),
             Err(err) => Err(RepositoryError::Generic(err.to_string())),
