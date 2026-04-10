@@ -1,4 +1,5 @@
 use chrono::NaiveDateTime;
+use garde::Validate;
 use serde::{Deserialize, Serialize};
 
 use crate::domain::entities::specialty::Specialty;
@@ -10,6 +11,12 @@ pub struct SpecialtyResource {
     pub name: String,
     #[serde(rename(serialize = "createdAt"))]
     pub created_at: Option<NaiveDateTime>,
+}
+
+#[derive(Deserialize, Validate)]
+pub struct SpecialtyRequest {
+    #[garde(length(min = 1))]
+    pub name: String,
 }
 
 impl From<Specialty> for SpecialtyResource {

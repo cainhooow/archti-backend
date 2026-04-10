@@ -19,7 +19,11 @@ use crate::{
 };
 
 #[handler]
-pub async fn index_certification_handler(req: &mut Request, depot: &mut Depot, res: &mut Response) {
+pub async fn index_certification_handler(
+    _req: &mut Request,
+    _depot: &mut Depot,
+    _res: &mut Response,
+) {
 }
 
 #[handler]
@@ -41,7 +45,7 @@ pub async fn create_certification_handler(
 
     match req.parse_body::<CertificationRequest>().await {
         Ok(validator) => {
-            _ = validator.validate()?;
+            validator.validate()?;
 
             let certification = CreateCertificationUseCase::new(repository)
                 .execute(CreateCertificationCommand {
