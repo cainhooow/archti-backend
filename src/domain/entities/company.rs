@@ -19,6 +19,7 @@ pub struct Company {
 }
 
 impl Company {
+    #[allow(clippy::too_many_arguments)]
     pub fn register(
         legal_name: String,
         trade_name: String,
@@ -86,6 +87,7 @@ impl Company {
         })
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn restore(
         id: i64,
         legal_name: String,

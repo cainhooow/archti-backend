@@ -1,9 +1,9 @@
 pub mod bootstrap;
 pub mod database;
-pub mod models;
 pub mod http;
 pub mod mailer;
 pub mod mappers;
+pub mod models;
 pub mod persistence;
 pub mod renderer;
 pub mod security;

@@ -184,13 +184,13 @@ where
         // The company creator must receive the full default catalog for the tenant owner role.
         for permission in DEFAULT_PERMISSIONS {
             self.role_repository
-                .assign_permission(&owner_role_id, &permission.code())
+                .assign_permission(owner_role_id, &permission.code())
                 .await?;
         }
 
         // Owner role permissions assigned here
         self.membership_repository
-            .assign_role(&owner_membership_id, &owner_role_id)
+            .assign_role(owner_membership_id, owner_role_id)
             .await?;
 
         Ok(RegisterCompanyResult {

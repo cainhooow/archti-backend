@@ -18,9 +18,9 @@ pub struct Model {
     pub updated_at: Option<DateTime>,
 
     #[sea_orm(belongs_to, from = "company_id", to = "id")]
-    pub company: Option<super::company::Entity>,
+    pub company: HasOne<super::company::Entity>,
     #[sea_orm(belongs_to, from = "user_id", to = "id")]
-    pub user: Option<super::user::Entity>,
+    pub user: HasOne<super::user::Entity>,
     #[sea_orm(has_many, via = "membership_role")]
     pub roles: HasMany<super::role::Entity>,
 }

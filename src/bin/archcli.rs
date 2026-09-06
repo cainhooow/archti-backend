@@ -42,7 +42,7 @@ async fn main() {
             std::process::exit(1);
         }
         None => {
-            eprintln!("No command provied");
+            eprintln!("No command provided");
             std::process::exit(1);
         }
     }

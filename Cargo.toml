@@ -2,40 +2,41 @@
 name = "archti-backend"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.94.0"
+default-run = "archti-backend"
 
 [workspace]
 members = ["migration"]
 
 [dependencies]
-migration = { path = "migration" }
-async-trait = "0.1.89"
-regex = "1.12.3"
+async-trait = "0.1.92"
+regex = "1.13.1"
 salvo = { version = "0.91.1", features = ["affix-state", "flash", "jwt-auth", "logging", "cookie", "timeout", "cache", "caching-headers"] }
-sea-orm = { version = "2.0.0-rc", features = ["macros", "sqlx-postgres"] }
-tokio = { version = "1.50.0", features = ["macros"] }
+sea-orm = { version = "2.0.2", features = ["macros", "sqlx-postgres", "runtime-tokio-rustls"] }
+tokio = { version = "1.53.1", features = ["macros", "rt-multi-thread", "sync"] }
 tracing = "0.1.44"
-tracing-subscriber = "0.3.23"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 dotenvy = "0.15.7"
-serde = { version = "1.0.228", features = ["derive"] }
-thiserror = "2.0.18"
-rust_decimal = "1.41.0"
+serde = { version = "1.0.229", features = ["derive"] }
+thiserror = "2.0.20"
+rust_decimal = "1.43.0"
 crypto = { version = "0.5.1", features = ["password-hash"] }
-argon2 = "0.5.3"
-time = "0.3.47"
-jsonwebtoken = { version = "10.3.0" }
+argon2 = { version = "0.6.0", features = ["getrandom"] }
+time = "0.3.55"
+jsonwebtoken = { version = "11.0.0", default-features = false, features = ["rust_crypto"] }
 strum = "0.28.0"
 strum_macros = "0.28.0"
-serde_json = "1.0.149"
-garde = { version = "0.22.1", features = [
+serde_json = "1.0.151"
+garde = { version = "0.23.0", features = [
     "credit-card",
     "serde",
     "phone-number",
     "email",
     "full",
 ] }
-uuid = { version = "1.23.0", features = ["serde", "v4"] }
-chrono = { version = "0.4.44", features = ["serde"] }
+uuid = { version = "1.26.0", features = ["serde", "v4"] }
+chrono = { version = "0.4.45", features = ["serde"] }
 lettre = { version = "0.11.20", default-features = false, features = [  "tokio1-native-tls", "smtp-transport", "builder", "hostname"] }
-handlebars = { version = "6.4.0", features = ["dir_source", "rust-embed"] }
-css-inline = "0.20.1"
+handlebars = { version = "6.4.4", features = ["dir_source", "rust-embed"] }
+css-inline = "0.21.2"
 ferroid = { version = "2.0.0", features = ["alloc", "atomic", "serde", "snowflake", "std", "tracing"] }

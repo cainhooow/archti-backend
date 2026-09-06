@@ -158,3 +158,29 @@ impl TokenService for JwtAuthService {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn access_token_round_trips() {
+        let service = JwtAuthService::new("test-secret".to_string());
+
+        let output = service.generate_access_token(&42).unwrap();
+
+        assert_eq!(service.verify_token(&output.token).unwrap(), 42);
+    }
+
+    #[test]
+    fn refresh_token_cannot_be_used_as_access_token() {
+        let service = JwtAuthService::new("test-secret".to_string());
+
+        let output = service.generate_refresh_token(&42).unwrap();
+
+        assert!(matches!(
+            service.verify_token(&output.token),
+            Err(AppError::AuthenticationFailed)
+        ));
+    }
+}

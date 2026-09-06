@@ -106,3 +106,17 @@ impl PasswordResetTokenService for JwtPasswordResetTokenService {
         Ok(claims.sub)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn password_reset_token_round_trips() {
+        let service = JwtPasswordResetTokenService::new("test-secret".to_string());
+
+        let output = service.generate_reset_token(&84).unwrap();
+
+        assert_eq!(service.verify_token(&output.token).unwrap(), 84);
+    }
+}

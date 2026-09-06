@@ -33,8 +33,8 @@ impl CreateMembershipRepository for SeaOrmMembershipRepository {
     ) -> Result<CompanyMembership, RepositoryError> {
         let model = company_membership::ActiveModel {
             id: Set(snowflake()),
-            company_id: Set(membership.company_id().clone()),
-            user_id: Set(membership.user_id().clone()),
+            company_id: Set(*membership.company_id()),
+            user_id: Set(*membership.user_id()),
             membership_type: Set(membership.membership_type().as_str().to_string()),
             status_key: Set(membership.status().as_str().to_string()),
             display_name: Set(membership.display_name()),
@@ -140,7 +140,7 @@ impl MembershipRoleRepository for SeaOrmMembershipRepository {
         let membership_id = membership.id().ok_or(RepositoryError::NotFound)?;
 
         let membership_roles = membership_role::Entity::find()
-            .filter(membership_role::Column::MembershipId.eq(membership_id.clone()))
+            .filter(membership_role::Column::MembershipId.eq(*membership_id))
             .all(&*self.conn)
             .await
             .map_err(|err| RepositoryError::Generic(err.to_string()))?;

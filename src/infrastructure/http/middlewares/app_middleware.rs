@@ -56,8 +56,10 @@ impl Handler for AppMiddleware {
             if let Ok(claims) = state.app.auth_service.verify_token(&token_str) {
                 depot.insert(DEPOT_KEY_ID, claims);
             } else {
+                res.render(crate::infrastructure::http::resources::DataResponse::error(
+                    "Invalid Access Token",
+                ));
                 res.status_code(StatusCode::UNAUTHORIZED);
-                _ = ctrl.call_next(req, depot, res).await;
                 return;
             }
         }

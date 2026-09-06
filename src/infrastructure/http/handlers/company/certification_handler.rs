@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use garde::Validate;
 use salvo::prelude::*;
 
@@ -33,14 +35,14 @@ pub async fn create_certification_handler(
     res: &mut Response,
 ) -> Result<(), HttpError> {
     let state = depot
-        .obtain::<HttpState>()
+        .obtain::<Arc<HttpState>>()
         .map_err(|_| HttpError::InternalServerError("Failed to obtain HttpState".to_string()))?;
 
     let repository = SeaOrmCertificationRepository::new(state.app.db.clone());
 
-    let company_id = depot
-        .get::<i64>("id")
-        .map_err(|_| HttpError::InternalServerError("Failed to obtain company id".to_string()))?;
+    let company_id = req
+        .param::<i64>("id")
+        .ok_or_else(|| HttpError::BadRequest("Invalid company id".to_string()))?;
 
     match req.parse_body::<CertificationRequest>().await {
         Ok(validator) => {
@@ -48,7 +50,7 @@ pub async fn create_certification_handler(
 
             let certification = CreateCertificationUseCase::new(repository)
                 .execute(CreateCertificationCommand {
-                    company_id: *company_id,
+                    company_id,
                     name: validator.name,
                     valid_until: validator.valid_until,
                 })

@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 #[derive(Debug, Clone, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "user")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_inrement = false)]
+    #[sea_orm(primary_key, auto_increment = false)]
     pub id: i64,
     #[sea_orm(unique)]
     pub email: String,

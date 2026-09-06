@@ -74,6 +74,7 @@ impl User {
         })
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn restore(
         id: i64,
         email: String,

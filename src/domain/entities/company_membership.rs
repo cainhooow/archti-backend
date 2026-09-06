@@ -95,6 +95,7 @@ impl CompanyMembership {
         })
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn restore(
         id: i64,
         company_id: i64,
